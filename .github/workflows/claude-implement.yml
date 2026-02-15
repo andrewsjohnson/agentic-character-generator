@@ -52,10 +52,15 @@ jobs:
             # ===== Node + project commands =====
             --allowedTools "Bash(mkdir -p *)"
             --allowedTools "Bash(node *)"
+            --allowedTools "Bash(npm ci *)"
             --allowedTools "Bash(npm ci*)"
+            --allowedTools "Bash(npm test *)"
             --allowedTools "Bash(npm test*)"
-            --allowedTools "Bash(npm run lint*)"
-            --allowedTools "Bash(npm run typecheck*)"
+            --allowedTools "Bash(npm run lint *)"
+            --allowedTools "Bash(npm run lint*)"            
+            --allowedTools "Bash(npm run typecheck *)"
+            --allowedTools "Bash(npm run typecheck*)"            
+            --allowedTools "Bash(npm run build *)"
             --allowedTools "Bash(npm run build*)"
 
             # ===== Git operations =====

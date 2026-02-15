@@ -14,6 +14,11 @@ jobs:
   implement:
     runs-on: ubuntu-latest
 
+    # (Optional but recommended) Prevent multiple approvals racing each other.
+    concurrency:
+      group: claude-implement-issue-${{ github.event.issue.number }}
+      cancel-in-progress: true
+
     # Only on issues (not PRs), only when /approve-claude is posted,
     # only by trusted roles.
     if: |
@@ -32,6 +37,37 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           track_progress: true
+
+          # ✅ Allow the minimal Bash needed for implementation + checks.
+          # Tighten/loosen as you like (e.g. remove npm install* if you want lockfile-only).
+          settings: |
+            {
+              "permissions": {
+                "allow": [
+                  "Bash(mkdir:*)",
+                  "Bash(ls:*)",
+                  "Bash(find:*)",
+                  "Bash(cat:*)",
+                  "Bash(grep:*)",
+                  "Bash(sed:*)",
+                  "Bash(awk:*)",
+                  "Bash(xargs:*)",
+
+                  "Bash(node:*)",
+                  "Bash(npm ci*)",
+                  "Bash(npm install*)",
+                  "Bash(npm test*)",
+                  "Bash(npm run lint*)",
+                  "Bash(npm run typecheck*)",
+                  "Bash(npm run build*)",
+
+                  "Bash(git:*)",
+                  "Bash(gh pr view:*)",
+                  "Bash(gh pr comment:*)"
+                ]
+              }
+            }
+
           prompt: |
             Implement the plan found between:
             <!-- CLAUDE_PLAN_START --> and <!-- CLAUDE_PLAN_END -->

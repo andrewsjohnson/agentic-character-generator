@@ -15,6 +15,9 @@ import type { EquipmentItem } from './equipment';
 export type CharacterDraft = {
   name?: string;
 
+  /** The character's alignment (e.g. "Lawful Good", "Chaotic Neutral"). */
+  alignment?: string;
+
   /** The chosen race. */
   race?: Race;
 

@@ -5,7 +5,7 @@ export type StepProps = {
   updateCharacter: (updates: Partial<CharacterDraft>) => void;
 };
 
-export function BackgroundStep({ character, updateCharacter }: StepProps) {
+export function BackgroundStep({ character }: StepProps) {
   return (
     <div className="p-8">
       <h2 className="text-3xl font-bold mb-4">Select Background</h2>

@@ -19,7 +19,14 @@ describe('SpeciesStep', () => {
 
   it('displays current species selection', () => {
     const mockCharacter = {
-      species: { name: 'Human', description: '', size: 'Medium', speed: 30 }
+      species: {
+        name: 'Human',
+        size: 'Medium' as const,
+        speed: 30,
+        traits: [],
+        languages: ['Common'],
+        subspecies: []
+      }
     };
     const mockUpdate = vi.fn();
 

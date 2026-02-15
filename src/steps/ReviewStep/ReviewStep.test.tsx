@@ -19,9 +19,38 @@ describe('ReviewStep', () => {
 
   it('displays character details', () => {
     const mockCharacter = {
-      species: { name: 'Elf', description: '', size: 'Medium', speed: 30 },
-      class: { name: 'Wizard', description: '', hitDie: 6, primaryAbility: ['INT'] },
-      background: { name: 'Sage', description: '', skillProficiencies: [] },
+      species: {
+        name: 'Elf',
+        size: 'Medium' as const,
+        speed: 30,
+        traits: [],
+        languages: ['Common', 'Elvish'],
+        subspecies: []
+      },
+      class: {
+        name: 'Wizard',
+        hitDie: 6 as const,
+        primaryAbility: ['INT' as const],
+        savingThrows: ['INT', 'WIS'] as ['INT', 'WIS'],
+        armorProficiencies: [],
+        weaponProficiencies: [],
+        skillChoices: { options: [], count: 2 },
+        features: [],
+        subclasses: []
+      },
+      background: {
+        name: 'Sage',
+        abilityOptions: ['INT', 'WIS', 'CHA'] as ['INT', 'WIS', 'CHA'],
+        skillProficiencies: ['Arcana', 'History'] as ['Arcana', 'History'],
+        toolProficiency: 'None',
+        equipment: [],
+        feature: { name: 'Researcher', description: '' },
+        originFeat: 'Magic Initiate',
+        personalityTraits: [],
+        ideals: [],
+        bonds: [],
+        flaws: []
+      },
       abilityScoreMethod: 'standard-array' as const
     };
     const mockUpdate = vi.fn();

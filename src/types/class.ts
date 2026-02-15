@@ -10,7 +10,7 @@ export type ArmorProficiency = 'light' | 'medium' | 'heavy' | 'shields';
 export type WeaponProficiency =
   | 'simple'
   | 'martial'
-  | (string & {});
+  | (string & Record<string, never>);
 
 /** A class feature gained at level 1 (e.g. Rage, Spellcasting). */
 export type ClassFeature = {

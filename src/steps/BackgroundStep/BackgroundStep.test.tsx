@@ -19,7 +19,19 @@ describe('BackgroundStep', () => {
 
   it('displays current background selection', () => {
     const mockCharacter = {
-      background: { name: 'Acolyte', description: '', skillProficiencies: [] }
+      background: {
+        name: 'Acolyte',
+        abilityOptions: ['WIS', 'INT', 'CHA'] as ['WIS', 'INT', 'CHA'],
+        skillProficiencies: ['Insight', 'Religion'] as ['Insight', 'Religion'],
+        toolProficiency: 'None',
+        equipment: [],
+        feature: { name: 'Shelter of the Faithful', description: '' },
+        originFeat: 'Magic Initiate',
+        personalityTraits: [],
+        ideals: [],
+        bonds: [],
+        flaws: []
+      }
     };
     const mockUpdate = vi.fn();
 

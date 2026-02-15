@@ -20,8 +20,26 @@ describe('EquipmentStep', () => {
   it('displays equipment count', () => {
     const mockCharacter = {
       equipment: [
-        { name: 'Longsword', type: 'weapon' },
-        { name: 'Shield', type: 'armor' }
+        {
+          kind: 'weapon' as const,
+          name: 'Longsword',
+          category: 'martial' as const,
+          damage: '1d8',
+          damageType: 'slashing' as const,
+          properties: [],
+          weight: 3,
+          cost: '15 gp'
+        },
+        {
+          kind: 'armor' as const,
+          name: 'Shield',
+          category: 'shield' as const,
+          baseAC: 2,
+          addDex: false,
+          stealthDisadvantage: false,
+          weight: 6,
+          cost: '10 gp'
+        }
       ]
     };
     const mockUpdate = vi.fn();

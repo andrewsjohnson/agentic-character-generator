@@ -72,7 +72,10 @@ jobs:
           show_full_output: true
 
           claude_args: |
-            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr comment:*),Bash(git status*),Bash(git diff*),Bash(git add*),Bash(git commit*),Bash(git push*)"
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,\
+            Bash(gh pr view *),Bash(gh pr diff *),Bash(gh pr comment *),\
+            Bash(git status *),Bash(git diff *),Bash(git restore *),Bash(git checkout *),\
+            Bash(git add *),Bash(git reset *),Bash(git commit *),Bash(git push *)"
 
       # ==========================================================
       # ISSUE MODE — Claude is READ/COMMENT ONLY

@@ -97,19 +97,19 @@ jobs:
           title="(Claude) ${ISSUE_NUMBER}: ${ISSUE_TITLE:-Implementation}"
 
           body=$(cat <<EOF
-Fixes #$ISSUE_NUMBER
-
-## Plan (latest Claude plan comment)
-$plan_extracted
-
-## Next step
-Comment on this PR with:
-
-\`/implement-claude\`
-
-Generated with Claude Code.
-EOF
-)
+          Fixes #$ISSUE_NUMBER
+          
+          ## Plan (latest Claude plan comment)
+          $plan_extracted
+          
+          ## Next step
+          Comment on this PR with:
+          
+          \`/implement-claude\`
+          
+          Generated with Claude Code.
+          EOF
+          )
 
           gh pr create \
             --repo "$REPO" \

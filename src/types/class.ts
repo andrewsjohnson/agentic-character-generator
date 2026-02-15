@@ -6,8 +6,11 @@ export type HitDie = 6 | 8 | 10 | 12;
 /** Armor proficiency categories. */
 export type ArmorProficiency = 'light' | 'medium' | 'heavy' | 'shields';
 
-/** Weapon proficiency categories. */
-export type WeaponProficiency = 'simple' | 'martial' | string;
+/** Weapon proficiency — either a category or a specific weapon name. */
+export type WeaponProficiency =
+  | 'simple'
+  | 'martial'
+  | (string & {});
 
 /** A class feature gained at level 1 (e.g. Rage, Spellcasting). */
 export type ClassFeature = {

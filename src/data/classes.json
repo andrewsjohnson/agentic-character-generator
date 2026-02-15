@@ -1,0 +1,700 @@
+[
+  {
+    "name": "Barbarian",
+    "hitDie": 12,
+    "primaryAbility": [
+      "STR"
+    ],
+    "savingThrows": [
+      "STR",
+      "CON"
+    ],
+    "armorProficiencies": [
+      "light",
+      "medium",
+      "shields"
+    ],
+    "weaponProficiencies": [
+      "simple",
+      "martial"
+    ],
+    "skillChoices": {
+      "options": [
+        "Animal Handling",
+        "Athletics",
+        "Intimidation",
+        "Nature",
+        "Perception",
+        "Survival"
+      ],
+      "count": 2
+    },
+    "features": [
+      {
+        "name": "Rage",
+        "description": "In battle, you fight with primal ferocity. On your turn, you can enter a rage as a bonus action. While raging, you gain the following benefits if you aren't wearing heavy armor:\n- You have advantage on Strength checks and Strength saving throws.\n- When you make a melee weapon Attack using Strength, you gain a +2 bonus to the damage roll. This bonus increases as you level.\n- You have Resistance to bludgeoning, piercing, and slashing damage.\nIf you are able to cast Spells, you can't cast them or concentrate on them while raging.\nYour rage lasts for 1 minute. It ends early if you are knocked Unconscious or if Your Turn ends and you haven't attacked a hostile creature since your last turn or taken damage since then. You can also end your rage on Your Turn as a Bonus Action.\nOnce you have raged the maximum number of times for your barbarian level, you must finish a Long Rest before you can rage again. You may rage 2 times at 1st level, 3 at 3rd, 4 at 6th, 5 at 12th, and 6 at 17th."
+      },
+      {
+        "name": "Unarmored Defense",
+        "description": "While you are not wearing any armor, your Armor Class equals 10 + your Dexterity modifier + your Constitution modifier. You can use a shield and still gain this benefit."
+      }
+    ],
+    "subclasses": [
+      {
+        "name": "Berserker",
+        "features": []
+      }
+    ]
+  },
+  {
+    "name": "Bard",
+    "hitDie": 8,
+    "primaryAbility": [
+      "CHA"
+    ],
+    "savingThrows": [
+      "DEX",
+      "CHA"
+    ],
+    "armorProficiencies": [
+      "light"
+    ],
+    "weaponProficiencies": [
+      "simple",
+      "Longsword",
+      "Rapier",
+      "Shortsword",
+      "Hand crossbow"
+    ],
+    "skillChoices": {
+      "options": [
+        "Acrobatics",
+        "Animal Handling",
+        "Arcana",
+        "Athletics",
+        "Deception",
+        "History",
+        "Insight",
+        "Intimidation",
+        "Investigation",
+        "Medicine",
+        "Nature",
+        "Perception",
+        "Performance",
+        "Persuasion",
+        "Religion",
+        "Sleight of Hand",
+        "Stealth",
+        "Survival"
+      ],
+      "count": 3
+    },
+    "features": [
+      {
+        "name": "Spellcasting: Bard",
+        "description": "You have learned to untangle and reshape the fabric of reality in harmony with your wishes and music. Your spells are part of your vast repertoire, magic that you can tune to different situations."
+      },
+      {
+        "name": "Bardic Inspiration (d6)",
+        "description": "You can inspire others through stirring words or music. To do so, you use a bonus action on your turn to choose one creature other than yourself within 60 feet of you who can hear you. That creature gains one Bardic Inspiration die, a d6. Once within the next 10 minutes, the creature can roll the die and add the number rolled to one ability check, attack roll, or saving throw it makes. The creature can wait until after it rolls the d20 before deciding to use the Bardic Inspiration die, but must decide before the GM says whether the roll succeeds or fails. Once the Bardic Inspiration die is rolled, it is lost. A creature can have only one Bardic Inspiration die at a time.\nYou can use this feature a number of times equal to your Charisma modifier (a minimum of once). You regain any expended uses when you finish a long rest. \nYour Bardic Inspiration die changes when you reach certain levels in this class. The die becomes a d8 at 5th level, a d10 at 10th level, and a d12 at 15th level."
+      }
+    ],
+    "subclasses": [
+      {
+        "name": "Lore",
+        "features": []
+      }
+    ],
+    "spellcasting": {
+      "ability": "CHA",
+      "cantripsKnown": 2,
+      "spellSlots": 2,
+      "spellsPrepared": 4
+    }
+  },
+  {
+    "name": "Cleric",
+    "hitDie": 8,
+    "primaryAbility": [
+      "WIS"
+    ],
+    "savingThrows": [
+      "WIS",
+      "CHA"
+    ],
+    "armorProficiencies": [
+      "light",
+      "medium",
+      "shields"
+    ],
+    "weaponProficiencies": [
+      "simple"
+    ],
+    "skillChoices": {
+      "options": [
+        "History",
+        "Insight",
+        "Medicine",
+        "Persuasion",
+        "Religion"
+      ],
+      "count": 2
+    },
+    "features": [
+      {
+        "name": "Spellcasting: Cleric",
+        "description": "As a conduit for divine power, you can cast cleric spells."
+      },
+      {
+        "name": "Divine Domain",
+        "description": "Choose one domain related to your deity, such as Knowledge, Life, Light, Nature, Tempest, Trickery, or War. Only the Life domain is detailed in the Open Game Licensed SRD. Additional Domains are described in the official rulebooks or products from other publishers.\nYour domain grants you domain spells and other features when you choose it at 1st level. It also grants you additional ways to use Channel Divinity when you gain that feature at 2nd level, and additional benefits at 6th, 8th, and 17th levels."
+      },
+      {
+        "name": "Domain Spells",
+        "description": "Each domain has a list of spells--its domain spells--that you gain at the cleric levels noted in the domain description. Once you gain a domain spell, you always have it prepared, and it doesn't count against the number of spells you can prepare each day.\nIf you have a domain spell that doesn't appear on the cleric spell list, the spell is nonetheless a cleric spell for you."
+      }
+    ],
+    "subclasses": [
+      {
+        "name": "Life",
+        "features": [
+          {
+            "name": "Bonus Proficiency",
+            "description": "When you choose this domain at 1st level, you gain proficiency with heavy armor."
+          },
+          {
+            "name": "Disciple of Life",
+            "description": "Also starting at 1st level, your healing spells are more effective. Whenever you use a spell of 1st level or higher to restore hit points to a creature, the creature regains additional hit points equal to 2 + the spell's level."
+          }
+        ]
+      }
+    ],
+    "spellcasting": {
+      "ability": "WIS",
+      "cantripsKnown": 3,
+      "spellSlots": 2
+    }
+  },
+  {
+    "name": "Druid",
+    "hitDie": 8,
+    "primaryAbility": [
+      "WIS"
+    ],
+    "savingThrows": [
+      "INT",
+      "WIS"
+    ],
+    "armorProficiencies": [
+      "light",
+      "medium",
+      "shields"
+    ],
+    "weaponProficiencies": [
+      "Club",
+      "Dagger",
+      "Javelin",
+      "Mace",
+      "Quarterstaff",
+      "Sickle",
+      "Spear",
+      "Dart",
+      "Sling",
+      "Scimitar"
+    ],
+    "skillChoices": {
+      "options": [
+        "Animal Handling",
+        "Arcana",
+        "Insight",
+        "Medicine",
+        "Nature",
+        "Perception",
+        "Religion",
+        "Survival"
+      ],
+      "count": 2
+    },
+    "features": [
+      {
+        "name": "Spellcasting: Druid",
+        "description": "Drawing on the divine essence of nature itself, you can cast spells to shape that essence to your will."
+      },
+      {
+        "name": "Druidic",
+        "description": "You know Druidic, the secret language of druids. You can speak the language and use it to leave hidden messages. You and others who know this language automatically spot such a message. Others spot the message's presence with a successful DC 15 Wisdom (Perception) check but can't decipher it without magic."
+      }
+    ],
+    "subclasses": [
+      {
+        "name": "Land",
+        "features": []
+      }
+    ],
+    "spellcasting": {
+      "ability": "WIS",
+      "cantripsKnown": 2,
+      "spellSlots": 2
+    }
+  },
+  {
+    "name": "Fighter",
+    "hitDie": 10,
+    "primaryAbility": [
+      "STR",
+      "DEX"
+    ],
+    "savingThrows": [
+      "STR",
+      "CON"
+    ],
+    "armorProficiencies": [
+      "light",
+      "medium",
+      "heavy",
+      "shields"
+    ],
+    "weaponProficiencies": [
+      "simple",
+      "martial"
+    ],
+    "skillChoices": {
+      "options": [
+        "Acrobatics",
+        "Animal Handling",
+        "Athletics",
+        "History",
+        "Insight",
+        "Intimidation",
+        "Perception",
+        "Survival"
+      ],
+      "count": 2
+    },
+    "features": [
+      {
+        "name": "Fighting Style",
+        "description": "You adopt a particular style of fighting as your specialty. Choose one of the following options. You can't take a Fighting Style option more than once, even if you later get to choose again."
+      },
+      {
+        "name": "Second Wind",
+        "description": "You have a limited well of stamina that you can draw on to protect yourself from harm. On your turn, you can use a bonus action to regain hit points equal to 1d10 + your fighter level. Once you use this feature, you must finish a short or long rest before you can use it again."
+      }
+    ],
+    "subclasses": [
+      {
+        "name": "Champion",
+        "features": []
+      }
+    ]
+  },
+  {
+    "name": "Monk",
+    "hitDie": 8,
+    "primaryAbility": [
+      "DEX",
+      "WIS"
+    ],
+    "savingThrows": [
+      "DEX",
+      "STR"
+    ],
+    "armorProficiencies": [],
+    "weaponProficiencies": [
+      "simple",
+      "Shortsword"
+    ],
+    "skillChoices": {
+      "options": [
+        "Acrobatics",
+        "Athletics",
+        "History",
+        "Insight",
+        "Religion",
+        "Stealth"
+      ],
+      "count": 2
+    },
+    "features": [
+      {
+        "name": "Unarmored Defense",
+        "description": "Beginning at 1st level, while you are wearing no armor and not wielding a shield, your AC equals 10 + your Dexterity modifier + your Wisdom modifier."
+      },
+      {
+        "name": "Martial Arts",
+        "description": "At 1st level, your practice of martial arts gives you mastery of combat styles that use unarmed strikes and monk weapons, which are shortswords and any simple melee weapons that don't have the two- handed or heavy property.\nYou gain the following benefits while you are unarmed or wielding only monk weapons and you aren't wearing armor or wielding a shield:\n- You can use Dexterity instead of Strength for the attack and damage rolls of your unarmed strikes and monk weapons.\n- You can roll a d4 in place of the normal damage of your unarmed strike or monk weapon. This die changes as you gain monk levels, as shown in the Martial Arts column of Table: The Monk.\n- When you use the Attack action with an unarmed strike or a monk weapon on your turn, you can make one unarmed strike as a bonus action. For example, if you take the Attack action and attack with a quarterstaff, you can also make an unarmed strike as a bonus action, assuming you haven't already taken a bonus action this turn.\nCertain monasteries use specialized forms of the monk weapons. For example, you might use a club that is two lengths of wood connected by a short chain (called a nunchaku) or a sickle with a shorter, straighter blade (called a kama). Whatever name you use for a monk weapon, you can use the game statistics provided for the weapon."
+      }
+    ],
+    "subclasses": [
+      {
+        "name": "Open Hand",
+        "features": []
+      }
+    ]
+  },
+  {
+    "name": "Paladin",
+    "hitDie": 10,
+    "primaryAbility": [
+      "STR",
+      "CHA"
+    ],
+    "savingThrows": [
+      "WIS",
+      "CHA"
+    ],
+    "armorProficiencies": [
+      "light",
+      "medium",
+      "heavy",
+      "shields"
+    ],
+    "weaponProficiencies": [
+      "simple",
+      "martial"
+    ],
+    "skillChoices": {
+      "options": [
+        "Athletics",
+        "Insight",
+        "Intimidation",
+        "Medicine",
+        "Persuasion",
+        "Religion"
+      ],
+      "count": 2
+    },
+    "features": [
+      {
+        "name": "Divine Sense",
+        "description": "The presence of strong evil registers on your senses like a noxious odor, and powerful good rings like heavenly music in your ears. As an action, you can open your awareness to detect such forces. Until the end of your next turn, you know the location of any celestial, fiend, or undead within 60 feet of you that is not behind total cover. You know the type (celestial, fiend, or undead) of any being whose presence you sense, but not its identity. Within the same radius, you also detect the presence of any place or object that has been consecrated or desecrated, as with the hallow spell.\nYou can use this feature a number of times equal to 1 + your Charisma modifier. When you finish a long rest, you regain all expended uses."
+      },
+      {
+        "name": "Lay on Hands",
+        "description": "Your blessed touch can heal wounds. You have a pool of healing power that replenishes when you take a long rest. With that pool, you can restore a total number of hit points equal to your paladin level x 5.\nAs an action, you can touch a creature and draw power from the pool to restore a number of hit points to that creature, up to the maximum amount remaining in your pool.\nAlternatively, you can expend 5 hit points from your pool of healing to cure the target of one disease or neutralize one poison affecting it. You can cure multiple diseases and neutralize multiple poisons with a single use of Lay on Hands, expending hit points separately for each one.\nThis feature has no effect on undead and constructs."
+      }
+    ],
+    "subclasses": [
+      {
+        "name": "Devotion",
+        "features": []
+      }
+    ]
+  },
+  {
+    "name": "Ranger",
+    "hitDie": 10,
+    "primaryAbility": [
+      "DEX",
+      "WIS"
+    ],
+    "savingThrows": [
+      "DEX",
+      "STR"
+    ],
+    "armorProficiencies": [
+      "light",
+      "medium",
+      "shields"
+    ],
+    "weaponProficiencies": [
+      "simple",
+      "martial"
+    ],
+    "skillChoices": {
+      "options": [
+        "Animal Handling",
+        "Athletics",
+        "Insight",
+        "Investigation",
+        "Nature",
+        "Perception",
+        "Stealth",
+        "Survival"
+      ],
+      "count": 3
+    },
+    "features": [
+      {
+        "name": "Favored Enemy (1 type)",
+        "description": "Beginning at 1st level, you have significant experience studying, tracking, hunting, and even talking to a certain type of enemy.\nChoose a type of favored enemy: aberrations, beasts, celestials, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, or undead. Alternatively, you can select two races of humanoid (such as gnolls and orcs) as favored enemies.\nYou have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them.\nWhen you gain this feature, you also learn one language of your choice that is spoken by your favored enemies, if they speak one at all.\nYou choose one additional favored enemy, as well as an associated language, at 6th and 14th level. As you gain levels, your choices should reflect the types of monsters you have encountered on your adventures."
+      },
+      {
+        "name": "Natural Explorer (1 terrain type)",
+        "description": "You are particularly familiar with one type of natural environment and are adept at traveling and surviving in such regions. Choose one type of favored terrain: arctic, coast, desert, forest, grassland, mountain, or swamp. When you make an Intelligence or Wisdom check related to your favored terrain, your proficiency bonus is doubled if you are using a skill that you're proficient in.\nWhile traveling for an hour or more in your favored terrain, you gain the following benefits:\n- Difficult terrain doesn't slow your group's travel.\n- Your group can't become lost except by magical means.\n- Even when you are engaged in another activity while traveling (such as foraging, navigating, or tracking), you remain alert to danger.\n- If you are traveling alone, you can move stealthily at a normal pace.\n- When you forage, you find twice as much food as you normally would.\n- While tracking other creatures, you also learn their exact number, their sizes, and how long ago they passed through the area.\nYou choose additional favored terrain types at 6th and 10th level."
+      }
+    ],
+    "subclasses": [
+      {
+        "name": "Hunter",
+        "features": []
+      }
+    ]
+  },
+  {
+    "name": "Rogue",
+    "hitDie": 8,
+    "primaryAbility": [
+      "DEX"
+    ],
+    "savingThrows": [
+      "DEX",
+      "INT"
+    ],
+    "armorProficiencies": [
+      "light"
+    ],
+    "weaponProficiencies": [
+      "simple",
+      "Longsword",
+      "Rapier",
+      "Shortsword",
+      "Hand crossbow"
+    ],
+    "skillChoices": {
+      "options": [
+        "Acrobatics",
+        "Athletics",
+        "Deception",
+        "Insight",
+        "Intimidation",
+        "Investigation",
+        "Perception",
+        "Performance",
+        "Persuasion",
+        "Sleight of Hand",
+        "Stealth"
+      ],
+      "count": 4
+    },
+    "features": [
+      {
+        "name": "Expertise",
+        "description": "At 1st level, choose two of your skill proficiencies, or one of your skill proficiencies and your proficiency with thieves' tools. Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies.\nAt 6th level, you can choose two more of your proficiencies (in skills or with thieves' tools) to gain this benefit"
+      },
+      {
+        "name": "Sneak Attack",
+        "description": "Beginning at 1st level, you know how to strike subtly and exploit a foe's distraction. Once per turn, you can deal an extra 1d6 damage to one creature you hit with an attack if you have advantage on the attack roll. The attack must use a finesse or a ranged weapon.\nYou don't need advantage on the attack roll if another enemy of the target is within 5 feet of it, that enemy isn't incapacitated, and you don't have disadvantage on the attack roll.\nThe amount of the extra damage increases as you gain levels in this class, as shown in the Sneak Attack column of the Rogue table."
+      },
+      {
+        "name": "Thieves' Cant",
+        "description": "During your rogue training you learned thieves' cant, a secret mix of dialect, jargon, and code that allows you to hide messages in seemingly normal conversation. Only another creature that knows thieves' cant understands such messages. It takes four times longer to convey such a message than it does to speak the same idea plainly.\nIn addition, you understand a set of secret signs and symbols used to convey short, simple messages, such as whether an area is dangerous or the territory of a thieves' guild, whether loot is nearby, or whether the people in an area are easy marks or will provide a safe house for thieves on the run."
+      }
+    ],
+    "subclasses": [
+      {
+        "name": "Thief",
+        "features": []
+      }
+    ]
+  },
+  {
+    "name": "Sorcerer",
+    "hitDie": 6,
+    "primaryAbility": [
+      "CHA"
+    ],
+    "savingThrows": [
+      "CON",
+      "CHA"
+    ],
+    "armorProficiencies": [],
+    "weaponProficiencies": [
+      "Dagger",
+      "Dart",
+      "Sling",
+      "Quarterstaff",
+      "Light crossbow"
+    ],
+    "skillChoices": {
+      "options": [
+        "Arcana",
+        "Deception",
+        "Insight",
+        "Intimidation",
+        "Persuasion",
+        "Religion"
+      ],
+      "count": 2
+    },
+    "features": [
+      {
+        "name": "Spellcasting: Sorcerer",
+        "description": "An event in your past, or in the life of a parent or ancestor, left an indelible mark on you, infusing you with arcane magic. This font of magic, whatever its origin, fuels your spells."
+      },
+      {
+        "name": "Sorcerous Origin",
+        "description": "Choose a sorcerous origin, which describes the source of your innate magical power, such as Draconic Bloodline.\nYour choice grants you features when you choose it at 1st level and again at 6th, 14th, and 18th level."
+      }
+    ],
+    "subclasses": [
+      {
+        "name": "Draconic",
+        "features": [
+          {
+            "name": "Dragon Ancestor",
+            "description": "At 1st level, you choose one type of dragon as your ancestor. The damage type associated with each dragon is used by features you gain later.\nYou can speak, read, and write Draconic. Additionally, whenever you make a Charisma check when interacting with dragons, your proficiency bonus is doubled if it applies to the check."
+          },
+          {
+            "name": "Dragon Ancestor: Black - Acid Damage",
+            "description": "At 1st level, you choose one type of dragon as your ancestor. The damage type associated with each dragon is used by features you gain later.\nYou can speak, read, and write Draconic. Additionally, whenever you make a Charisma check when interacting with dragons, your proficiency bonus is doubled if it applies to the check."
+          },
+          {
+            "name": "Dragon Ancestor: Blue - Lightning Damage",
+            "description": "At 1st level, you choose one type of dragon as your ancestor. The damage type associated with each dragon is used by features you gain later.\nYou can speak, read, and write Draconic. Additionally, whenever you make a Charisma check when interacting with dragons, your proficiency bonus is doubled if it applies to the check."
+          },
+          {
+            "name": "Dragon Ancestor: Brass - Fire Damage",
+            "description": "At 1st level, you choose one type of dragon as your ancestor. The damage type associated with each dragon is used by features you gain later.\nYou can speak, read, and write Draconic. Additionally, whenever you make a Charisma check when interacting with dragons, your proficiency bonus is doubled if it applies to the check."
+          },
+          {
+            "name": "Dragon Ancestor: Bronze - Lightning Damage",
+            "description": "At 1st level, you choose one type of dragon as your ancestor. The damage type associated with each dragon is used by features you gain later.\nYou can speak, read, and write Draconic. Additionally, whenever you make a Charisma check when interacting with dragons, your proficiency bonus is doubled if it applies to the check."
+          },
+          {
+            "name": "Dragon Ancestor: Copper - Acid Damage",
+            "description": "At 1st level, you choose one type of dragon as your ancestor. The damage type associated with each dragon is used by features you gain later.\nYou can speak, read, and write Draconic. Additionally, whenever you make a Charisma check when interacting with dragons, your proficiency bonus is doubled if it applies to the check."
+          },
+          {
+            "name": "Dragon Ancestor: Gold - Fire Damage",
+            "description": "At 1st level, you choose one type of dragon as your ancestor. The damage type associated with each dragon is used by features you gain later.\nYou can speak, read, and write Draconic. Additionally, whenever you make a Charisma check when interacting with dragons, your proficiency bonus is doubled if it applies to the check."
+          },
+          {
+            "name": "Dragon Ancestor: Green - Poison Damage",
+            "description": "At 1st level, you choose one type of dragon as your ancestor. The damage type associated with each dragon is used by features you gain later.\nYou can speak, read, and write Draconic. Additionally, whenever you make a Charisma check when interacting with dragons, your proficiency bonus is doubled if it applies to the check."
+          },
+          {
+            "name": "Dragon Ancestor: Red - Fire Damage",
+            "description": "At 1st level, you choose one type of dragon as your ancestor. The damage type associated with each dragon is used by features you gain later.\nYou can speak, read, and write Draconic. Additionally, whenever you make a Charisma check when interacting with dragons, your proficiency bonus is doubled if it applies to the check."
+          },
+          {
+            "name": "Dragon Ancestor: Silver - Cold Damage",
+            "description": "At 1st level, you choose one type of dragon as your ancestor. The damage type associated with each dragon is used by features you gain later.\nYou can speak, read, and write Draconic. Additionally, whenever you make a Charisma check when interacting with dragons, your proficiency bonus is doubled if it applies to the check."
+          },
+          {
+            "name": "Dragon Ancestor: White - Cold Damage",
+            "description": "At 1st level, you choose one type of dragon as your ancestor. The damage type associated with each dragon is used by features you gain later.\nYou can speak, read, and write Draconic. Additionally, whenever you make a Charisma check when interacting with dragons, your proficiency bonus is doubled if it applies to the check."
+          },
+          {
+            "name": "Draconic Resilience",
+            "description": "As magic flows through your body, it causes physical traits of your dragon ancestors to emerge. At 1st level, your hit point maximum increases by 1 and increases by 1 again whenever you gain a level in this class.\nAdditionally, parts of your skin are covered by a thin sheen of dragon-like scales. When you aren't wearing armor, your AC equals 13 + your Dexterity modifier."
+          }
+        ]
+      }
+    ],
+    "spellcasting": {
+      "ability": "CHA",
+      "cantripsKnown": 4,
+      "spellSlots": 2,
+      "spellsPrepared": 2
+    }
+  },
+  {
+    "name": "Warlock",
+    "hitDie": 8,
+    "primaryAbility": [
+      "CHA"
+    ],
+    "savingThrows": [
+      "WIS",
+      "CHA"
+    ],
+    "armorProficiencies": [
+      "light"
+    ],
+    "weaponProficiencies": [
+      "simple"
+    ],
+    "skillChoices": {
+      "options": [
+        "Arcana",
+        "Deception",
+        "History",
+        "Intimidation",
+        "Investigation",
+        "Nature",
+        "Religion"
+      ],
+      "count": 2
+    },
+    "features": [
+      {
+        "name": "Otherworldly Patron",
+        "description": "At 1st level, you have struck a bargain with an otherworldly being of your choice, such as the Fiend. Your choice grants you features at 1st level and again at 6th, 10th, and 14th level."
+      },
+      {
+        "name": "Pact Magic",
+        "description": "Your arcane research and the magic bestowed on you by your patron have given you facility with spells."
+      }
+    ],
+    "subclasses": [
+      {
+        "name": "Fiend",
+        "features": [
+          {
+            "name": "Dark One's Blessing",
+            "description": "Starting at 1st level, when you reduce a hostile creature to 0 hit points, you gain temporary hit points equal to your Charisma modifier + your warlock level (minimum of 1)."
+          }
+        ]
+      }
+    ],
+    "spellcasting": {
+      "ability": "CHA",
+      "cantripsKnown": 2,
+      "spellSlots": 1,
+      "spellsPrepared": 2,
+      "isPactMagic": true
+    }
+  },
+  {
+    "name": "Wizard",
+    "hitDie": 6,
+    "primaryAbility": [
+      "INT"
+    ],
+    "savingThrows": [
+      "INT",
+      "WIS"
+    ],
+    "armorProficiencies": [],
+    "weaponProficiencies": [
+      "Dagger",
+      "Dart",
+      "Sling",
+      "Quarterstaff",
+      "Light crossbow"
+    ],
+    "skillChoices": {
+      "options": [
+        "Arcana",
+        "History",
+        "Insight",
+        "Investigation",
+        "Medicine",
+        "Religion"
+      ],
+      "count": 2
+    },
+    "features": [
+      {
+        "name": "Spellcasting: Wizard",
+        "description": "As a student of arcane magic, you have a spellbook containing spells that show the first glimmerings of your true power."
+      },
+      {
+        "name": "Arcane Recovery",
+        "description": "You have learned to regain some of your magical energy by studying your spellbook. Once per day when you finish a short rest, you can choose expended spell slots to recover. The spell slots can have a combined level that is equal to or less than half your wizard level (rounded up), and none of the slots can be 6th level or higher.\nFor example, if you're a 4th-level wizard, you can recover up to two levels worth of spell slots. You can recover either a 2nd-level spell slot or two 1st-level spell slots."
+      }
+    ],
+    "subclasses": [
+      {
+        "name": "Evocation",
+        "features": []
+      }
+    ],
+    "spellcasting": {
+      "ability": "INT",
+      "cantripsKnown": 3,
+      "spellSlots": 2
+    }
+  }
+]

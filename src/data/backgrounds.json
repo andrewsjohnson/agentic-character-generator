@@ -1,0 +1,105 @@
+[
+  {
+    "name": "Acolyte",
+    "abilityOptions": ["WIS", "INT", "CHA"],
+    "skillProficiencies": ["Insight", "Religion"],
+    "toolProficiency": "Calligrapher's Supplies",
+    "equipment": [
+      { "name": "Book (prayers)", "quantity": 1 },
+      { "name": "Calligrapher's Supplies", "quantity": 1 },
+      { "name": "Holy Symbol", "quantity": 1 },
+      { "name": "Parchment", "quantity": 10 },
+      { "name": "Robe", "quantity": 1 },
+      { "name": "GP", "quantity": 8 }
+    ],
+    "feature": {
+      "name": "Shelter of the Faithful",
+      "description": "You and your companions can find free lodging and food at temples sharing your faith, provided you are in good standing. Clergy there will support you as long as your goals do not threaten their interests. You may also call upon the faithful for minor assistance that does not put them in danger."
+    },
+    "originFeat": "Magic Initiate",
+    "personalityTraits": [
+      "I hold a deep admiration for a specific hero of my faith and constantly measure my actions against theirs.",
+      "I can bridge disagreements between the most stubborn opponents by finding shared values.",
+      "I have spent so long in the temple that I sometimes struggle with everyday social customs.",
+      "I see divine signs in every small event and love sharing my interpretations with others.",
+      "Nothing can disturb my calm outlook; I have faced spiritual trials that make mundane troubles seem trivial.",
+      "I treat strangers with warmth and patience, believing everyone deserves compassion."
+    ],
+    "ideals": [
+      "Heritage. Sacred customs and rites passed down through generations must be upheld at all costs.",
+      "Generosity. I strive to help those less fortunate, sharing what I have without hesitation.",
+      "Change. We must work to improve the world, challenging stale doctrines when they no longer serve the people.",
+      "Devotion. I place my trust in my deity above all else and believe their guidance will see me through.",
+      "Aspiration. I work tirelessly to prove myself worthy of the faith placed in me by my mentors.",
+      "Reason. The teachings of my order are valuable because they rest on logic and wisdom, not blind obedience."
+    ],
+    "bonds": [
+      "I would do anything to recover a sacred relic that was stolen from my temple long ago.",
+      "I owe my life to the elder who took me in when my family could not provide for me.",
+      "I want to safeguard a holy text that my enemies believe was lost in a catastrophe.",
+      "Someday I will have my revenge on the corrupt hierarchy that branded me a heretic.",
+      "Everything I do is for the common folk who look to my temple for hope.",
+      "I seek to earn back the trust of a fellow devotee whose faith I once shook with a careless act."
+    ],
+    "flaws": [
+      "I hold others to strict moral standards and am quick to voice my disappointment when they fall short.",
+      "I place excessive trust in those who hold authority within my faith.",
+      "My devotion to doctrine sometimes makes me rigid when flexibility would serve me better.",
+      "I harbor a secret doubt about my own worthiness that I hide behind outward confidence.",
+      "I can be condescending toward those who do not share my spiritual perspective.",
+      "Once I commit to a course of action, I find it nearly impossible to change direction, even when evidence says I should."
+    ]
+  },
+  {
+    "name": "Soldier",
+    "abilityOptions": ["STR", "DEX", "CON"],
+    "skillProficiencies": ["Athletics", "Intimidation"],
+    "toolProficiency": "Gaming Set",
+    "equipment": [
+      { "name": "Crowbar", "quantity": 1 },
+      { "name": "Gaming Set", "quantity": 1 },
+      { "name": "Healer's Kit", "quantity": 1 },
+      { "name": "Manacles", "quantity": 1 },
+      { "name": "Quiver", "quantity": 1 },
+      { "name": "Traveler's Clothes", "quantity": 1 },
+      { "name": "GP", "quantity": 14 }
+    ],
+    "feature": {
+      "name": "Military Rank",
+      "description": "You hold a rank from your former military service. Soldiers still loyal to your old command generally defer to your authority, and you can invoke your rank to gain access to military outposts and request simple favors from active-duty soldiers of lower rank."
+    },
+    "originFeat": "Savage Attacker",
+    "personalityTraits": [
+      "I am always polite and respectful, but I keep a constant awareness of my surroundings.",
+      "I have a dry, dark sense of humor born from years of hard campaigns.",
+      "I face every problem head-on; a direct approach is always the most reliable one.",
+      "I enjoy arm wrestling, sparring, and other physical contests more than most social gatherings.",
+      "I rarely waste words; when I speak, people tend to listen.",
+      "I am fiercely protective of those I consider part of my unit, even long after service ended."
+    ],
+    "ideals": [
+      "Greater Good. Our duty is to lay down our lives protecting those who cannot protect themselves.",
+      "Responsibility. I carry out my orders because discipline is what holds society together.",
+      "Independence. When leaders fail their people, soldiers have a duty to think and act for themselves.",
+      "Honor. I refuse to gain an advantage through dishonesty or treachery, no matter the stakes.",
+      "Might. In the end, the strongest will prevails, and I intend to be the strongest in the field.",
+      "Camaraderie. The bonds forged in battle are more valuable than any rank or reward."
+    ],
+    "bonds": [
+      "I would still lay down my life for the people I served with in my company.",
+      "Someone I cared about deeply was lost in battle, and I fight to honor their memory.",
+      "My honor is more precious to me than my life; I cannot abide stains upon it.",
+      "I carry an heirloom weapon that belonged to a fallen comrade, and I will never let it be lost.",
+      "I fight for a homeland I was driven from, and I mean to reclaim it someday.",
+      "My greatest ambition is to be remembered as a soldier who stood firm when it truly mattered."
+    ],
+    "flaws": [
+      "I follow orders too readily, sometimes at the expense of my own moral judgment.",
+      "The horrors of past battles haunt me, and I sometimes freeze at the worst moments.",
+      "I made a shameful choice on the battlefield that I conceal from everyone around me.",
+      "I have little respect for anyone who has never had to put their life on the line.",
+      "I can be slow to trust outsiders, viewing most civilians as naive about real danger.",
+      "I would rather solve a problem with force than diplomacy, even when talking would be wiser."
+    ]
+  }
+]

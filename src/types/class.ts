@@ -24,6 +24,10 @@ export type SpellcastingInfo = {
   cantripsKnown: number;
   /** Level-1 spell slots. Not all casters have slots at level 1 (e.g. Warlock uses pact slots). */
   spellSlots: number;
+  /** Number of spells prepared or known at level 1. Optional because some classes prepare all. */
+  spellsPrepared?: number;
+  /** Whether this class uses Pact Magic (Warlock) instead of standard Spellcasting. */
+  isPactMagic?: boolean;
 };
 
 /** A subclass option (e.g. Champion Fighter, Life Domain Cleric). */

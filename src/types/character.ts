@@ -1,5 +1,5 @@
 import type { AbilityScores, AbilityScoreMethod } from './ability';
-import type { Race, Subrace } from './race';
+import type { Species, Subspecies } from './species';
 import type { CharacterClass, Subclass } from './class';
 import type { Background } from './background';
 import type { EquipmentItem } from './equipment';
@@ -18,11 +18,11 @@ export type CharacterDraft = {
   /** The character's alignment (e.g. "Lawful Good", "Chaotic Neutral"). */
   alignment?: string;
 
-  /** The chosen race. */
-  race?: Race;
+  /** The chosen species. */
+  species?: Species;
 
-  /** The chosen subrace, if the selected race has subraces. */
-  subrace?: Subrace;
+  /** The chosen subspecies, if the selected species has subspecies. */
+  subspecies?: Subspecies;
 
   /** The chosen class. */
   class?: CharacterClass;
@@ -36,14 +36,17 @@ export type CharacterDraft = {
   /** The method used to determine ability scores. */
   abilityScoreMethod?: AbilityScoreMethod;
 
-  /** Base ability scores before racial bonuses. */
+  /** Base ability scores before background bonuses. */
   baseAbilityScores?: AbilityScores;
 
   /**
-   * Final ability scores after racial bonuses are applied.
-   * Derived from baseAbilityScores + race/subrace bonuses.
+   * Final ability scores after background bonuses are applied.
+   * Derived from baseAbilityScores + background bonuses.
    * Should be computed, not stored.
    */
+
+  /** Origin feat selected from background options. */
+  originFeat?: string;
 
   /** The level of the character. Defaults to 1 for new characters. */
   level?: number;
@@ -60,7 +63,7 @@ export type CharacterDraft = {
   /** Level-1 spells chosen by the player (prepared or known, depending on class). */
   spellsKnown?: string[];
 
-  /** Languages chosen by the player (from background or racial options). */
+  /** Languages chosen by the player (from species options or background). */
   selectedLanguages?: string[];
 
   /** Personality trait chosen from background options. */

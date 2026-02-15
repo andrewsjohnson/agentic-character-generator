@@ -10,14 +10,19 @@ export type BackgroundFeature = {
   description: string;
 };
 
+import type { AbilityName } from './ability';
+
 /** A character background from the SRD. */
 export type Background = {
   name: string;
+  /** Three abilities this background can increase. Player chooses +2/+1 or +1/+1/+1 split. */
+  abilityOptions: [AbilityName, AbilityName, AbilityName];
   skillProficiencies: [string, string];
-  toolProficiencies: string[];
-  languages: number;
+  toolProficiency: string;
   equipment: BackgroundEquipment[];
   feature: BackgroundFeature;
+  /** Origin feat granted by this background. */
+  originFeat: string;
   personalityTraits: string[];
   ideals: string[];
   bonds: string[];

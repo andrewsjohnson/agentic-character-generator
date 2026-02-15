@@ -92,11 +92,13 @@ Before committing changes, always run these commands to ensure code quality:
 npm install          # Install dependencies (first time only)
 npm run typecheck    # Verify TypeScript types
 npm run lint         # Check code style with ESLint
-npm run test         # Run all tests with Vitest
+npx vitest run       # Run all tests with Vitest (non-interactive)
 npm run build        # Ensure production build succeeds
 ```
 
 These commands are also enforced in CI via `.github/workflows/ci.yml`. All checks must pass before merging.
+
+Note: `npm run test` runs Vitest in watch mode (interactive). For CI or one-off test runs, use `npx vitest run` instead.
 
 ## Git Commit Guidelines
 

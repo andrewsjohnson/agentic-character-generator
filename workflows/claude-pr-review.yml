@@ -1,0 +1,37 @@
+name: Claude Code – PR Review
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Claude Code PR Review
+        uses: anthropics/claude-code-action@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+          model: claude-4-opus-latest
+          max-iterations: 12
+          mcp-tools: github
+          prompt: |
+            ROLE: Senior Code Reviewer focused on correctness, readability, testability, and repo conventions.
+            DO:
+              - Summarize PR intent from title/description/linked issues.
+              - Check regression risk, async/concurrency, input validation, error boundaries.
+              - Verify tests cover happy + one failure path; flag brittle mocks.
+              - Enforce architecture/style from CLAUDE.md (layering, DI, logging).
+              - Compare against acceptance criteria in issue body or /docs/specs/*.
+            OUTPUT:
+              - Executive summary.
+              - Findings table: {file, line, severity[info|minor|major|critical], rule, fix}
+              - Suggested diffs where feasible.

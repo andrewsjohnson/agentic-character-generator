@@ -1,6 +1,11 @@
 /** The six core ability scores in D&D 5e. */
 export type AbilityName = 'STR' | 'DEX' | 'CON' | 'INT' | 'WIS' | 'CHA';
 
+/** All six ability names as a runtime array, matching the AbilityName union. */
+export const ABILITY_NAMES: readonly AbilityName[] = [
+  'STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA',
+] as const;
+
 /** A complete set of base ability scores (before racial bonuses). */
 export type AbilityScores = Record<AbilityName, number>;
 

@@ -84,6 +84,22 @@ All data files in `src/data/` are pre-shaped to match their corresponding types 
 - Do not create generic/abstract component systems (e.g., a universal `<FormField>` that handles many variants). Build the specific UI each step needs.
 - Do not use `any` or `as` type assertions. If the types don't work, fix the types.
 
+## Validation Commands
+
+Before committing changes, always run these commands to ensure code quality:
+
+```bash
+npm install          # Install dependencies (first time only)
+npm run typecheck    # Verify TypeScript types
+npm run lint         # Check code style with ESLint
+npx vitest run       # Run all tests with Vitest (non-interactive)
+npm run build        # Ensure production build succeeds
+```
+
+These commands are also enforced in CI via `.github/workflows/ci.yml`. All checks must pass before merging.
+
+Note: `npm run test` runs Vitest in watch mode (interactive). For CI or one-off test runs, use `npx vitest run` instead.
+
 ## Git Commit Guidelines
 
 When making git commits:

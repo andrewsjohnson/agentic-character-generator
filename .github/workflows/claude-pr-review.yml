@@ -80,6 +80,36 @@ jobs:
           claude_args: |
             --model claude-opus-4-5-20251101
             --max-turns 12
+            --allowedTools Edit
+            --allowedTools MultiEdit
+            --allowedTools Read
+            --allowedTools Write
+            --allowedTools LS
+            --allowedTools Glob
+            --allowedTools Grep
+            --allowedTools "Bash(mkdir -p *)"
+            --allowedTools "Bash(node *)"
+            --allowedTools "Bash(npx run *)"
+            --allowedTools "Bash(npx run vitest *)"
+            --allowedTools "Bash(npx vitest *)"
+            --allowedTools "Bash(npx vitest run *)"
+            --allowedTools "Bash(npm --version)"
+            --allowedTools "Bash(npm ci*)"
+            --allowedTools "Bash(npm test*)"
+            --allowedTools "Bash(npm install*)"
+            --allowedTools "Bash(npm run lint*)"
+            --allowedTools "Bash(npm run typecheck*)"
+            --allowedTools "Bash(npm run build*)"
+            --allowedTools "Bash(gh api *)"
+            --allowedTools "Bash(gh issue view *)"
+            --allowedTools "Bash(git add *)"
+            --allowedTools "Bash(git commit *)"
+            --allowedTools "Bash(git push *)"
+            --allowedTools "Bash(git status *)"
+            --allowedTools "Bash(git diff *)"
+            --allowedTools "Bash(git log *)"
+            --allowedTools "Bash(git rm *)"
+            --allowedTools "Bash(git reset *)"
 
           prompt: |
             /review

@@ -83,3 +83,10 @@ All data files in `src/data/` are pre-shaped to match their corresponding types 
 - Do not put game logic in React components.
 - Do not create generic/abstract component systems (e.g., a universal `<FormField>` that handles many variants). Build the specific UI each step needs.
 - Do not use `any` or `as` type assertions. If the types don't work, fix the types.
+
+## Git Commit Guidelines
+
+When making git commits:
+- Use multiple `-m` flags for multi-line messages, NOT heredoc syntax
+- Example: `git commit -m "Title" -m "Body" -m "Co-authored-by: ..."`
+- Do NOT use `cat <<EOF` or similar heredoc patterns in commit commands

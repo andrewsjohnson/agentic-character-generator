@@ -1,77 +1,37 @@
-name: Claude PR Fix (comment-triggered)
+name: Claude Code
 
 on:
   issue_comment:
     types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
 
 jobs:
-  claude-fix:
-    # Only run if the comment is on a PR (not a plain issue)
-    if: ${{ github.event.issue.pull_request != null }}
+  claude:
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
     runs-on: ubuntu-latest
-
     permissions:
-      contents: write          # REQUIRED to push commits to the PR branch
-      pull-requests: write     # REQUIRED to comment / add inline comments
-      issues: read             # lets it read linked issues/specs if needed
-      id-token: write          # used by the action’s OIDC flow in some setups
-
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read # Required for Claude to read CI results on PRs
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
-      - name: Claude - apply requested changes
-        # If you hit the AJV depsCount/deps crash on @v1, pin to a known-good SHA:
-        # uses: anthropics/claude-code-action@01e756b34ef7a1447e9508f674143b07d20c2631
+      - name: Run Claude Code
+        id: claude
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
-          # Run only when someone explicitly calls Claude in a PR comment
-          trigger_phrase: "@claude"
-
-          # Helpful for debugging / visibility
-          show_full_output: true
-
-          # Show “fix links” in output (action input, not a claude_args flag)
-          include_fix_links: true
-
-          # Optional: keep Bash tightly scoped if Claude tries gh for PR context.
-          # Remove this block if you want to forbid Bash entirely.
-          settings: |
-            {
-              "permissions": {
-                "allow": ["Bash(gh pr *)"]
-              }
-            }
-
-          claude_args: |
-            --model claude-opus-4-5-20251101
-            --max-turns 12
-
-          prompt: |
-            REPO: ${{ github.repository }}
-            PR NUMBER: ${{ github.event.issue.number }}
-            COMMENT AUTHOR: ${{ github.event.comment.user.login }}
-          
-            TRIGGER COMMENT:
-            """
-            ${{ github.event.comment.body }}
-            """
-          
-            You are a PR implementation assistant.
-          
-            Interpret the trigger comment above as instructions for modifying the PR.
-          
-            Rules:
-            - Apply the requested changes to the PR branch.
-            - Follow repo conventions in CLAUDE.md.
-            - Make minimal safe edits.
-            - Add/update tests if appropriate.
-            - Commit changes with a clear message.
-            - Post a summary explaining what changed.
-          
-            If the request is unclear or risky, ask a clarification question instead of editing.

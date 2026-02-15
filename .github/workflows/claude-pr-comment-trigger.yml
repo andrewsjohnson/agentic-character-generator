@@ -1,0 +1,67 @@
+name: Claude PR Fix (comment-triggered)
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  claude-fix:
+    # Only run if the comment is on a PR (not a plain issue)
+    if: ${{ github.event.issue.pull_request != null }}
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write          # REQUIRED to push commits to the PR branch
+      pull-requests: write     # REQUIRED to comment / add inline comments
+      issues: read             # lets it read linked issues/specs if needed
+      id-token: write          # used by the action’s OIDC flow in some setups
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Claude - apply requested changes
+        # If you hit the AJV depsCount/deps crash on @v1, pin to a known-good SHA:
+        # uses: anthropics/claude-code-action@01e756b34ef7a1447e9508f674143b07d20c2631
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+          # Run only when someone explicitly calls Claude in a PR comment
+          trigger_phrase: "@claude"
+
+          # Helpful for debugging / visibility
+          show_full_output: true
+
+          # Show “fix links” in output (action input, not a claude_args flag)
+          include_fix_links: true
+
+          # Optional: keep Bash tightly scoped if Claude tries gh for PR context.
+          # Remove this block if you want to forbid Bash entirely.
+          settings: |
+            {
+              "permissions": {
+                "allow": ["Bash(gh pr *)"]
+              }
+            }
+
+          claude_args: |
+            --model claude-opus-4-5-20251101
+            --max-turns 12
+
+          prompt: |
+            You are a PR implementation assistant.
+
+            When triggered by an @claude comment on a pull request:
+            - Read the triggering comment and interpret the requested changes.
+            - Make the smallest safe set of edits to satisfy the request.
+            - Follow repo conventions in CLAUDE.md and existing code style.
+            - If tests exist, update/add tests for the change when appropriate.
+            - Commit changes to the PR branch with a clear message.
+            - Post a PR comment summarizing what changed and where.
+
+            If the request is ambiguous or risky (large refactor, dependencies, migrations),
+            ask a brief clarifying question in a PR comment instead of proceeding.

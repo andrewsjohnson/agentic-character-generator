@@ -18,8 +18,6 @@ export type Race = {
   name: string;
   speed: number;
   size: 'Small' | 'Medium';
-  /** Darkvision range in feet, or 0 if the race lacks darkvision. */
-  darkvision: number;
   abilityBonuses: AbilityBonuses;
   traits: RacialTrait[];
   languages: string[];

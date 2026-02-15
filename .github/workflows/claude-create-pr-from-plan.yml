@@ -1,0 +1,117 @@
+name: Claude - Create PR from Plan
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+
+jobs:
+  create_pr:
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: claude-create-pr-issue-${{ github.event.issue.number }}
+      cancel-in-progress: true
+
+    if: |
+      github.event.issue.pull_request == null &&
+      contains(github.event.comment.body, '/approve-claude') &&
+      (github.event.comment.author_association == 'OWNER' ||
+       github.event.comment.author_association == 'MEMBER' ||
+       github.event.comment.author_association == 'COLLABORATOR')
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # ---------------------------------------------------
+      # Create deterministic branch
+      # ---------------------------------------------------
+      - name: Create branch + push empty commit
+        env:
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+
+          BRANCH="claude/issue-${ISSUE_NUMBER}"
+
+          git fetch origin "${DEFAULT_BRANCH}"
+          git checkout -b "${BRANCH}" "origin/${DEFAULT_BRANCH}"
+
+          git config user.name "claude[bot]"
+          git config user.email "41898282+claude[bot]@users.noreply.github.com"
+
+          git commit --allow-empty -m "chore: start work on #${ISSUE_NUMBER}"
+          git push -u origin "${BRANCH}"
+
+          echo "BRANCH=${BRANCH}" >> "$GITHUB_ENV"
+
+      # ---------------------------------------------------
+      # Extract plan + create PR
+      # ---------------------------------------------------
+      - name: Create PR from latest Claude plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          BRANCH: ${{ env.BRANCH }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+        run: |
+          set -euo pipefail
+
+          # Skip if PR already exists
+          existing_pr=$(gh pr list --repo "$REPO" --head "$BRANCH" --json number --jq '.[0].number // empty')
+          if [ -n "$existing_pr" ]; then
+            echo "PR already exists: #$existing_pr"
+            exit 0
+          fi
+
+          echo "Fetching issue comments..."
+          gh api "/repos/${REPO}/issues/${ISSUE_NUMBER}/comments?per_page=100" > comments.json
+
+          echo "Extracting latest plan..."
+          plan_body=$(jq -r '
+            map(select(.body | contains("<!-- CLAUDE_PLAN_START -->") and contains("<!-- CLAUDE_PLAN_END -->")))
+            | last
+            | .body // ""
+          ' comments.json)
+
+          if [ -z "$plan_body" ] || [ "$plan_body" = "null" ]; then
+            plan_extracted="(Plan not found — run /plan and retry /approve-claude.)"
+          else
+            plan_extracted=$(printf "%s" "$plan_body" \
+              | sed -n '/CLAUDE_PLAN_START/,/CLAUDE_PLAN_END/p' \
+              | sed '1d;$d')
+          fi
+
+          title="(Claude) ${ISSUE_NUMBER}: ${ISSUE_TITLE:-Implementation}"
+
+          body=$(cat <<EOF
+          Fixes #$ISSUE_NUMBER
+          
+          ## Plan
+          $plan_extracted
+          
+          ## Next step
+          Comment on this PR with:
+          
+          \`/implement-claude\`
+          
+          Generated with Claude Code.
+          EOF
+          )
+
+          gh pr create \
+            --repo "$REPO" \
+            --head "$BRANCH" \
+            --base "$DEFAULT_BRANCH" \
+            --title "$title" \
+            --body "$body"

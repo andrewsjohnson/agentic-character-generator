@@ -2,7 +2,7 @@
 
 ## Project Status
 
-**Last Updated**: 2024-02-15
+**Last Updated**: 2026-02-15
 
 ### Completed
 - ✅ Project scaffolding with Vite + React + TypeScript
@@ -10,10 +10,12 @@
 - ✅ Basic directory structure
 - ✅ Type definitions for Character, Species, Class, Background, Equipment, Ability
 - ✅ Rules documentation for all major game systems
+- ✅ Wizard step components (placeholders with proper props and tests)
+- ✅ React Router setup with navigation between steps
+- ✅ All verification passing (typecheck, lint, build)
 
 ### In Progress
-- 🚧 Wizard step components (placeholders created, need implementation)
-- 🚧 React Router setup
+- 🚧 CI workflow (manual addition required due to permissions)
 
 ### TODO
 - ⏳ Game rules logic implementation (src/rules/)

@@ -54,6 +54,12 @@ export type CharacterDraft = {
   /** Equipment selected during character creation. */
   equipment?: EquipmentItem[];
 
+  /** Cantrips chosen by the player (spell names from the class spell list). */
+  cantripsKnown?: string[];
+
+  /** Level-1 spells chosen by the player (prepared or known, depending on class). */
+  spellsKnown?: string[];
+
   /** Personality trait chosen from background options. */
   personalityTrait?: string;
 

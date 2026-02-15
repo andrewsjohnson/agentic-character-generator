@@ -23,13 +23,43 @@ jobs:
       pull-requests: write
       issues: write
       id-token: write
-      actions: read # Required for Claude to read CI results on PRs
+      actions: read
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
+      - name: Checkout repository (PAT)
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.CLAUDE_PUSH_TOKEN }}
+
+      # ✅ Switch to the PR HEAD BRANCH when the trigger is on a PR
+      - name: Checkout PR branch (when applicable)
+        if: |
+          github.event_name == 'issue_comment' && github.event.issue.pull_request != null
+        env:
+          GH_TOKEN: ${{ secrets.CLAUDE_PUSH_TOKEN }}
+        run: |
+          gh pr checkout ${{ github.event.issue.number }}
+          echo "Checked out PR branch: $(git rev-parse --abbrev-ref HEAD)"
+          git status --porcelain=v1
+
+      - name: Checkout PR branch (review comment)
+        if: github.event_name == 'pull_request_review_comment'
+        env:
+          GH_TOKEN: ${{ secrets.CLAUDE_PUSH_TOKEN }}
+        run: |
+          gh pr checkout ${{ github.event.pull_request.number }}
+          echo "Checked out PR branch: $(git rev-parse --abbrev-ref HEAD)"
+          git status --porcelain=v1
+
+      - name: Checkout PR branch (review submitted)
+        if: github.event_name == 'pull_request_review'
+        env:
+          GH_TOKEN: ${{ secrets.CLAUDE_PUSH_TOKEN }}
+        run: |
+          gh pr checkout ${{ github.event.pull_request.number }}
+          echo "Checked out PR branch: $(git rev-parse --abbrev-ref HEAD)"
+          git status --porcelain=v1
 
       - name: Run Claude Code
         id: claude
@@ -37,3 +67,5 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ secrets.CLAUDE_PUSH_TOKEN }}
+          trigger_phrase: "@claude"
+          show_full_output: true

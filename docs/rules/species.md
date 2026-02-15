@@ -1,4 +1,4 @@
-# Races (Species)
+# Species
 
 ## Available Species
 
@@ -8,7 +8,7 @@ Dragonborn, Dwarf, Elf, Gnome, Goliath, Halfling, Human, Orc, Tiefling.
 
 - **Size** (Small or Medium — record on character sheet)
 - **Speed** (base walking speed in feet)
-- **Species Traits** (unique racial features; see each species entry in "Character Origins")
+- **Species Traits** (unique species features; see each species entry in "Character Origins")
 
 ## Ability Score Adjustments
 

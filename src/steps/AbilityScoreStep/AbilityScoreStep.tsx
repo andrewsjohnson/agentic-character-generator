@@ -1,9 +1,4 @@
-import type { CharacterDraft } from '../../types/character';
-
-export type StepProps = {
-  character: CharacterDraft;
-  updateCharacter: (updates: Partial<CharacterDraft>) => void;
-};
+import type { StepProps } from '../types';
 
 export function AbilityScoreStep({ character }: StepProps) {
   return (

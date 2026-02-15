@@ -1,6 +1,6 @@
 # Architectural Decisions
 
-## 2024-02-15: Project Scaffolding
+## 2026-02-15: Project Scaffolding
 
 **Context**: Setting up the initial project structure for the D&D 5e Character Creator.
 

@@ -42,7 +42,7 @@ jobs:
 
           # IMPORTANT: no '#' comment lines inside this block
           claude_args: |
-            --max-turns 35
+            --max-turns 80
             --allowedTools Edit
             --allowedTools MultiEdit
             --allowedTools Read

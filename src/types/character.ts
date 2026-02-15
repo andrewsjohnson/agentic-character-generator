@@ -60,6 +60,9 @@ export type CharacterDraft = {
   /** Level-1 spells chosen by the player (prepared or known, depending on class). */
   spellsKnown?: string[];
 
+  /** Languages chosen by the player (from background or racial options). */
+  selectedLanguages?: string[];
+
   /** Personality trait chosen from background options. */
   personalityTrait?: string;
 

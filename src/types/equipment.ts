@@ -57,6 +57,8 @@ export type Gear = {
   kind: 'gear';
   name: string;
   description?: string;
+  /** Number of this item. Defaults to 1 when not specified. */
+  quantity?: number;
   weight: number;
   cost: string;
 };

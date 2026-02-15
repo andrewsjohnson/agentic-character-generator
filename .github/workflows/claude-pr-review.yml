@@ -24,7 +24,7 @@ jobs:
         with:
           # ✅ REQUIRED when using API billing
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-
+          show_full_output: true
           # Claude configuration (CLI flags go here in v1)
           claude_args: |
             --model claude-3-opus-latest

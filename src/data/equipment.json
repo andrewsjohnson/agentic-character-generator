@@ -1,0 +1,900 @@
+[
+  {
+    "kind": "weapon",
+    "name": "Club",
+    "category": "simple",
+    "damage": "1d4",
+    "damageType": "bludgeoning",
+    "properties": ["light"],
+    "weight": 2,
+    "cost": "1 sp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Dagger",
+    "category": "simple",
+    "damage": "1d4",
+    "damageType": "piercing",
+    "properties": ["finesse", "light", "thrown"],
+    "range": { "normal": 20, "long": 60 },
+    "weight": 1,
+    "cost": "2 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Greatclub",
+    "category": "simple",
+    "damage": "1d8",
+    "damageType": "bludgeoning",
+    "properties": ["two-handed"],
+    "weight": 10,
+    "cost": "2 sp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Handaxe",
+    "category": "simple",
+    "damage": "1d6",
+    "damageType": "slashing",
+    "properties": ["light", "thrown"],
+    "range": { "normal": 20, "long": 60 },
+    "weight": 2,
+    "cost": "5 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Javelin",
+    "category": "simple",
+    "damage": "1d6",
+    "damageType": "piercing",
+    "properties": ["thrown"],
+    "range": { "normal": 30, "long": 120 },
+    "weight": 2,
+    "cost": "5 sp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Light Hammer",
+    "category": "simple",
+    "damage": "1d4",
+    "damageType": "bludgeoning",
+    "properties": ["light", "thrown"],
+    "range": { "normal": 20, "long": 60 },
+    "weight": 2,
+    "cost": "2 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Mace",
+    "category": "simple",
+    "damage": "1d6",
+    "damageType": "bludgeoning",
+    "properties": [],
+    "weight": 4,
+    "cost": "5 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Quarterstaff",
+    "category": "simple",
+    "damage": "1d6",
+    "damageType": "bludgeoning",
+    "properties": ["versatile"],
+    "weight": 4,
+    "cost": "2 sp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Sickle",
+    "category": "simple",
+    "damage": "1d4",
+    "damageType": "slashing",
+    "properties": ["light"],
+    "weight": 2,
+    "cost": "1 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Spear",
+    "category": "simple",
+    "damage": "1d6",
+    "damageType": "piercing",
+    "properties": ["thrown", "versatile"],
+    "range": { "normal": 20, "long": 60 },
+    "weight": 3,
+    "cost": "1 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Crossbow, Light",
+    "category": "simple",
+    "damage": "1d8",
+    "damageType": "piercing",
+    "properties": ["ammunition", "loading", "two-handed"],
+    "range": { "normal": 80, "long": 320 },
+    "weight": 5,
+    "cost": "25 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Dart",
+    "category": "simple",
+    "damage": "1d4",
+    "damageType": "piercing",
+    "properties": ["finesse", "thrown"],
+    "range": { "normal": 20, "long": 60 },
+    "weight": 0.25,
+    "cost": "5 cp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Shortbow",
+    "category": "simple",
+    "damage": "1d6",
+    "damageType": "piercing",
+    "properties": ["ammunition", "two-handed"],
+    "range": { "normal": 80, "long": 320 },
+    "weight": 2,
+    "cost": "25 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Sling",
+    "category": "simple",
+    "damage": "1d4",
+    "damageType": "bludgeoning",
+    "properties": ["ammunition"],
+    "range": { "normal": 30, "long": 120 },
+    "weight": 0,
+    "cost": "1 sp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Battleaxe",
+    "category": "martial",
+    "damage": "1d8",
+    "damageType": "slashing",
+    "properties": ["versatile"],
+    "weight": 4,
+    "cost": "10 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Flail",
+    "category": "martial",
+    "damage": "1d8",
+    "damageType": "bludgeoning",
+    "properties": [],
+    "weight": 2,
+    "cost": "10 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Glaive",
+    "category": "martial",
+    "damage": "1d10",
+    "damageType": "slashing",
+    "properties": ["heavy", "reach", "two-handed"],
+    "weight": 6,
+    "cost": "20 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Greataxe",
+    "category": "martial",
+    "damage": "1d12",
+    "damageType": "slashing",
+    "properties": ["heavy", "two-handed"],
+    "weight": 7,
+    "cost": "30 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Greatsword",
+    "category": "martial",
+    "damage": "2d6",
+    "damageType": "slashing",
+    "properties": ["heavy", "two-handed"],
+    "weight": 6,
+    "cost": "50 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Halberd",
+    "category": "martial",
+    "damage": "1d10",
+    "damageType": "slashing",
+    "properties": ["heavy", "reach", "two-handed"],
+    "weight": 6,
+    "cost": "20 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Lance",
+    "category": "martial",
+    "damage": "1d12",
+    "damageType": "piercing",
+    "properties": ["reach", "special"],
+    "weight": 6,
+    "cost": "10 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Longsword",
+    "category": "martial",
+    "damage": "1d8",
+    "damageType": "slashing",
+    "properties": ["versatile"],
+    "weight": 3,
+    "cost": "15 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Maul",
+    "category": "martial",
+    "damage": "2d6",
+    "damageType": "bludgeoning",
+    "properties": ["heavy", "two-handed"],
+    "weight": 10,
+    "cost": "10 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Morningstar",
+    "category": "martial",
+    "damage": "1d8",
+    "damageType": "piercing",
+    "properties": [],
+    "weight": 4,
+    "cost": "15 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Pike",
+    "category": "martial",
+    "damage": "1d10",
+    "damageType": "piercing",
+    "properties": ["heavy", "reach", "two-handed"],
+    "weight": 18,
+    "cost": "5 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Rapier",
+    "category": "martial",
+    "damage": "1d8",
+    "damageType": "piercing",
+    "properties": ["finesse"],
+    "weight": 2,
+    "cost": "25 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Scimitar",
+    "category": "martial",
+    "damage": "1d6",
+    "damageType": "slashing",
+    "properties": ["finesse", "light"],
+    "weight": 3,
+    "cost": "25 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Shortsword",
+    "category": "martial",
+    "damage": "1d6",
+    "damageType": "piercing",
+    "properties": ["finesse", "light"],
+    "weight": 2,
+    "cost": "10 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Trident",
+    "category": "martial",
+    "damage": "1d6",
+    "damageType": "piercing",
+    "properties": ["thrown", "versatile"],
+    "range": { "normal": 20, "long": 60 },
+    "weight": 4,
+    "cost": "5 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "War Pick",
+    "category": "martial",
+    "damage": "1d8",
+    "damageType": "piercing",
+    "properties": [],
+    "weight": 2,
+    "cost": "5 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Warhammer",
+    "category": "martial",
+    "damage": "1d8",
+    "damageType": "bludgeoning",
+    "properties": ["versatile"],
+    "weight": 2,
+    "cost": "15 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Whip",
+    "category": "martial",
+    "damage": "1d4",
+    "damageType": "slashing",
+    "properties": ["finesse", "reach"],
+    "weight": 3,
+    "cost": "2 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Blowgun",
+    "category": "martial",
+    "damage": "1",
+    "damageType": "piercing",
+    "properties": ["ammunition", "loading"],
+    "range": { "normal": 25, "long": 100 },
+    "weight": 1,
+    "cost": "10 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Crossbow, Hand",
+    "category": "martial",
+    "damage": "1d6",
+    "damageType": "piercing",
+    "properties": ["ammunition", "light", "loading"],
+    "range": { "normal": 30, "long": 120 },
+    "weight": 3,
+    "cost": "75 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Crossbow, Heavy",
+    "category": "martial",
+    "damage": "1d10",
+    "damageType": "piercing",
+    "properties": ["ammunition", "heavy", "loading", "two-handed"],
+    "range": { "normal": 100, "long": 400 },
+    "weight": 18,
+    "cost": "50 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Longbow",
+    "category": "martial",
+    "damage": "1d8",
+    "damageType": "piercing",
+    "properties": ["ammunition", "heavy", "two-handed"],
+    "range": { "normal": 150, "long": 600 },
+    "weight": 2,
+    "cost": "50 gp"
+  },
+  {
+    "kind": "weapon",
+    "name": "Net",
+    "category": "martial",
+    "damage": "0",
+    "damageType": "bludgeoning",
+    "properties": ["thrown", "special"],
+    "range": { "normal": 5, "long": 15 },
+    "weight": 3,
+    "cost": "1 gp"
+  },
+  {
+    "kind": "armor",
+    "name": "Padded Armor",
+    "category": "light",
+    "baseAC": 11,
+    "addDex": true,
+    "stealthDisadvantage": true,
+    "weight": 8,
+    "cost": "5 gp"
+  },
+  {
+    "kind": "armor",
+    "name": "Leather Armor",
+    "category": "light",
+    "baseAC": 11,
+    "addDex": true,
+    "stealthDisadvantage": false,
+    "weight": 10,
+    "cost": "10 gp"
+  },
+  {
+    "kind": "armor",
+    "name": "Studded Leather Armor",
+    "category": "light",
+    "baseAC": 12,
+    "addDex": true,
+    "stealthDisadvantage": false,
+    "weight": 13,
+    "cost": "45 gp"
+  },
+  {
+    "kind": "armor",
+    "name": "Hide Armor",
+    "category": "medium",
+    "baseAC": 12,
+    "addDex": true,
+    "maxDexBonus": 2,
+    "stealthDisadvantage": false,
+    "weight": 12,
+    "cost": "10 gp"
+  },
+  {
+    "kind": "armor",
+    "name": "Chain Shirt",
+    "category": "medium",
+    "baseAC": 13,
+    "addDex": true,
+    "maxDexBonus": 2,
+    "stealthDisadvantage": false,
+    "weight": 20,
+    "cost": "50 gp"
+  },
+  {
+    "kind": "armor",
+    "name": "Scale Mail",
+    "category": "medium",
+    "baseAC": 14,
+    "addDex": true,
+    "maxDexBonus": 2,
+    "stealthDisadvantage": true,
+    "weight": 45,
+    "cost": "50 gp"
+  },
+  {
+    "kind": "armor",
+    "name": "Breastplate",
+    "category": "medium",
+    "baseAC": 14,
+    "addDex": true,
+    "maxDexBonus": 2,
+    "stealthDisadvantage": false,
+    "weight": 20,
+    "cost": "400 gp"
+  },
+  {
+    "kind": "armor",
+    "name": "Half Plate Armor",
+    "category": "medium",
+    "baseAC": 15,
+    "addDex": true,
+    "maxDexBonus": 2,
+    "stealthDisadvantage": true,
+    "weight": 40,
+    "cost": "750 gp"
+  },
+  {
+    "kind": "armor",
+    "name": "Ring Mail",
+    "category": "heavy",
+    "baseAC": 14,
+    "addDex": false,
+    "stealthDisadvantage": true,
+    "weight": 40,
+    "cost": "30 gp"
+  },
+  {
+    "kind": "armor",
+    "name": "Chain Mail",
+    "category": "heavy",
+    "baseAC": 16,
+    "addDex": false,
+    "strengthRequirement": 13,
+    "stealthDisadvantage": true,
+    "weight": 55,
+    "cost": "75 gp"
+  },
+  {
+    "kind": "armor",
+    "name": "Splint Armor",
+    "category": "heavy",
+    "baseAC": 17,
+    "addDex": false,
+    "strengthRequirement": 15,
+    "stealthDisadvantage": true,
+    "weight": 60,
+    "cost": "200 gp"
+  },
+  {
+    "kind": "armor",
+    "name": "Plate Armor",
+    "category": "heavy",
+    "baseAC": 18,
+    "addDex": false,
+    "strengthRequirement": 15,
+    "stealthDisadvantage": true,
+    "weight": 65,
+    "cost": "1500 gp"
+  },
+  {
+    "kind": "armor",
+    "name": "Shield",
+    "category": "shield",
+    "baseAC": 2,
+    "addDex": false,
+    "stealthDisadvantage": false,
+    "weight": 6,
+    "cost": "10 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Backpack",
+    "weight": 5,
+    "cost": "2 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Bedroll",
+    "weight": 7,
+    "cost": "1 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Bell",
+    "weight": 0,
+    "cost": "1 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Blanket",
+    "weight": 3,
+    "cost": "5 sp"
+  },
+  {
+    "kind": "gear",
+    "name": "Candle",
+    "weight": 0,
+    "cost": "1 cp"
+  },
+  {
+    "kind": "gear",
+    "name": "Chain (10 feet)",
+    "weight": 10,
+    "cost": "5 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Climber's Kit",
+    "description": "Includes pitons, boot tips, gloves, and a harness. Allows you to anchor yourself; when you do, you can't fall more than 25 feet from the point where you anchored yourself, and you can't climb more than 25 feet away from that point without undoing the anchor.",
+    "weight": 12,
+    "cost": "25 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Component Pouch",
+    "description": "A small, watertight leather belt pouch that has compartments to hold all the material components and other special items you need to cast your spells, except for those components that have a specific cost.",
+    "weight": 2,
+    "cost": "25 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Crowbar",
+    "weight": 5,
+    "cost": "2 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Flask",
+    "weight": 1,
+    "cost": "2 cp"
+  },
+  {
+    "kind": "gear",
+    "name": "Grappling Hook",
+    "weight": 4,
+    "cost": "2 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Hammer",
+    "weight": 3,
+    "cost": "1 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Healer's Kit",
+    "description": "This kit has ten uses. As an action, you can expend one use of the kit to stabilize a creature that has 0 hit points, without needing to make a Wisdom (Medicine) check.",
+    "weight": 3,
+    "cost": "5 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Holy Symbol (Amulet)",
+    "description": "A holy symbol is a representation of a god or pantheon used as a spellcasting focus for divine spells.",
+    "weight": 1,
+    "cost": "5 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Hunting Trap",
+    "weight": 25,
+    "cost": "5 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Ink Bottle",
+    "weight": 0,
+    "cost": "10 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Ink Pen",
+    "weight": 0,
+    "cost": "2 cp"
+  },
+  {
+    "kind": "gear",
+    "name": "Lamp",
+    "weight": 1,
+    "cost": "5 sp"
+  },
+  {
+    "kind": "gear",
+    "name": "Lantern, Bullseye",
+    "weight": 2,
+    "cost": "10 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Lantern, Hooded",
+    "weight": 2,
+    "cost": "5 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Lock",
+    "weight": 1,
+    "cost": "10 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Manacles",
+    "weight": 6,
+    "cost": "2 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Mess Kit",
+    "weight": 1,
+    "cost": "2 sp"
+  },
+  {
+    "kind": "gear",
+    "name": "Mirror, Steel",
+    "weight": 0.5,
+    "cost": "5 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Oil Flask",
+    "weight": 1,
+    "cost": "1 sp"
+  },
+  {
+    "kind": "gear",
+    "name": "Paper (one sheet)",
+    "weight": 0,
+    "cost": "2 sp"
+  },
+  {
+    "kind": "gear",
+    "name": "Piton",
+    "weight": 0.25,
+    "cost": "5 cp"
+  },
+  {
+    "kind": "gear",
+    "name": "Potion of Healing",
+    "description": "A character who drinks the magical red fluid in this vial regains 2d4 + 2 hit points. Drinking or administering a potion takes an action.",
+    "weight": 0.5,
+    "cost": "50 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Pouch",
+    "weight": 1,
+    "cost": "5 sp"
+  },
+  {
+    "kind": "gear",
+    "name": "Quiver",
+    "description": "A quiver can hold up to 20 arrows.",
+    "weight": 1,
+    "cost": "1 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Rations (1 day)",
+    "weight": 2,
+    "cost": "5 sp"
+  },
+  {
+    "kind": "gear",
+    "name": "Rope, Hempen (50 feet)",
+    "weight": 10,
+    "cost": "1 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Rope, Silk (50 feet)",
+    "weight": 5,
+    "cost": "10 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Sack",
+    "weight": 0.5,
+    "cost": "1 cp"
+  },
+  {
+    "kind": "gear",
+    "name": "Sealing Wax",
+    "weight": 0,
+    "cost": "5 sp"
+  },
+  {
+    "kind": "gear",
+    "name": "Shield of Faith Scroll",
+    "weight": 0,
+    "cost": "25 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Shovel",
+    "weight": 5,
+    "cost": "2 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Signal Whistle",
+    "weight": 0,
+    "cost": "5 cp"
+  },
+  {
+    "kind": "gear",
+    "name": "Spellbook",
+    "description": "Essential for wizards, this leather-bound book serves as a repository for spells.",
+    "weight": 3,
+    "cost": "50 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Spyglass",
+    "weight": 1,
+    "cost": "1000 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Tent, Two-Person",
+    "weight": 20,
+    "cost": "2 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Tinderbox",
+    "weight": 1,
+    "cost": "5 sp"
+  },
+  {
+    "kind": "gear",
+    "name": "Torch",
+    "weight": 1,
+    "cost": "1 cp"
+  },
+  {
+    "kind": "gear",
+    "name": "Vial",
+    "weight": 0,
+    "cost": "1 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Waterskin",
+    "weight": 5,
+    "cost": "2 sp"
+  },
+  {
+    "kind": "gear",
+    "name": "Arrows (20)",
+    "quantity": 20,
+    "weight": 1,
+    "cost": "1 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Bolts (20)",
+    "quantity": 20,
+    "weight": 1.5,
+    "cost": "1 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Sling Bullets (20)",
+    "quantity": 20,
+    "weight": 1.5,
+    "cost": "4 cp"
+  },
+  {
+    "kind": "gear",
+    "name": "Blowgun Needles (50)",
+    "quantity": 50,
+    "weight": 1,
+    "cost": "1 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Arcane Focus (Crystal)",
+    "description": "An arcane focus is a special item designed to channel the power of arcane spells. A crystal can be used as a spellcasting focus.",
+    "weight": 1,
+    "cost": "10 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Arcane Focus (Orb)",
+    "description": "An arcane focus is a special item designed to channel the power of arcane spells. An orb can be used as a spellcasting focus.",
+    "weight": 3,
+    "cost": "20 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Arcane Focus (Rod)",
+    "description": "An arcane focus is a special item designed to channel the power of arcane spells. A rod can be used as a spellcasting focus.",
+    "weight": 2,
+    "cost": "10 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Arcane Focus (Staff)",
+    "description": "An arcane focus is a special item designed to channel the power of arcane spells. A staff can be used as a spellcasting focus.",
+    "weight": 4,
+    "cost": "5 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Arcane Focus (Wand)",
+    "description": "An arcane focus is a special item designed to channel the power of arcane spells. A wand can be used as a spellcasting focus.",
+    "weight": 1,
+    "cost": "10 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Druidic Focus (Sprig of Mistletoe)",
+    "description": "A druidic focus might be a sprig of mistletoe or holly, a wand or scepter made of yew or another special wood, a staff drawn whole out of a living tree, or a totem object.",
+    "weight": 0,
+    "cost": "1 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Druidic Focus (Wooden Staff)",
+    "description": "A druidic focus might be a sprig of mistletoe or holly, a wand or scepter made of yew or another special wood, a staff drawn whole out of a living tree, or a totem object.",
+    "weight": 4,
+    "cost": "5 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Druidic Focus (Yew Wand)",
+    "description": "A druidic focus might be a sprig of mistletoe or holly, a wand or scepter made of yew or another special wood, a staff drawn whole out of a living tree, or a totem object.",
+    "weight": 1,
+    "cost": "10 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Holy Symbol (Emblem)",
+    "description": "A holy symbol is a representation of a god or pantheon used as a spellcasting focus for divine spells.",
+    "weight": 0,
+    "cost": "5 gp"
+  },
+  {
+    "kind": "gear",
+    "name": "Holy Symbol (Reliquary)",
+    "description": "A holy symbol is a representation of a god or pantheon used as a spellcasting focus for divine spells.",
+    "weight": 2,
+    "cost": "5 gp"
+  }
+]

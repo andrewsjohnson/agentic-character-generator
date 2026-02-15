@@ -33,24 +33,33 @@ jobs:
       # ---------------------------------------------------
       # Create deterministic branch
       # ---------------------------------------------------
-      - name: Create branch + push empty commit
+      - name: Ensure branch exists (reuse if already created)
         env:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
           set -euo pipefail
-
+      
           BRANCH="claude/issue-${ISSUE_NUMBER}"
-
-          git fetch origin "${DEFAULT_BRANCH}"
-          git checkout -b "${BRANCH}" "origin/${DEFAULT_BRANCH}"
-
-          git config user.name "claude[bot]"
-          git config user.email "41898282+claude[bot]@users.noreply.github.com"
-
-          git commit --allow-empty -m "chore: start work on #${ISSUE_NUMBER}"
-          git push -u origin "${BRANCH}"
-
+      
+          git fetch origin "${DEFAULT_BRANCH}" || true
+          git fetch origin "${BRANCH}" || true
+      
+          if git show-ref --verify --quiet "refs/remotes/origin/${BRANCH}"; then
+            echo "Remote branch exists: origin/${BRANCH}. Reusing it."
+            git checkout "${BRANCH}" || git checkout -b "${BRANCH}" "origin/${BRANCH}"
+            git pull --ff-only origin "${BRANCH}"
+          else
+            echo "Remote branch does not exist. Creating ${BRANCH} from origin/${DEFAULT_BRANCH}."
+            git checkout -b "${BRANCH}" "origin/${DEFAULT_BRANCH}"
+      
+            git config user.name "claude[bot]"
+            git config user.email "41898282+claude[bot]@users.noreply.github.com"
+      
+            git commit --allow-empty -m "chore: start work on #${ISSUE_NUMBER}"
+            git push -u origin "${BRANCH}"
+          fi
+      
           echo "BRANCH=${BRANCH}" >> "$GITHUB_ENV"
 
       # ---------------------------------------------------

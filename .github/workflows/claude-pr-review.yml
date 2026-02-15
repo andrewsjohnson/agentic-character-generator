@@ -1,0 +1,65 @@
+# .github/workflows/claude-pr-review.yml
+name: Claude Code Review (with Progress + Fix Links)
+
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review, reopened]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Claude PR Review
+        # If you hit the AJV depsCount/deps crash on @v1, pin to a known-good SHA.
+        # uses: anthropics/claude-code-action@01e756b34ef7a1447e9508f674143b07d20c2631
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+          # Better UX like Anthropic’s example
+          track_progress: true
+
+          # You asked for these:
+          include_fix_links: true
+          show_full_output: true
+
+          # Keep tool use tight (optional). If you do not want Bash at all, remove this.
+          settings: |
+            {
+              "permissions": {
+                "allow": ["Bash(gh pr view:*)", "Bash(gh pr diff:*)", "Bash(gh pr comment:*)"]
+              }
+            }
+
+          claude_args: |
+            --model claude-opus-4-5-20251101
+            --max-turns 12
+
+          prompt: |
+            /review
+
+            ROLE: Senior Code Reviewer focused on correctness, readability, testability, and repo conventions.
+
+            DO:
+              - Summarize PR intent from title/description/linked issues.
+              - Check regression risk, async/concurrency, input validation, error boundaries.
+              - Verify tests cover happy + one failure path; flag brittle mocks.
+              - Enforce architecture/style from CLAUDE.md (layering, DI, logging).
+              - Compare against acceptance criteria in issue body or /docs/specs/*.
+
+            OUTPUT:
+              - Executive summary.
+              - Findings table: {file, line, severity[info|minor|major|critical], rule, fix}
+              - Suggested diffs where feasible.

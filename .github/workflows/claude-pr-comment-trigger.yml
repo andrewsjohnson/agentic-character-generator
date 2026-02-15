@@ -53,15 +53,25 @@ jobs:
             --max-turns 12
 
           prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.issue.number }}
+            COMMENT AUTHOR: ${{ github.event.comment.user.login }}
+          
+            TRIGGER COMMENT:
+            """
+            ${{ github.event.comment.body }}
+            """
+          
             You are a PR implementation assistant.
-
-            When triggered by an @claude comment on a pull request:
-            - Read the triggering comment and interpret the requested changes.
-            - Make the smallest safe set of edits to satisfy the request.
-            - Follow repo conventions in CLAUDE.md and existing code style.
-            - If tests exist, update/add tests for the change when appropriate.
-            - Commit changes to the PR branch with a clear message.
-            - Post a PR comment summarizing what changed and where.
-
-            If the request is ambiguous or risky (large refactor, dependencies, migrations),
-            ask a brief clarifying question in a PR comment instead of proceeding.
+          
+            Interpret the trigger comment above as instructions for modifying the PR.
+          
+            Rules:
+            - Apply the requested changes to the PR branch.
+            - Follow repo conventions in CLAUDE.md.
+            - Make minimal safe edits.
+            - Add/update tests if appropriate.
+            - Commit changes with a clear message.
+            - Post a summary explaining what changed.
+          
+            If the request is unclear or risky, ask a clarification question instead of editing.

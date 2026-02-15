@@ -15,6 +15,22 @@
 | 9     | +4                | 19    | +6                |
 | 10    | +4                | 20    | +6                |
 
+## Skill-to-Ability Mapping
+
+Each skill check uses a specific ability modifier. The 18 standard skills are:
+
+| Skill | Ability | Skill | Ability |
+|-------|---------|-------|---------|
+| Acrobatics | Dexterity | Medicine | Wisdom |
+| Animal Handling | Wisdom | Nature | Intelligence |
+| Arcana | Intelligence | Perception | Wisdom |
+| Athletics | Strength | Performance | Charisma |
+| Deception | Charisma | Persuasion | Charisma |
+| History | Intelligence | Religion | Intelligence |
+| Insight | Wisdom | Sleight of Hand | Dexterity |
+| Intimidation | Charisma | Stealth | Dexterity |
+| Investigation | Intelligence | Survival | Wisdom |
+
 ## Skill Check Formula
 
 ```
@@ -54,5 +70,5 @@ Include Proficiency Bonus if proficient in Perception, plus any other applicable
 
 ## Notes for Agents
 
-- The full skill list and skill-to-ability mapping (e.g., Athletics → Strength, Stealth → Dexterity) is in the "Playing the Game" chapter, not included in this SRD excerpt.
 - When Proficiency Bonus increases at a new level, update **all** numbers that include it: skills, saving throws, attack rolls, spell save DC, spell attack bonus.
+- The skill-to-ability mapping above is from the 2024 D&D SRD and represents the standard associations. In rare cases, a DM might allow a different ability for a specific check (e.g., Strength (Intimidation) for a physically imposing threat).

@@ -1,0 +1,111 @@
+name: Claude - Implement in PR (milestones)
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  id-token: write
+
+jobs:
+  implement_in_pr:
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: claude-implement-pr-${{ github.event.issue.number }}
+      cancel-in-progress: true
+
+    # Only run on PR comments (not issue comments), only when /implement-claude is posted
+    if: |
+      github.event.issue.pull_request != null &&
+      contains(github.event.comment.body, '/implement-claude') &&
+      (github.event.comment.author_association == 'OWNER' ||
+       github.event.comment.author_association == 'MEMBER' ||
+       github.event.comment.author_association == 'COLLABORATOR')
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Implement with milestone commits
+        id: claude
+        continue-on-error: true
+        uses: anthropics/claude-code-action@01e756b34ef7a1447e9508f674143b07d20c2631
+        with:
+          show_full_output: true
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          track_progress: true
+
+          # IMPORTANT: no '#' comment lines inside this block
+          claude_args: |
+            --max-turns 25
+            --allowedTools Edit
+            --allowedTools MultiEdit
+            --allowedTools Read
+            --allowedTools Write
+            --allowedTools LS
+            --allowedTools Glob
+            --allowedTools Grep
+            --allowedTools "Bash(mkdir -p *)"
+            --allowedTools "Bash(node *)"
+            --allowedTools "Bash(npm ci*)"
+            --allowedTools "Bash(npm test*)"
+            --allowedTools "Bash(npm run lint*)"
+            --allowedTools "Bash(npm run typecheck*)"
+            --allowedTools "Bash(npm run build*)"
+            --allowedTools "Bash(git add *)"
+            --allowedTools "Bash(git commit *)"
+            --allowedTools "Bash(git push *)"
+            --allowedTools "Bash(git status *)"
+            --allowedTools "Bash(git diff *)"
+            --allowedTools "Bash(git log *)"
+            --allowedTools "Bash(git rm *)"
+
+          prompt: |
+            Implement the plan found between:
+            <!-- CLAUDE_PLAN_START --> and <!-- CLAUDE_PLAN_END -->
+            in the *linked issue* for this PR.
+
+            CRITICAL WORKFLOW:
+            Work in milestones and PUSH after each one so progress is never lost.
+
+            Milestone 1 (scaffold/config):
+            - Create Vite + React + TS scaffold and core config files
+            - Add dependencies/devDependencies
+            - Configure Tailwind + Vitest + ESLint
+            - Run: npm ci, npm run typecheck, npm run lint, npm test (or npm run test:ci if defined)
+            - Commit message: "chore: scaffold vite react typescript"
+            - Push to this PR branch
+
+            Milestone 2 (app + routes + placeholders):
+            - Implement App.tsx router + placeholder step components
+            - Add placeholder tests
+            - Run checks again
+            - Commit message: "feat: add wizard routes and placeholders"
+            - Push
+
+            Milestone 3 (polish + docs):
+            - Update CLAUDE.md with the commands/expectations
+            - Add any remaining placeholders (.gitignore, etc.)
+            - Run checks again
+            - Commit message: "chore: docs and project hygiene"
+            - Push
+
+            IMPORTANT:
+            - After each milestone:
+              - git status
+              - git add -A
+              - git commit -m "<message>\n\nCo-authored-by: Andrew Johnson <andrewsjohnson@users.noreply.github.com>"
+              - git push origin <current-branch>
+            - Avoid shell pipelines/redirection (no &&, ||, 2>&1).
+            - If something blocks progress, leave a comment describing exactly what failed and what you need changed.
+
+      - name: Fail workflow if Claude step failed unexpectedly
+        if: steps.claude.outcome == 'failure'
+        run: |
+          echo "Claude implement step failed. Check the job output for details."
+          exit 1

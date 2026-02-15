@@ -39,8 +39,6 @@ jobs:
 
           claude_args: |
             --max-turns 12
-
-            # ===== File editing =====
             --allowedTools Edit
             --allowedTools MultiEdit
             --allowedTools Read
@@ -48,8 +46,6 @@ jobs:
             --allowedTools LS
             --allowedTools Glob
             --allowedTools Grep
-
-            # ===== Node + project commands =====
             --allowedTools "Bash(mkdir -p *)"
             --allowedTools "Bash(node *)"
             --allowedTools "Bash(npm ci *)"
@@ -62,8 +58,6 @@ jobs:
             --allowedTools "Bash(npm run typecheck*)"            
             --allowedTools "Bash(npm run build *)"
             --allowedTools "Bash(npm run build*)"
-
-            # ===== Git operations =====
             --allowedTools "Bash(git add *)"
             --allowedTools "Bash(git commit *)"
             --allowedTools "Bash(git push *)"

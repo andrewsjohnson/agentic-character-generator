@@ -54,6 +54,8 @@ jobs:
             --allowedTools "Bash(node *)"
             --allowedTools "Bash(npx run *)"
             --allowedTools "Bash(npx run vitest *)"
+            --allowedTools "Bash(npx vitest *)"
+            --allowedTools "Bash(npx vitest run *)"
             --allowedTools "Bash(npm --version)"
             --allowedTools "Bash(npm ci*)"
             --allowedTools "Bash(npm test*)"

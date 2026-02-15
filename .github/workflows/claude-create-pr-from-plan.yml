@@ -30,21 +30,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      # ---------------------------------------------------
-      # Create deterministic branch
-      # ---------------------------------------------------
       - name: Ensure branch exists (reuse if already created)
         env:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
           set -euo pipefail
-      
+
           BRANCH="claude/issue-${ISSUE_NUMBER}"
-      
+
           git fetch origin "${DEFAULT_BRANCH}" || true
           git fetch origin "${BRANCH}" || true
-      
+
           if git show-ref --verify --quiet "refs/remotes/origin/${BRANCH}"; then
             echo "Remote branch exists: origin/${BRANCH}. Reusing it."
             git checkout "${BRANCH}" || git checkout -b "${BRANCH}" "origin/${BRANCH}"
@@ -52,19 +49,16 @@ jobs:
           else
             echo "Remote branch does not exist. Creating ${BRANCH} from origin/${DEFAULT_BRANCH}."
             git checkout -b "${BRANCH}" "origin/${DEFAULT_BRANCH}"
-      
+
             git config user.name "claude[bot]"
             git config user.email "41898282+claude[bot]@users.noreply.github.com"
-      
+
             git commit --allow-empty -m "chore: start work on #${ISSUE_NUMBER}"
             git push -u origin "${BRANCH}"
           fi
-      
+
           echo "BRANCH=${BRANCH}" >> "$GITHUB_ENV"
 
-      # ---------------------------------------------------
-      # Extract plan + create PR
-      # ---------------------------------------------------
       - name: Create PR from latest Claude plan
         env:
           GH_TOKEN: ${{ secrets.CLAUDE_PR_TOKEN }}
@@ -76,7 +70,6 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Skip if PR already exists
           existing_pr=$(gh pr list --repo "$REPO" --head "$BRANCH" --json number --jq '.[0].number // empty')
           if [ -n "$existing_pr" ]; then
             echo "PR already exists: #$existing_pr"
@@ -86,37 +79,37 @@ jobs:
           echo "Fetching issue comments..."
           gh api "/repos/${REPO}/issues/${ISSUE_NUMBER}/comments?per_page=100" > comments.json
 
-          echo "Extracting latest plan..."
-          plan_body=$(jq -r '
-            map(select(.body | contains("<!-- CLAUDE_PLAN_START -->") and contains("<!-- CLAUDE_PLAN_END -->")))
+          echo "Extracting latest Claude plan comment..."
+          plan_extracted=$(jq -r '
+            map(select(.user.login == "claude[bot]"))
+            | map(select(.body | test("Implementation Plan|Summary of Approach|Concrete File Paths|Step-by-Step|Checklist|Risks|Tests"; "i")))
             | last
             | .body // ""
           ' comments.json)
 
-          if [ -z "$plan_body" ] || [ "$plan_body" = "null" ]; then
-            plan_extracted="(Plan not found — run /plan and retry /approve-claude.)"
-          else
-            plan_extracted=$(printf "%s" "$plan_body" \
-              | sed -n '/CLAUDE_PLAN_START/,/CLAUDE_PLAN_END/p' \
-              | sed '1d;$d')
+          if [ -z "$plan_extracted" ] || [ "$plan_extracted" = "null" ]; then
+            plan_extracted="(Plan not found — run /plan and retry /approve-claude. Tip: ensure the plan is posted by claude[bot].)"
           fi
+
+          # Optional: avoid PR body size limits
+          plan_extracted=$(printf "%s" "$plan_extracted" | head -c 60000)
 
           title="(Claude) ${ISSUE_NUMBER}: ${ISSUE_TITLE:-Implementation}"
 
           body=$(cat <<EOF
-          Fixes #$ISSUE_NUMBER
-          
-          ## Plan
-          $plan_extracted
-          
-          ## Next step
-          Comment on this PR with:
-          
-          \`/implement-claude\`
-          
-          Generated with Claude Code.
-          EOF
-          )
+Fixes #$ISSUE_NUMBER
+
+## Plan (latest Claude plan comment)
+$plan_extracted
+
+## Next step
+Comment on this PR with:
+
+\`/implement-claude\`
+
+Generated with Claude Code.
+EOF
+)
 
           gh pr create \
             --repo "$REPO" \

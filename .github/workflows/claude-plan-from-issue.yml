@@ -60,7 +60,7 @@ jobs:
             4) Risks/edge cases
             5) Tests to add/update + commands to run
 
-            Use these markers so later workflows can find the plan:
+            You MUST use these markers so later workflows can find the plan:
             <!-- CLAUDE_PLAN_START -->
             ...content...
             <!-- CLAUDE_PLAN_END -->

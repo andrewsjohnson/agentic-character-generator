@@ -30,7 +30,7 @@
 
 ## Notes for Agents
 
-- Background is the **sole source of ability score increases** in this edition (species no longer grants them).
+- Background is the **sole source of ability score increases** in this edition (species does not grant them).
 - The background's feat is an origin feat chosen at character creation.
 - Specific background descriptions (equipment lists, flavor text, detailed proficiencies) are in the full "Character Origins" chapter, not included in this SRD excerpt.
 - When choosing a background, prioritize matching one of the three listed abilities to the class's primary ability.

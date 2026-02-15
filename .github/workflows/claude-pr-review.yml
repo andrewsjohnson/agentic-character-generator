@@ -1,4 +1,5 @@
 name: Claude Code – PR Review
+
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -6,23 +7,25 @@ on:
 jobs:
   review:
     runs-on: ubuntu-latest
+
+    # Required for PR commenting + GitHub App (OIDC) auth
     permissions:
       contents: read
       pull-requests: write
+      id-token: write
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Run Claude Code PR Review
+      - name: Claude PR Review
         uses: anthropics/claude-code-action@v1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
-          model: claude-4-opus-latest
-          max-iterations: 12
-          mcp-tools: github
+          # Using the Claude GitHub App connection:
+          # - no anthropic_api_key needed
+          # - no github_token needed (the action uses the workflow token + OIDC)
           prompt: |
             ROLE: Senior Code Reviewer focused on correctness, readability, testability, and repo conventions.
             DO:
@@ -35,3 +38,12 @@ jobs:
               - Executive summary.
               - Findings table: {file, line, severity[info|minor|major|critical], rule, fix}
               - Suggested diffs where feasible.
+
+          # Claude CLI flags (this is where model + limits go in v1)
+          claude_args: |
+            --model claude-3-opus-latest
+            --max-turns 12
+            # Optional quality-of-life:
+            # --verbose
+            # If you have a lot of generated/vendor code, consider excluding via repo config
+            # rather than passing huge diffs around.

@@ -1,7 +1,10 @@
+# .github/workflows/claude-pr-review.yml
 name: Claude Code Review
+
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+
 jobs:
   review:
     runs-on: ubuntu-latest
@@ -9,13 +12,28 @@ jobs:
       contents: read
       pull-requests: write
       issues: read
-      id-token: write
+
     steps:
-      - uses: anthropics/claude-code-action@v1
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Claude PR Review
+        uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+          claude_args: |
+            --model claude-opus-4-5-20251101
+            --max-turns 12
+            --include-fix-linksclaude_args: |
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"
+
           prompt: |
             /review
+
             ROLE: Senior Code Reviewer focused on correctness, readability, testability, and repo conventions.
 
             DO:
@@ -29,7 +47,3 @@ jobs:
               - Executive summary.
               - Findings table: {file, line, severity[info|minor|major|critical], rule, fix}
               - Suggested diffs where feasible.
-          claude_args: |
-            --model claude-opus-4-5-20251101
-            --max-turns 12
-              

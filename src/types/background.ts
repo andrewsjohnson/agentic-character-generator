@@ -1,3 +1,5 @@
+import type { AbilityName } from './ability';
+
 /** Equipment granted by a background (name and quantity). */
 export type BackgroundEquipment = {
   name: string;
@@ -9,8 +11,6 @@ export type BackgroundFeature = {
   name: string;
   description: string;
 };
-
-import type { AbilityName } from './ability';
 
 /** A character background from the SRD. */
 export type Background = {

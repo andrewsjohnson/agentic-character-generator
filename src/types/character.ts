@@ -39,12 +39,6 @@ export type CharacterDraft = {
   /** Base ability scores before background bonuses. */
   baseAbilityScores?: AbilityScores;
 
-  /**
-   * Final ability scores after background bonuses are applied.
-   * Derived from baseAbilityScores + background bonuses.
-   * Should be computed, not stored.
-   */
-
   /** Origin feat selected from background options. */
   originFeat?: string;
 

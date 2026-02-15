@@ -6,11 +6,11 @@ export const ABILITY_NAMES: readonly AbilityName[] = [
   'STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA',
 ] as const;
 
-/** A complete set of base ability scores (before racial bonuses). */
+/** A complete set of base ability scores (before background bonuses). */
 export type AbilityScores = Record<AbilityName, number>;
 
 /**
- * Partial ability score bonuses, e.g. racial bonuses that only affect
+ * Partial ability score bonuses, e.g. background bonuses that only affect
  * some abilities.
  */
 export type AbilityBonuses = Partial<Record<AbilityName, number>>;

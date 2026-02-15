@@ -37,7 +37,17 @@ export type WeaponProperty =
 export type DamageType =
   | 'bludgeoning'
   | 'piercing'
-  | 'slashing';
+  | 'slashing'
+  | 'acid'
+  | 'cold'
+  | 'fire'
+  | 'force'
+  | 'lightning'
+  | 'necrotic'
+  | 'poison'
+  | 'psychic'
+  | 'radiant'
+  | 'thunder';
 
 /** A weapon (melee or ranged). */
 export type Weapon = {

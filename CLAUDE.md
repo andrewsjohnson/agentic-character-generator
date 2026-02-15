@@ -54,14 +54,14 @@ docs/
 - Rules functions in `src/rules/` must have corresponding test files.
 - Tests go next to the file they test: `ability-scores.ts` → `ability-scores.test.ts`.
 - Step components get tests in their step directory: `RaceStep/RaceStep.test.tsx`.
-- Use concrete SRD values in tests (e.g., Hill Dwarf gets +2 CON, +1 WIS) rather than abstract placeholders.
+- Use concrete SRD values in tests (e.g., Acolyte background grants +2 WIS, +1 INT) rather than abstract placeholders.
 
 ## D&D Rules References
 
 Task-specific rules references are in `docs/rules/`. Consult the relevant file before implementing any game logic:
 
-- `ability-scores.md` — modifier formula, point buy costs/budget, standard array, racial bonus application
-- `races.md` — racial traits, ability bonuses, subraces
+- `ability-scores.md` — modifier formula, point buy costs/budget, standard array, background bonus application
+- `races.md` — racial traits, creature type, size, speed, special senses
 - `classes.md` — hit dice, primary abilities, saving throw proficiencies, class features at level 1
 - `backgrounds.md` — skill proficiencies, equipment, feature
 - `equipment-and-armor.md` — AC calculation, weapon properties

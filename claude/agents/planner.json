@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "LS",
+      "Glob",
+      "Grep",
+      "mcp__github_comment__update_claude_comment"
+    ]
+  }
+}

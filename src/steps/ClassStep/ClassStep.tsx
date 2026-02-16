@@ -17,6 +17,7 @@ function ClassCard({ charClass, selected, onClick }: ClassCardProps) {
   return (
     <button
       onClick={onClick}
+      data-testid={`class-card-${charClass.name.toLowerCase()}`}
       className={`w-full text-left p-4 rounded-lg border-2 transition-all hover:shadow-md ${
         selected
           ? 'border-blue-600 bg-blue-50'
@@ -41,24 +42,24 @@ function ClassDetail({ charClass }: ClassDetailProps) {
   const skillChoices = getClassSkillChoices(charClass);
 
   return (
-    <div className="mt-8 pt-8 border-t border-gray-200">
-      <h3 className="text-2xl font-bold mb-4">{charClass.name} Details</h3>
+    <div className="mt-8 pt-8 border-t border-gray-200" data-testid="class-detail-panel">
+      <h3 className="text-2xl font-bold mb-4" data-testid="class-detail-heading">{charClass.name} Details</h3>
 
       {/* Proficiencies Section */}
-      <div className="mb-6">
+      <div className="mb-6" data-testid="proficiencies-section">
         <h4 className="text-lg font-semibold mb-2">Proficiencies</h4>
         <div className="space-y-2 text-sm">
-          <p>
+          <p data-testid="armor-proficiencies">
             <span className="font-medium">Armor:</span>{' '}
             {charClass.armorProficiencies.length > 0
               ? charClass.armorProficiencies.join(', ')
               : 'None'}
           </p>
-          <p>
+          <p data-testid="weapon-proficiencies">
             <span className="font-medium">Weapons:</span>{' '}
             {charClass.weaponProficiencies.join(', ')}
           </p>
-          <p>
+          <p data-testid="saving-throws">
             <span className="font-medium">Saving Throws:</span>{' '}
             {charClass.savingThrows.join(', ')}
           </p>
@@ -66,9 +67,9 @@ function ClassDetail({ charClass }: ClassDetailProps) {
       </div>
 
       {/* Skill Choices Section */}
-      <div className="mb-6">
+      <div className="mb-6" data-testid="skill-choices-section">
         <h4 className="text-lg font-semibold mb-2">Skill Choices</h4>
-        <p className="text-sm text-gray-700">
+        <p className="text-sm text-gray-700" data-testid="skill-choices-text">
           Choose {skillChoices.count} from: {skillChoices.options.join(', ')}
         </p>
         <p className="text-xs text-gray-500 mt-1">
@@ -77,11 +78,11 @@ function ClassDetail({ charClass }: ClassDetailProps) {
       </div>
 
       {/* Features Section */}
-      <div className="mb-6">
+      <div className="mb-6" data-testid="features-section">
         <h4 className="text-lg font-semibold mb-2">Level 1 Features</h4>
         <div className="space-y-3">
           {charClass.features.map((feature, index) => (
-            <div key={index} className="bg-gray-50 p-3 rounded">
+            <div key={index} className="bg-gray-50 p-3 rounded" data-testid={`feature-${index}`}>
               <h5 className="font-semibold text-sm mb-1">{feature.name}</h5>
               <p className="text-xs text-gray-700">{feature.description}</p>
             </div>
@@ -91,29 +92,29 @@ function ClassDetail({ charClass }: ClassDetailProps) {
 
       {/* Spellcasting Section */}
       {charClass.spellcasting && (
-        <div className="mb-6">
+        <div className="mb-6" data-testid="spellcasting-section">
           <h4 className="text-lg font-semibold mb-2">Spellcasting</h4>
           <div className="bg-blue-50 p-3 rounded space-y-2 text-sm">
-            <p>
+            <p data-testid="spellcasting-ability">
               <span className="font-medium">Spellcasting Ability:</span>{' '}
               {charClass.spellcasting.ability}
             </p>
-            <p>
+            <p data-testid="cantrips-known">
               <span className="font-medium">Cantrips Known:</span>{' '}
               {charClass.spellcasting.cantripsKnown}
             </p>
-            <p>
+            <p data-testid="spell-slots">
               <span className="font-medium">Spell Slots (Level 1):</span>{' '}
               {charClass.spellcasting.spellSlots}
             </p>
             {charClass.spellcasting.spellsPrepared !== undefined && (
-              <p>
+              <p data-testid="spells-prepared">
                 <span className="font-medium">Spells Prepared/Known:</span>{' '}
                 {charClass.spellcasting.spellsPrepared}
               </p>
             )}
             {charClass.spellcasting.isPactMagic && (
-              <p className="text-xs text-gray-600 italic">
+              <p className="text-xs text-gray-600 italic" data-testid="pact-magic-note">
                 This class uses Pact Magic instead of standard Spellcasting.
               </p>
             )}

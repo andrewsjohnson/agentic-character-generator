@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import { SpeciesStep } from './SpeciesStep';
 import speciesData from '../../data/races.json';
 import type { Species } from '../../types/species';
@@ -28,17 +28,17 @@ describe('SpeciesStep', () => {
     const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} />);
 
     // Get the species grid
-    const speciesGrid = container.querySelector('.grid');
+    const speciesGrid = container.querySelector('.grid') as HTMLElement;
     expect(speciesGrid).toBeInTheDocument();
 
     // Check Human card details
-    const humanCard = within(speciesGrid!).getByText('Human').closest('button');
+    const humanCard = within(speciesGrid).getByText('Human').closest('button');
     expect(humanCard).toHaveTextContent('Size: Medium');
     expect(humanCard).toHaveTextContent('Speed: 30 ft.');
     expect(humanCard).toHaveTextContent('0 traits');
 
     // Check Dwarf card details
-    const dwarfCard = within(speciesGrid!).getByText('Dwarf').closest('button');
+    const dwarfCard = within(speciesGrid).getByText('Dwarf').closest('button');
     expect(dwarfCard).toHaveTextContent('Size: Medium');
     expect(dwarfCard).toHaveTextContent('Speed: 25 ft.');
     expect(dwarfCard).toHaveTextContent('5 traits');
@@ -51,8 +51,8 @@ describe('SpeciesStep', () => {
     const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} />);
 
     // Get species grid and find Human card
-    const speciesGrid = container.querySelector('.grid');
-    const humanCard = within(speciesGrid!).getByText('Human').closest('button');
+    const speciesGrid = container.querySelector('.grid') as HTMLElement;
+    const humanCard = within(speciesGrid).getByText('Human').closest('button');
     fireEvent.click(humanCard!);
 
     // Should call updateCharacter with Human species and undefined subspecies
@@ -72,8 +72,8 @@ describe('SpeciesStep', () => {
     expect(screen.queryByText('Choose Your Subspecies')).not.toBeInTheDocument();
 
     // Click Dwarf (has subspecies)
-    const speciesGrid = container.querySelector('.grid');
-    const dwarfCard = within(speciesGrid!).getByText('Dwarf').closest('button');
+    const speciesGrid = container.querySelector('.grid') as HTMLElement;
+    const dwarfCard = within(speciesGrid).getByText('Dwarf').closest('button');
     fireEvent.click(dwarfCard!);
 
     // Subspecies section should now be visible
@@ -88,8 +88,8 @@ describe('SpeciesStep', () => {
     const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} />);
 
     // Click Dwarf (has subspecies)
-    const speciesGrid = container.querySelector('.grid');
-    const dwarfCard = within(speciesGrid!).getByText('Dwarf').closest('button');
+    const speciesGrid = container.querySelector('.grid') as HTMLElement;
+    const dwarfCard = within(speciesGrid).getByText('Dwarf').closest('button');
     fireEvent.click(dwarfCard!);
 
     // Should NOT have updated character yet (no subspecies selected)
@@ -106,9 +106,9 @@ describe('SpeciesStep', () => {
 
     const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} />);
 
-    const speciesGrid = container.querySelector('.grid');
-    const humanCard = within(speciesGrid!).getByText('Human').closest('button');
-    const dwarfCard = within(speciesGrid!).getByText('Dwarf').closest('button');
+    const speciesGrid = container.querySelector('.grid') as HTMLElement;
+    const humanCard = within(speciesGrid).getByText('Human').closest('button');
+    const dwarfCard = within(speciesGrid).getByText('Dwarf').closest('button');
 
     // Initially no highlight
     expect(humanCard).toHaveClass('border-gray-300');
@@ -129,8 +129,8 @@ describe('SpeciesStep', () => {
     const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} />);
 
     // Click Elf (has High Elf subspecies)
-    const speciesGrid = container.querySelector('.grid');
-    const elfCard = within(speciesGrid!).getByText('Elf').closest('button');
+    const speciesGrid = container.querySelector('.grid') as HTMLElement;
+    const elfCard = within(speciesGrid).getByText('Elf').closest('button');
     fireEvent.click(elfCard!);
 
     const highElfCards = screen.getAllByText('High Elf');
@@ -152,17 +152,17 @@ describe('SpeciesStep', () => {
 
     const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} />);
 
-    const speciesGrid = container.querySelector('.grid');
+    const speciesGrid = container.querySelector('.grid') as HTMLElement;
 
     // Click Dwarf - has Hill Dwarf subspecies
-    const dwarfCard = within(speciesGrid!).getByText('Dwarf').closest('button');
+    const dwarfCard = within(speciesGrid).getByText('Dwarf').closest('button');
     fireEvent.click(dwarfCard!);
 
     // Hill Dwarf should be visible
     expect(screen.getAllByText(/Hill Dwarf/i).length).toBeGreaterThan(0);
 
     // Click Elf - has High Elf subspecies
-    const elfCard = within(speciesGrid!).getByText('Elf').closest('button');
+    const elfCard = within(speciesGrid).getByText('Elf').closest('button');
     fireEvent.click(elfCard!);
 
     // Should show Elf subspecies (High Elf)
@@ -187,8 +187,8 @@ describe('SpeciesStep', () => {
     const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} />);
 
     // Tiefling card should be highlighted
-    const speciesGrid = container.querySelector('.grid');
-    const tieflingCard = within(speciesGrid!).getByText('Tiefling').closest('button');
+    const speciesGrid = container.querySelector('.grid') as HTMLElement;
+    const tieflingCard = within(speciesGrid).getByText('Tiefling').closest('button');
     expect(tieflingCard).toHaveClass('border-blue-600');
   });
 
@@ -223,8 +223,8 @@ describe('SpeciesStep', () => {
     const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} />);
 
     // Halfling card should be highlighted
-    const speciesGrid = container.querySelector('.grid');
-    const halflingCard = within(speciesGrid!).getByText('Halfling').closest('button');
+    const speciesGrid = container.querySelector('.grid') as HTMLElement;
+    const halflingCard = within(speciesGrid).getByText('Halfling').closest('button');
     expect(halflingCard).toHaveClass('border-blue-600');
 
     // Subspecies section should be visible
@@ -242,8 +242,8 @@ describe('SpeciesStep', () => {
 
     const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} />);
 
-    const speciesGrid = container.querySelector('.grid');
-    const humanCard = within(speciesGrid!).getByText('Human').closest('button');
+    const speciesGrid = container.querySelector('.grid') as HTMLElement;
+    const humanCard = within(speciesGrid).getByText('Human').closest('button');
     expect(humanCard).toHaveTextContent('0 traits');
   });
 
@@ -253,18 +253,18 @@ describe('SpeciesStep', () => {
 
     const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} />);
 
-    const speciesGrid = container.querySelector('.grid');
+    const speciesGrid = container.querySelector('.grid') as HTMLElement;
 
     // Human has 0 traits
-    const humanCard = within(speciesGrid!).getByText('Human').closest('button');
+    const humanCard = within(speciesGrid).getByText('Human').closest('button');
     expect(humanCard).toHaveTextContent('0 traits');
 
     // Dragonborn has 3 traits
-    const dragonbornCard = within(speciesGrid!).getByText('Dragonborn').closest('button');
+    const dragonbornCard = within(speciesGrid).getByText('Dragonborn').closest('button');
     expect(dragonbornCard).toHaveTextContent('3 traits');
 
     // Click Halfling to see subspecies
-    const halflingCard = within(speciesGrid!).getByText('Halfling').closest('button');
+    const halflingCard = within(speciesGrid).getByText('Halfling').closest('button');
     fireEvent.click(halflingCard!);
 
     // Lightfoot Halfling has 1 additional trait
@@ -285,14 +285,14 @@ describe('formatAbilityBonuses', () => {
 
     const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} />);
 
-    const speciesGrid = container.querySelector('.grid');
+    const speciesGrid = container.querySelector('.grid') as HTMLElement;
 
     // Check that Human card does not have "Bonuses:" text
-    const humanCard = within(speciesGrid!).getByText('Human').closest('button');
+    const humanCard = within(speciesGrid).getByText('Human').closest('button');
     expect(humanCard).not.toHaveTextContent('Bonuses:');
 
     // Check that Dwarf card does not have "Bonuses:" text
-    const dwarfCard = within(speciesGrid!).getByText('Dwarf').closest('button');
+    const dwarfCard = within(speciesGrid).getByText('Dwarf').closest('button');
     expect(dwarfCard).not.toHaveTextContent('Bonuses:');
   });
 });

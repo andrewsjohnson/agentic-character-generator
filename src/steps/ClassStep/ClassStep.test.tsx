@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
 import { ClassStep } from './ClassStep';
 import classesData from '../../data/classes.json';
 import type { CharacterClass } from '../../types/class';
@@ -83,7 +83,7 @@ describe('ClassStep', () => {
     expect(wizardCard).toHaveClass('border-gray-300');
   });
 
-  it('shows detail panel when class is selected', () => {
+  it('shows detail panel when class is selected', async () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
@@ -98,13 +98,14 @@ describe('ClassStep', () => {
     const fighterCard = within(classGrid).getByText('Fighter').closest('button');
     fireEvent.click(fighterCard!);
 
-    // Detail panel should now be visible
-    const fighterDetailPanels = screen.getAllByText('Fighter Details');
-    expect(fighterDetailPanels[fighterDetailPanels.length - 1]).toBeInTheDocument();
-    expect(screen.getByText('Level 1 Features')).toBeInTheDocument();
+    // Detail panel should now be visible - wait for React transition
+    await waitFor(() => {
+      expect(screen.getByText('Fighter Details')).toBeInTheDocument();
+      expect(screen.getByText('Level 1 Features')).toBeInTheDocument();
+    });
   });
 
-  it('displays proficiencies correctly in detail panel', () => {
+  it('displays proficiencies correctly in detail panel', async () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
@@ -115,18 +116,17 @@ describe('ClassStep', () => {
     const fighterCard = within(classGrid).getByText('Fighter').closest('button');
     fireEvent.click(fighterCard!);
 
-    // Get detail panel
-    const fighterDetailPanels = screen.getAllByText('Fighter Details');
-    const detailPanel = fighterDetailPanels[fighterDetailPanels.length - 1].closest('div') as HTMLElement;
-
-    // Check proficiencies within detail panel
-    expect(within(detailPanel).getByText(/Armor:/)).toBeInTheDocument();
-    expect(within(detailPanel).getByText(/light, medium, heavy, shields/)).toBeInTheDocument();
-    expect(within(detailPanel).getByText(/Weapons:/)).toBeInTheDocument();
-    expect(within(detailPanel).getByText(/Saving Throws:/)).toBeInTheDocument();
+    // Wait for detail panel to appear and check proficiencies
+    await waitFor(() => {
+      const detailPanel = screen.getByText('Fighter Details').closest('div') as HTMLElement;
+      expect(within(detailPanel).getByText(/Armor:/)).toBeInTheDocument();
+      expect(within(detailPanel).getByText(/light, medium, heavy, shields/)).toBeInTheDocument();
+      expect(within(detailPanel).getByText(/Weapons:/)).toBeInTheDocument();
+      expect(within(detailPanel).getByText(/Saving Throws:/)).toBeInTheDocument();
+    });
   });
 
-  it('displays "None" for classes with no armor proficiencies', () => {
+  it('displays "None" for classes with no armor proficiencies', async () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
@@ -137,16 +137,15 @@ describe('ClassStep', () => {
     const monkCard = within(classGrid).getByText('Monk').closest('button');
     fireEvent.click(monkCard!);
 
-    // Get detail panel
-    const monkDetailPanels = screen.getAllByText('Monk Details');
-    const detailPanel = monkDetailPanels[monkDetailPanels.length - 1].closest('div') as HTMLElement;
-
-    // Should show "None" for armor within detail panel
-    const armorText = within(detailPanel).getByText(/Armor:/);
-    expect(armorText.parentElement).toHaveTextContent('Armor: None');
+    // Wait for detail panel and check "None" for armor
+    await waitFor(() => {
+      const detailPanel = screen.getByText('Monk Details').closest('div') as HTMLElement;
+      const armorText = within(detailPanel).getByText(/Armor:/);
+      expect(armorText.parentElement).toHaveTextContent('Armor: None');
+    });
   });
 
-  it('displays skill choices correctly', () => {
+  it('displays skill choices correctly', async () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
@@ -157,17 +156,16 @@ describe('ClassStep', () => {
     const fighterCard = within(classGrid).getByText('Fighter').closest('button');
     fireEvent.click(fighterCard!);
 
-    // Get detail panel
-    const fighterDetailPanels = screen.getAllByText('Fighter Details');
-    const detailPanel = fighterDetailPanels[fighterDetailPanels.length - 1].closest('div') as HTMLElement;
-
-    // Check skill choices within detail panel
-    expect(within(detailPanel).getByText(/Choose 2 from:/)).toBeInTheDocument();
-    expect(within(detailPanel).getByText(/Acrobatics, Animal Handling, Athletics/)).toBeInTheDocument();
-    expect(within(detailPanel).getByText(/You will choose your skills in a later step/)).toBeInTheDocument();
+    // Wait for detail panel and check skill choices
+    await waitFor(() => {
+      const detailPanel = screen.getByText('Fighter Details').closest('div') as HTMLElement;
+      expect(within(detailPanel).getByText(/Choose 2 from:/)).toBeInTheDocument();
+      expect(within(detailPanel).getByText(/Acrobatics, Animal Handling, Athletics/)).toBeInTheDocument();
+      expect(within(detailPanel).getByText(/You will choose your skills in a later step/)).toBeInTheDocument();
+    });
   });
 
-  it('displays features correctly', () => {
+  it('displays features correctly', async () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
@@ -178,17 +176,16 @@ describe('ClassStep', () => {
     const fighterCard = within(classGrid).getByText('Fighter').closest('button');
     fireEvent.click(fighterCard!);
 
-    // Get detail panel
-    const fighterDetailPanels = screen.getAllByText('Fighter Details');
-    const detailPanel = fighterDetailPanels[fighterDetailPanels.length - 1].closest('div') as HTMLElement;
-
-    // Check features within detail panel
-    expect(within(detailPanel).getByText('Level 1 Features')).toBeInTheDocument();
-    expect(within(detailPanel).getByText('Fighting Style')).toBeInTheDocument();
-    expect(within(detailPanel).getByText('Second Wind')).toBeInTheDocument();
+    // Wait for detail panel and check features
+    await waitFor(() => {
+      const detailPanel = screen.getByText('Fighter Details').closest('div') as HTMLElement;
+      expect(within(detailPanel).getByText('Level 1 Features')).toBeInTheDocument();
+      expect(within(detailPanel).getByText('Fighting Style')).toBeInTheDocument();
+      expect(within(detailPanel).getByText('Second Wind')).toBeInTheDocument();
+    });
   });
 
-  it('displays spellcasting info for caster classes', () => {
+  it('displays spellcasting info for caster classes', async () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
@@ -199,16 +196,15 @@ describe('ClassStep', () => {
     const wizardCard = within(classGrid).getByText('Wizard').closest('button');
     fireEvent.click(wizardCard!);
 
-    // Get detail panel
-    const wizardDetailPanels = screen.getAllByText('Wizard Details');
-    const detailPanel = wizardDetailPanels[wizardDetailPanels.length - 1].closest('div') as HTMLElement;
-
-    // Check spellcasting section within detail panel
-    expect(within(detailPanel).getByText('Spellcasting')).toBeInTheDocument();
-    expect(within(detailPanel).getByText(/Spellcasting Ability:/)).toBeInTheDocument();
-    expect(within(detailPanel).getByText(/INT/)).toBeInTheDocument();
-    expect(within(detailPanel).getByText(/Cantrips Known:/)).toBeInTheDocument();
-    expect(within(detailPanel).getByText(/Spell Slots \(Level 1\):/)).toBeInTheDocument();
+    // Wait for detail panel and check spellcasting
+    await waitFor(() => {
+      const detailPanel = screen.getByText('Wizard Details').closest('div') as HTMLElement;
+      expect(within(detailPanel).getByText('Spellcasting')).toBeInTheDocument();
+      expect(within(detailPanel).getByText(/Spellcasting Ability:/)).toBeInTheDocument();
+      expect(within(detailPanel).getByText(/INT/)).toBeInTheDocument();
+      expect(within(detailPanel).getByText(/Cantrips Known:/)).toBeInTheDocument();
+      expect(within(detailPanel).getByText(/Spell Slots \(Level 1\):/)).toBeInTheDocument();
+    });
   });
 
   it('does not display spellcasting section for non-caster classes', () => {
@@ -226,7 +222,7 @@ describe('ClassStep', () => {
     expect(screen.queryByText('Spellcasting')).not.toBeInTheDocument();
   });
 
-  it('displays pact magic note for Warlock', () => {
+  it('displays pact magic note for Warlock', async () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
@@ -237,15 +233,14 @@ describe('ClassStep', () => {
     const warlockCard = within(classGrid).getByText('Warlock').closest('button');
     fireEvent.click(warlockCard!);
 
-    // Get detail panel
-    const warlockDetailPanels = screen.getAllByText('Warlock Details');
-    const detailPanel = warlockDetailPanels[warlockDetailPanels.length - 1].closest('div') as HTMLElement;
-
-    // Check for pact magic note within detail panel
-    expect(within(detailPanel).getByText(/Pact Magic/i)).toBeInTheDocument();
+    // Wait for detail panel and check pact magic note
+    await waitFor(() => {
+      const detailPanel = screen.getByText('Warlock Details').closest('div') as HTMLElement;
+      expect(within(detailPanel).getByText(/Pact Magic/i)).toBeInTheDocument();
+    });
   });
 
-  it('displays spells prepared for classes that prepare spells', () => {
+  it('displays spells prepared for classes that prepare spells', async () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
@@ -256,15 +251,14 @@ describe('ClassStep', () => {
     const wizardCard = within(classGrid).getByText('Wizard').closest('button');
     fireEvent.click(wizardCard!);
 
-    // Get detail panel
-    const wizardDetailPanels = screen.getAllByText('Wizard Details');
-    const detailPanel = wizardDetailPanels[wizardDetailPanels.length - 1].closest('div') as HTMLElement;
-
-    // Check for spells prepared within detail panel
-    expect(within(detailPanel).getByText(/Spells Prepared\/Known:/)).toBeInTheDocument();
+    // Wait for detail panel and check spells prepared
+    await waitFor(() => {
+      const detailPanel = screen.getByText('Wizard Details').closest('div') as HTMLElement;
+      expect(within(detailPanel).getByText(/Spells Prepared\/Known:/)).toBeInTheDocument();
+    });
   });
 
-  it('initializes with character current class', () => {
+  it('initializes with character current class', async () => {
     const mockCharacter = {
       class: {
         name: 'Rogue',
@@ -287,9 +281,10 @@ describe('ClassStep', () => {
     const rogueCard = within(classGrid).getByText('Rogue').closest('button');
     expect(rogueCard).toHaveClass('border-blue-600');
 
-    // Detail panel should be visible
-    const rogueDetailPanels = screen.getAllByText('Rogue Details');
-    expect(rogueDetailPanels[rogueDetailPanels.length - 1]).toBeInTheDocument();
+    // Detail panel should be visible - wait for it
+    await waitFor(() => {
+      expect(screen.getByText('Rogue Details')).toBeInTheDocument();
+    });
   });
 
   it('handles classes with multiple primary abilities', () => {
@@ -309,7 +304,7 @@ describe('ClassStep', () => {
     expect(paladinCard).toHaveTextContent('Primary: STR, CHA');
   });
 
-  it('changes selection when different class is clicked', () => {
+  it('changes selection when different class is clicked', async () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
@@ -321,21 +316,26 @@ describe('ClassStep', () => {
 
     // Click Fighter
     fireEvent.click(fighterCard!);
-    expect(fighterCard).toHaveClass('border-blue-600');
-    const fighterDetails = screen.getAllByText('Fighter Details');
-    expect(fighterDetails[fighterDetails.length - 1]).toBeInTheDocument();
+
+    // Wait for Fighter detail panel to appear
+    await waitFor(() => {
+      expect(fighterCard).toHaveClass('border-blue-600');
+      expect(screen.getByText('Fighter Details')).toBeInTheDocument();
+    });
 
     // Click Wizard
     fireEvent.click(wizardCard!);
-    expect(wizardCard).toHaveClass('border-blue-600');
-    expect(fighterCard).toHaveClass('border-gray-300');
-    const wizardDetails = screen.getAllByText('Wizard Details');
-    expect(wizardDetails[wizardDetails.length - 1]).toBeInTheDocument();
-    // Fighter Details should not be in the document (use queryAllByText to handle potential duplicates during transition)
-    expect(screen.queryAllByText('Fighter Details').length).toBe(0);
+
+    // Wait for Wizard detail panel to appear and Fighter to disappear
+    await waitFor(() => {
+      expect(wizardCard).toHaveClass('border-blue-600');
+      expect(fighterCard).toHaveClass('border-gray-300');
+      expect(screen.getByText('Wizard Details')).toBeInTheDocument();
+      expect(screen.queryByText('Fighter Details')).not.toBeInTheDocument();
+    });
   });
 
-  it('renders correct number of skill choices for each class', () => {
+  it('renders correct number of skill choices for each class', async () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
@@ -345,19 +345,25 @@ describe('ClassStep', () => {
     // Bard has 3 skill choices
     const bardCard = within(classGrid).getByText('Bard').closest('button');
     fireEvent.click(bardCard!);
-    const bardDetailPanels = screen.getAllByText('Bard Details');
-    const bardDetailPanel = bardDetailPanels[bardDetailPanels.length - 1].closest('div') as HTMLElement;
-    expect(within(bardDetailPanel).getByText(/Choose 3 from:/)).toBeInTheDocument();
+
+    // Wait for Bard detail panel
+    await waitFor(() => {
+      const bardDetailPanel = screen.getByText('Bard Details').closest('div') as HTMLElement;
+      expect(within(bardDetailPanel).getByText(/Choose 3 from:/)).toBeInTheDocument();
+    });
 
     // Rogue has 4 skill choices
     const rogueCard = within(classGrid).getByText('Rogue').closest('button');
     fireEvent.click(rogueCard!);
-    const rogueDetailPanels = screen.getAllByText('Rogue Details');
-    const rogueDetailPanel = rogueDetailPanels[rogueDetailPanels.length - 1].closest('div') as HTMLElement;
-    expect(within(rogueDetailPanel).getByText(/Choose 4 from:/)).toBeInTheDocument();
+
+    // Wait for Rogue detail panel (and Bard to be removed)
+    await waitFor(() => {
+      const rogueDetailPanel = screen.getByText('Rogue Details').closest('div') as HTMLElement;
+      expect(within(rogueDetailPanel).getByText(/Choose 4 from:/)).toBeInTheDocument();
+    });
   });
 
-  it('displays all class features with descriptions', () => {
+  it('displays all class features with descriptions', async () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
@@ -368,16 +374,13 @@ describe('ClassStep', () => {
     const barbarianCard = within(classGrid).getByText('Barbarian').closest('button');
     fireEvent.click(barbarianCard!);
 
-    // Get detail panel
-    const barbarianDetailPanels = screen.getAllByText('Barbarian Details');
-    const detailPanel = barbarianDetailPanels[barbarianDetailPanels.length - 1].closest('div') as HTMLElement;
-
-    // Check that both features are displayed within detail panel
-    expect(within(detailPanel).getByText('Rage')).toBeInTheDocument();
-    expect(within(detailPanel).getByText('Unarmored Defense')).toBeInTheDocument();
-
-    // Check that descriptions are present within detail panel
-    expect(within(detailPanel).getByText(/primal ferocity/i)).toBeInTheDocument();
-    expect(within(detailPanel).getByText(/Armor Class equals 10/i)).toBeInTheDocument();
+    // Wait for detail panel and check features
+    await waitFor(() => {
+      const detailPanel = screen.getByText('Barbarian Details').closest('div') as HTMLElement;
+      expect(within(detailPanel).getByText('Rage')).toBeInTheDocument();
+      expect(within(detailPanel).getByText('Unarmored Defense')).toBeInTheDocument();
+      expect(within(detailPanel).getByText(/primal ferocity/i)).toBeInTheDocument();
+      expect(within(detailPanel).getByText(/Armor Class equals 10/i)).toBeInTheDocument();
+    });
   });
 });

@@ -8,13 +8,23 @@ jobs:
   revise:
     if: github.event.label.name == 'NEEDS-PLAN-REVISION'
     runs-on: ubuntu-latest
+
+    # Keep workflow token minimal; use GitHub App token for gh label edits.
     permissions:
       contents: read
-      issues: write
-      id-token: write
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Export token for gh
+        run: echo "GH_TOKEN=${{ steps.app-token.outputs.token }}" >> "$GITHUB_ENV"
 
       - uses: anthropics/claude-code-action@v1
         with:
@@ -41,10 +51,8 @@ jobs:
             - One issue comment only (the new plan).
 
       - name: Clear revision label (NEEDS-PLAN-REVISION -> PLANNED)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          gh issue edit ${{ github.event.issue.number }} \
+          gh issue edit ${{ github.event.issue.number }} --repo ${{ github.repository }} \
             --remove-label "NEEDS-PLAN-REVISION" \
             --add-label "PLANNED"

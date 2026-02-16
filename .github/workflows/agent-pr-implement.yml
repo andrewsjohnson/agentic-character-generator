@@ -180,7 +180,7 @@ jobs:
           gh pr edit ${{ github.event.pull_request.number }} --repo ${{ github.repository }} \
             --remove-label "IN-PROGRESS" || true
 
-      - name: On success: if awaiting feedback, stop here (do not set NEEDS-REVIEW)
+      - name: On success - if awaiting feedback, stop here (do not set NEEDS-REVIEW)
         if: success()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

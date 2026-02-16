@@ -1,0 +1,33 @@
+name: Agent - PR Feedback Handler
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  resume:
+    if: >
+      github.event.issue.pull_request != null &&
+      startsWith(github.event.comment.body, '/agent')
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: If awaiting feedback, re-trigger implementation
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          PR="${{ github.event.issue.number }}"
+          REPO="${{ github.repository }}"
+
+          LABELS="$(gh pr view "$PR" --repo "$REPO" --json labels -q '.labels[].name')"
+
+          echo "$LABELS" | grep -q '^HALTED$' && { echo "HALTED; no-op."; exit 0; }
+          echo "$LABELS" | grep -q '^AWAITING-FEEDBACK$' || { echo "Not awaiting feedback; no-op."; exit 0; }
+
+          gh pr edit "$PR" --repo "$REPO" \
+            --remove-label "AWAITING-FEEDBACK" \
+            --add-label "IMPLEMENT"

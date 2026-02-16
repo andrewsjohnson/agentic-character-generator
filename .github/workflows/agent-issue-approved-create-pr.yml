@@ -19,12 +19,12 @@ jobs:
           app-id: ${{ secrets.APP_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
 
+      - name: Export token for gh
+        run: echo "GH_TOKEN=${{ steps.app-token.outputs.token }}" >> "$GITHUB_ENV"
+
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-
-      - name: Export token for gh
-        run: echo "GH_TOKEN=${{ steps.app-token.outputs.token }}" >> "$GITHUB_ENV"
 
       - name: Configure git to push as GitHub App
         run: |
@@ -33,7 +33,8 @@ jobs:
           git config user.email "agentic-automation[bot]@users.noreply.github.com"
           git remote set-url origin "https://x-access-token:${{ steps.app-token.outputs.token }}@github.com/${{ github.repository }}.git"
 
-      - name: Create branch + PR with plan in body
+      - name: Create or reuse branch + create or reuse PR
+        id: create_pr
         run: |
           set -euo pipefail
 
@@ -43,7 +44,7 @@ jobs:
           TITLE="$(gh issue view "$ISSUE_NUMBER" --repo "$REPO" --json title -q .title)"
           SAFE_TITLE="$(echo "$TITLE" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-' | sed 's/^-//;s/-$//')"
           BRANCH="agent/issue-${ISSUE_NUMBER}-${SAFE_TITLE}"
-          BASE_BRANCH="$(gh repo view --json defaultBranchRef -q .defaultBranchRef.name)"
+          BASE_BRANCH="$(gh repo view --repo "$REPO" --json defaultBranchRef -q .defaultBranchRef.name)"
 
           PLAN="$(gh issue view "$ISSUE_NUMBER" --repo "$REPO" --json comments \
             -q '.comments | map(select(.body | test("^## Plan v[0-9]+"))) | last | .body // ""')"
@@ -53,36 +54,76 @@ jobs:
           fi
 
           git fetch origin "$BASE_BRANCH"
-          git checkout -b "$BRANCH" "origin/$BASE_BRANCH"
-          git push -u origin "$BRANCH"
 
-          BODY=$(
-            cat <<EOF
-            Implements: #${ISSUE_NUMBER}
+          # Branch existence check
+          if git ls-remote --exit-code --heads origin "$BRANCH" > /dev/null 2>&1; then
+            echo "Remote branch exists: $BRANCH"
+            BRANCH_CREATED="no"
+          else
+            git checkout -b "$BRANCH" "origin/$BASE_BRANCH"
+            git push -u origin "$BRANCH"
+            BRANCH_CREATED="yes"
+          fi
 
-            ${PLAN}
+          # PR existence check
+          EXISTING_PR_NUMBER="$(
+            gh pr list --repo "$REPO" --head "$BRANCH" --state open --json number -q '.[0].number // ""'
+          )"
 
-            ---
-            Labels/state:
-            - IMPLEMENT: agent should implement the plan
-            EOF
-                      )
+          if [ -n "$EXISTING_PR_NUMBER" ]; then
+            PR_NUMBER="$EXISTING_PR_NUMBER"
+            PR_URL="$(gh pr view "$PR_NUMBER" --repo "$REPO" --json url -q .url)"
+            PR_CREATED="no"
+          else
+            BODY=$(
+              cat <<EOF
+              Implements: #${ISSUE_NUMBER}
+              
+              ${PLAN}
+              
+              ---
+              Labels/state:
+              - IMPLEMENT: agent should implement the plan
+              EOF
+            )
 
-          PR_URL="$(gh pr create --repo "$REPO" \
-            --title "$TITLE" \
-            --body "$BODY" \
-            --base "$BASE_BRANCH" \
-            --head "$BRANCH")"
+            PR_URL="$(gh pr create --repo "$REPO" \
+              --title "$TITLE" \
+              --body "$BODY" \
+              --base "$BASE_BRANCH" \
+              --head "$BRANCH")"
 
-          echo "Created PR: $PR_URL"
+            PR_NUMBER="$(gh pr view "$PR_URL" --repo "$REPO" --json number -q .number)"
+            PR_CREATED="yes"
+          fi
 
-          PR_NUMBER="$(gh pr view "$PR_URL" --repo "$REPO" --json number -q .number)"
+          # Ensure IMPLEMENT label present
+          gh pr edit "$PR_NUMBER" --repo "$REPO" --add-label "IMPLEMENT" || true
 
-          gh pr edit "$PR_NUMBER" --repo "$REPO" \
-            --add-label "IMPLEMENT"
+          echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
+          echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "pr_created=$PR_CREATED" >> "$GITHUB_OUTPUT"
+          echo "branch_created=$BRANCH_CREATED" >> "$GITHUB_OUTPUT"
+
+      - name: Comment on issue with PR link
+        run: |
+          set -euo pipefail
+
+          ISSUE_NUMBER="${{ github.event.issue.number }}"
+          PR_URL="${{ steps.create_pr.outputs.pr_url }}"
+          PR_NUMBER="${{ steps.create_pr.outputs.pr_number }}"
+          PR_CREATED="${{ steps.create_pr.outputs.pr_created }}"
+
+          if [ "$PR_CREATED" = "yes" ]; then
+            MESSAGE="✅ Created PR #${PR_NUMBER}: ${PR_URL}"
+          else
+            MESSAGE="ℹ️ Reusing existing PR #${PR_NUMBER}: ${PR_URL}"
+          fi
+
+          gh issue comment "$ISSUE_NUMBER" --repo ${{ github.repository }} --body "$MESSAGE"
 
       - name: Relabel issue (optional)
         run: |
           set -euo pipefail
           gh issue edit ${{ github.event.issue.number }} --repo ${{ github.repository }} \
-            --remove-label "APPROVED"
+            --remove-label "APPROVED" || true

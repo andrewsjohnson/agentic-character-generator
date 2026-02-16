@@ -166,6 +166,20 @@ const FIGHTING_STYLE_VARIANTS = new Set([
   'Fighting Style: Two-Weapon Fighting',
 ]);
 
+// Dragon Ancestor sub-options that should not appear as separate features
+const DRAGON_ANCESTOR_VARIANTS = new Set([
+  'Dragon Ancestor: Black - Acid Damage',
+  'Dragon Ancestor: Blue - Lightning Damage',
+  'Dragon Ancestor: Brass - Fire Damage',
+  'Dragon Ancestor: Bronze - Lightning Damage',
+  'Dragon Ancestor: Copper - Acid Damage',
+  'Dragon Ancestor: Gold - Fire Damage',
+  'Dragon Ancestor: Green - Poison Damage',
+  'Dragon Ancestor: Red - Fire Damage',
+  'Dragon Ancestor: Silver - Cold Damage',
+  'Dragon Ancestor: White - Cold Damage',
+]);
+
 function getLevel1Features(classIndex) {
   return rawFeatures
     .filter(f =>
@@ -182,7 +196,12 @@ function getLevel1Features(classIndex) {
 
 function getSubclassLevel1Features(subclassIndex) {
   return rawFeatures
-    .filter(f => f.subclass && f.subclass.index === subclassIndex && f.level === 1)
+    .filter(f =>
+      f.subclass &&
+      f.subclass.index === subclassIndex &&
+      f.level === 1 &&
+      !DRAGON_ANCESTOR_VARIANTS.has(f.name)
+    )
     .map(f => ({
       name: f.name,
       description: f.desc.join('\n'),

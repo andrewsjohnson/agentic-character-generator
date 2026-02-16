@@ -1,0 +1,23 @@
+name: Agent - Plan Revise Command (Issue)
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  request_revision:
+    if: >
+      github.event.issue.pull_request == null &&
+      startsWith(github.event.comment.body, '/plan-revise')
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
+    steps:
+      - name: Add NEEDS-PLAN-REVISION label (idempotent)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh issue edit ${{ github.event.issue.number }} --repo ${{ github.repository }} \
+            --add-label "NEEDS-PLAN-REVISION"

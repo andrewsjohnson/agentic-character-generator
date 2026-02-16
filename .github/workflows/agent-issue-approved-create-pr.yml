@@ -1,0 +1,75 @@
+name: Agent - Create PR From Approved Issue
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  create_pr:
+    if: github.event.label.name == 'APPROVED'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create branch + PR with plan in body
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          ISSUE_NUMBER="${{ github.event.issue.number }}"
+          REPO="${{ github.repository }}"
+
+          TITLE="$(gh issue view "$ISSUE_NUMBER" --repo "$REPO" --json title -q .title)"
+          SAFE_TITLE="$(echo "$TITLE" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-' | sed 's/^-//;s/-$//')"
+          BRANCH="agent/issue-${ISSUE_NUMBER}-${SAFE_TITLE}"
+          BASE_BRANCH="$(gh repo view --json defaultBranchRef -q .defaultBranchRef.name)"
+
+          PLAN="$(gh issue view "$ISSUE_NUMBER" --repo "$REPO" --json comments \
+            -q '.comments | map(select(.body | test("^## Plan v[0-9]+"))) | last | .body // ""')"
+
+          if [ -z "$PLAN" ]; then
+            PLAN="$(gh issue view "$ISSUE_NUMBER" --repo "$REPO" --json body -q .body)"
+          fi
+
+          git fetch origin "$BASE_BRANCH"
+          git checkout -b "$BRANCH" "origin/$BASE_BRANCH"
+          git push -u origin "$BRANCH"
+
+          BODY=$(
+            cat <<EOF
+          Implements: #${ISSUE_NUMBER}
+
+          ${PLAN}
+
+          ---
+          Labels/state:
+          - IMPLEMENT: agent should implement the plan
+          EOF
+          )
+
+          PR_URL="$(gh pr create --repo "$REPO" \
+            --title "$TITLE" \
+            --body "$BODY" \
+            --base "$BASE_BRANCH" \
+            --head "$BRANCH")"
+
+          echo "Created PR: $PR_URL"
+
+          PR_NUMBER="$(gh pr view "$PR_URL" --repo "$REPO" --json number -q .number)"
+
+          gh pr edit "$PR_NUMBER" --repo "$REPO" \
+            --add-label "IMPLEMENT"
+
+      - name: Relabel issue (optional)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh issue edit ${{ github.event.issue.number }} \
+            --remove-label "APPROVED"

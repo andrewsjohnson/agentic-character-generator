@@ -30,7 +30,11 @@
       "Bash(git diff *)",
       "Bash(git log *)",
       "Bash(git rm *)",
-      "Bash(git reset *)"
+      "Bash(git reset *)",
+      "Bash(gh pr edit *)",
+      "Bash(gh pr view *)",
+      "Bash(git fetch *)",
+      "Bash(git checkout *)"
     ]
   }
 }

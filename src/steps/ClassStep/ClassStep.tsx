@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { StepProps } from '../types';
 import type { CharacterClass } from '../../types/class';
+import { getClassProficiencies, getClassSkillChoices } from '../../rules/classes';
 import classesData from '../../data/classes.json';
 
 type ClassCardProps = {
@@ -65,6 +66,46 @@ export function ClassStep({ character, updateCharacter }: StepProps) {
           />
         ))}
       </div>
+
+      {/* Detail Panel */}
+      {selectedClass && (
+        <div className="mt-8 pt-8 border-t border-gray-200">
+          <h3 className="text-2xl font-bold mb-4">{selectedClass.name} Details</h3>
+
+          {/* Proficiencies Section */}
+          <div className="mb-6">
+            <h4 className="text-lg font-semibold mb-2">Proficiencies</h4>
+            <div className="space-y-2 text-sm">
+              <p>
+                <span className="font-medium">Armor:</span>{' '}
+                {selectedClass.armorProficiencies.length > 0
+                  ? selectedClass.armorProficiencies.join(', ')
+                  : 'None'}
+              </p>
+              <p>
+                <span className="font-medium">Weapons:</span>{' '}
+                {selectedClass.weaponProficiencies.join(', ')}
+              </p>
+              <p>
+                <span className="font-medium">Saving Throws:</span>{' '}
+                {selectedClass.savingThrows.join(', ')}
+              </p>
+            </div>
+          </div>
+
+          {/* Skill Choices Section */}
+          <div className="mb-6">
+            <h4 className="text-lg font-semibold mb-2">Skill Choices</h4>
+            <p className="text-sm text-gray-700">
+              Choose {getClassSkillChoices(selectedClass).count} from:{' '}
+              {getClassSkillChoices(selectedClass).options.join(', ')}
+            </p>
+            <p className="text-xs text-gray-500 mt-1">
+              You will choose your skills in a later step.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

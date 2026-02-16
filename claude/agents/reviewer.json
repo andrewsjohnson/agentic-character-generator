@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh pr view:*)", 
+      "Bash(gh pr diff:*)", 
+      "Bash(gh pr comment:*)",
+      "Read",
+      "LS",
+      "Glob",
+      "Grep",
+      "Bash(mkdir -p *)",
+      "Bash(node *)",
+      "Bash(npx run *)",
+      "Bash(npx run vitest *)",
+      "Bash(npx vitest *)",
+      "Bash(npx vitest run *)",
+      "Bash(npm --version)",
+      "Bash(npm ci*)",
+      "Bash(npm test*)",
+      "Bash(npm install*)",
+      "Bash(npm run lint*)",
+      "Bash(npm run typecheck*)",
+      "Bash(npm run build*)",
+      "Bash(gh api *)",
+      "Bash(gh issue view *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git rm *)",
+      "Bash(git reset *)"
+    ]
+  }
+}

@@ -16,15 +16,21 @@ jobs:
     runs-on: ubuntu-latest
 
     if: |
-      github.event_name == 'issues' ||
       (
+        github.event_name == 'issues' &&
+        (
+          contains(github.event.issue.body || '', '/plan') ||
+          contains(github.event.issue.body || '', '/revise-plan')
+        )
+      ) ||
+      (
+        github.event_name == 'issue_comment' &&
         github.event.issue.pull_request == null &&
         (
-          contains(github.event.comment.body, '/plan') ||
-          contains(github.event.comment.body, '/revise-plan')
+          contains(github.event.comment.body || '', '/plan') ||
+          contains(github.event.comment.body || '', '/revise-plan')
         )
       )
-
     steps:
       - uses: actions/checkout@v4
 

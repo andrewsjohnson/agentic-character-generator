@@ -160,7 +160,7 @@ export function ClassStep({ character, updateCharacter }: StepProps) {
 
       {/* Detail Panel */}
       {selectedClass && (
-        <ClassDetail key={selectedClass.name} charClass={selectedClass} />
+        <ClassDetail charClass={selectedClass} />
       )}
     </div>
   );

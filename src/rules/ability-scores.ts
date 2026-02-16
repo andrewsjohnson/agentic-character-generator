@@ -115,15 +115,16 @@ export function isValidPointBuy(scores: AbilityScores, budget = 27): boolean {
 }
 
 /**
- * Apply species ability bonuses to a set of base ability scores.
+ * Apply ability bonuses to a set of base ability scores.
+ * Works for both species bonuses and background adjustments.
  * Caps each final score at 20 (the standard D&D 5e maximum).
  *
- * @param baseScores - The base ability scores before species bonuses
- * @param bonuses - The species ability bonuses (may be partial)
+ * @param baseScores - The base ability scores before bonuses
+ * @param bonuses - The ability bonuses (may be partial)
  * @returns A new AbilityScores object with bonuses applied and capped at 20
  *
  * @example
- * applySpeciesBonuses(
+ * applyAbilityBonuses(
  *   { STR: 15, DEX: 14, CON: 13, INT: 12, WIS: 10, CHA: 8 },
  *   { STR: 2, CON: 1 }
  * )
@@ -131,13 +132,13 @@ export function isValidPointBuy(scores: AbilityScores, budget = 27): boolean {
  *
  * @example
  * // Capping at 20
- * applySpeciesBonuses(
+ * applyAbilityBonuses(
  *   { STR: 19, DEX: 14, CON: 13, INT: 12, WIS: 10, CHA: 8 },
  *   { STR: 2 }
  * )
  * // returns { STR: 20, DEX: 14, CON: 13, INT: 12, WIS: 10, CHA: 8 }
  */
-export function applySpeciesBonuses(
+export function applyAbilityBonuses(
   baseScores: AbilityScores,
   bonuses: AbilityBonuses
 ): AbilityScores {

@@ -5,7 +5,7 @@ import {
   getPointBuyCost,
   getTotalPointsSpent,
   isValidPointBuy,
-  applySpeciesBonuses,
+  applyAbilityBonuses,
   getStandardArray,
   isValidStandardArray,
 } from './ability-scores';
@@ -245,7 +245,7 @@ describe('isValidPointBuy', () => {
   });
 });
 
-describe('applySpeciesBonuses', () => {
+describe('applyAbilityBonuses', () => {
   it('applies bonuses correctly to base scores', () => {
     const baseScores: AbilityScores = {
       STR: 15,
@@ -258,7 +258,7 @@ describe('applySpeciesBonuses', () => {
 
     const bonuses = { STR: 2, CON: 1 };
 
-    const result = applySpeciesBonuses(baseScores, bonuses);
+    const result = applyAbilityBonuses(baseScores, bonuses);
 
     expect(result).toEqual({
       STR: 17,
@@ -282,7 +282,7 @@ describe('applySpeciesBonuses', () => {
 
     const bonuses = { STR: 2, DEX: 3 };
 
-    const result = applySpeciesBonuses(baseScores, bonuses);
+    const result = applyAbilityBonuses(baseScores, bonuses);
 
     expect(result).toEqual({
       STR: 20, // Capped from 21
@@ -306,7 +306,7 @@ describe('applySpeciesBonuses', () => {
 
     const bonuses = {};
 
-    const result = applySpeciesBonuses(baseScores, bonuses);
+    const result = applyAbilityBonuses(baseScores, bonuses);
 
     expect(result).toEqual(baseScores);
   });
@@ -323,7 +323,7 @@ describe('applySpeciesBonuses', () => {
 
     const bonuses = { CHA: 2 };
 
-    const result = applySpeciesBonuses(baseScores, bonuses);
+    const result = applyAbilityBonuses(baseScores, bonuses);
 
     expect(result).toEqual({
       STR: 15,
@@ -347,7 +347,7 @@ describe('applySpeciesBonuses', () => {
 
     const bonuses = { STR: 2, CON: 2, WIS: 1 };
 
-    const result = applySpeciesBonuses(baseScores, bonuses);
+    const result = applyAbilityBonuses(baseScores, bonuses);
 
     expect(result).toEqual({
       STR: 12,

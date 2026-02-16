@@ -33,64 +33,80 @@ jobs:
           git config user.email "agentic-automation[bot]@users.noreply.github.com"
           git remote set-url origin "https://x-access-token:${{ steps.app-token.outputs.token }}@github.com/${{ github.repository }}.git"
 
-      - name: Create or reuse branch + create or reuse PR
+      - name: Create or reuse branch + create or reuse PR (idempotent + kickoff commit)
         id: create_pr
         run: |
           set -euo pipefail
-      
+
           ISSUE_NUMBER="${{ github.event.issue.number }}"
           REPO="${{ github.repository }}"
-      
+
           TITLE="$(gh issue view "$ISSUE_NUMBER" --repo "$REPO" --json title -q .title)"
           SAFE_TITLE="$(echo "$TITLE" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-' | sed 's/^-//;s/-$//')"
           BRANCH="agent/issue-${ISSUE_NUMBER}-${SAFE_TITLE}"
           BASE_BRANCH="$(gh repo view "$REPO" --json defaultBranchRef -q .defaultBranchRef.name)"
-      
+
           PLAN="$(gh issue view "$ISSUE_NUMBER" --repo "$REPO" --json comments \
             -q '.comments | map(select(.body | test("^## Plan v[0-9]+"))) | last | .body // ""')"
-      
           if [ -z "$PLAN" ]; then
             PLAN="$(gh issue view "$ISSUE_NUMBER" --repo "$REPO" --json body -q .body)"
           fi
-      
+
+          # Ensure we have base branch locally
           git fetch origin "$BASE_BRANCH"
-      
+
+          # Ensure branch exists remotely and locally
           if git ls-remote --exit-code --heads origin "$BRANCH" > /dev/null 2>&1; then
             echo "Remote branch exists: $BRANCH"
-            BRANCH_CREATED="no"
+            git fetch origin "$BRANCH:$BRANCH"
           else
+            echo "Remote branch does not exist; creating and pushing: $BRANCH"
             git checkout -b "$BRANCH" "origin/$BASE_BRANCH"
             git push -u origin "$BRANCH"
-            BRANCH_CREATED="yes"
           fi
-      
+
+          git checkout "$BRANCH"
+
+          # Kickoff empty commit if branch has no commits ahead of base
+          AHEAD_COUNT="$(git rev-list --count "origin/$BASE_BRANCH..$BRANCH")"
+          if [ "$AHEAD_COUNT" -eq 0 ]; then
+            echo "Branch has no commits ahead of $BASE_BRANCH; creating kickoff commit."
+            git commit --allow-empty -m "chore: initialize PR for issue #${ISSUE_NUMBER}"
+            git push origin "$BRANCH"
+          else
+            echo "Branch already ahead of $BASE_BRANCH by $AHEAD_COUNT commits."
+          fi
+
+          # Reuse existing open PR if present
           EXISTING_PR_NUMBER="$(
             gh pr list --repo "$REPO" --head "$BRANCH" --state open --json number -q '.[0].number // ""'
           )"
-      
+
           if [ -n "$EXISTING_PR_NUMBER" ]; then
             PR_NUMBER="$EXISTING_PR_NUMBER"
             PR_URL="$(gh pr view "$PR_NUMBER" --repo "$REPO" --json url -q .url)"
             PR_CREATED="no"
           else
             BODY="$(printf "Implements: #%s\n\n%s\n\n---\nLabels/state:\n- IMPLEMENT: agent should implement the plan\n" "$ISSUE_NUMBER" "$PLAN")"
-      
+
             PR_URL="$(gh pr create --repo "$REPO" \
               --title "$TITLE" \
               --body "$BODY" \
               --base "$BASE_BRANCH" \
               --head "$BRANCH")"
-      
+
             PR_NUMBER="$(gh pr view "$PR_URL" --repo "$REPO" --json number -q .number)"
             PR_CREATED="yes"
           fi
-      
+
+          # Ensure IMPLEMENT label present (idempotent)
           gh pr edit "$PR_NUMBER" --repo "$REPO" --add-label "IMPLEMENT" || true
-      
+
           echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
           echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
           echo "pr_created=$PR_CREATED" >> "$GITHUB_OUTPUT"
-          echo "branch_created=$BRANCH_CREATED" >> "$GITHUB_OUTPUT"
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+          echo "base_branch=$BASE_BRANCH" >> "$GITHUB_OUTPUT"
 
       - name: Comment on issue with PR link
         run: |
@@ -109,7 +125,7 @@ jobs:
 
           gh issue comment "$ISSUE_NUMBER" --repo ${{ github.repository }} --body "$MESSAGE"
 
-      - name: Relabel issue (optional)
+      - name: Relabel issue (remove APPROVED)
         run: |
           set -euo pipefail
           gh issue edit ${{ github.event.issue.number }} --repo ${{ github.repository }} \

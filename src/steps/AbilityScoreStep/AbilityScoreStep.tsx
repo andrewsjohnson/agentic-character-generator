@@ -125,6 +125,34 @@ export function AbilityScoreStep({ character, updateCharacter }: StepProps) {
     return `${mod}`;
   };
 
+  // Standard Array handlers
+  const handleStandardArrayChange = (ability: AbilityName, value: string) => {
+    const numValue = parseInt(value, 10);
+    if (isNaN(numValue)) return;
+
+    setBaseScores({ ...baseScores, [ability]: numValue });
+  };
+
+  // Get available values for standard array dropdowns
+  const getAvailableValues = (currentAbility: AbilityName): number[] => {
+    const standardArray = Array.from(getStandardArray());
+    const usedValues = ABILITY_NAMES.filter((ability) => ability !== currentAbility).map(
+      (ability) => baseScores[ability]
+    );
+
+    // Filter out values that are already used by other abilities
+    return standardArray.filter(
+      (value) => !usedValues.includes(value) || value === baseScores[currentAbility]
+    );
+  };
+
+  // Calculate Standard Array stats
+  const isValidStandardArrayAssignment = isValidStandardArray(baseScores);
+  const assignedStandardValues = ABILITY_NAMES.map((ability) => baseScores[ability]);
+  const remainingStandardValues = Array.from(getStandardArray()).filter(
+    (value) => !assignedStandardValues.includes(value)
+  );
+
   return (
     <div className="p-8">
       <h2 className="text-3xl font-bold mb-4">Assign Ability Scores</h2>
@@ -269,7 +297,95 @@ export function AbilityScoreStep({ character, updateCharacter }: StepProps) {
         </div>
       ) : (
         <div>
-          <p className="text-gray-700 mb-4">Standard Array mode - coming soon</p>
+          {/* Standard Array Instructions */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <p className="text-sm text-gray-700">
+              <strong>Standard Array:</strong> Assign these values to your abilities: 15, 14, 13, 12, 10, 8.
+              Each value can only be used once.
+            </p>
+            {remainingStandardValues.length > 0 && (
+              <div className="mt-2">
+                <span className="text-sm font-medium text-gray-700">Remaining values: </span>
+                <span className="text-sm text-blue-600">
+                  {remainingStandardValues.join(', ')}
+                </span>
+              </div>
+            )}
+            {isValidStandardArrayAssignment && (
+              <div className="mt-2 text-sm font-medium text-green-600">
+                ✓ All values assigned!
+              </div>
+            )}
+          </div>
+
+          {/* Ability Score Grid */}
+          <div className="space-y-3">
+            {ABILITY_NAMES.map((ability) => {
+              const baseScore = baseScores[ability];
+              const bonus = speciesBonuses[ability] ?? 0;
+              const finalScore = finalScores[ability];
+              const modifier = modifiers[ability];
+              const availableValues = getAvailableValues(ability);
+
+              return (
+                <div
+                  key={ability}
+                  className="grid grid-cols-[120px_1fr_100px_100px_120px] gap-4 items-center bg-white p-4 rounded-lg border border-gray-200"
+                >
+                  {/* Ability Name */}
+                  <div>
+                    <div className="font-bold text-gray-900">{ability}</div>
+                    <div className="text-xs text-gray-500">{ABILITY_LABELS[ability]}</div>
+                  </div>
+
+                  {/* Dropdown Selector */}
+                  <div className="flex items-center">
+                    <select
+                      value={baseScore}
+                      onChange={(e) => handleStandardArrayChange(ability, e.target.value)}
+                      className="w-24 px-3 py-2 text-xl font-bold border border-gray-300 rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                      aria-label={`Select score for ${ability}`}
+                    >
+                      {availableValues.map((value) => (
+                        <option key={value} value={value}>
+                          {value}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Species Bonus */}
+                  <div className="text-center">
+                    <div className="text-sm text-gray-500">Bonus</div>
+                    <div className="text-lg font-semibold text-blue-600">
+                      {bonus > 0 ? `+${bonus}` : bonus < 0 ? `${bonus}` : '—'}
+                    </div>
+                  </div>
+
+                  {/* Final Score */}
+                  <div className="text-center">
+                    <div className="text-sm text-gray-500">Final</div>
+                    <div className="text-2xl font-bold text-gray-900">{finalScore}</div>
+                  </div>
+
+                  {/* Modifier */}
+                  <div className="text-center">
+                    <div className="text-sm text-gray-500">Modifier</div>
+                    <div className="text-2xl font-bold text-green-600">
+                      {formatModifier(modifier)}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Validation Message */}
+          {!isValidStandardArrayAssignment && (
+            <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded text-sm text-amber-800">
+              Please assign all six standard array values (15, 14, 13, 12, 10, 8) to your abilities.
+            </div>
+          )}
         </div>
       )}
     </div>

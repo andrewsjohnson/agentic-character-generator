@@ -1,0 +1,154 @@
+name: Agent - Review PR
+
+on:
+  pull_request_target:
+    types: [labeled]
+
+concurrency:
+  group: review-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  review:
+    if: github.event.label.name == 'NEEDS-REVIEW'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Guardrails (skip if halted / awaiting feedback)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          PR="${{ github.event.pull_request.number }}"
+          REPO="${{ github.repository }}"
+          LABELS="$(gh pr view "$PR" --repo "$REPO" --json labels -q '.labels[].name')"
+
+          echo "$LABELS" | grep -q '^HALTED$' && { echo "HALTED set; exiting."; exit 0; }
+          echo "$LABELS" | grep -q '^AWAITING-FEEDBACK$' && { echo "AWAITING-FEEDBACK set; exiting."; exit 0; }
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          track_progress: true
+          claude_args: |
+            --settings ./claude/agents/reviewer.json
+          prompt: |
+            You are the REVIEW agent.
+
+            ROLE
+            Senior Code Reviewer focused on correctness, readability, testability, regression risk, and repo conventions.
+
+            SOURCE OF TRUTH
+            - The PR body contains the authoritative implementation plan. Review against it.
+            - The repository code is available for context.
+            - You may consult the linked issue for additional context, but do not override the PR-body plan.
+
+            REVIEW OBJECTIVES
+
+            1) Intent & Scope
+            - Summarize intended change based on the PR-body plan.
+            - Confirm the implementation aligns with the plan.
+            - Flag scope creep or missing plan items.
+
+            2) Correctness & Risk
+            - Check regression risk.
+            - Pay special attention to:
+              - async/concurrency hazards
+              - input validation
+              - error handling and boundaries
+              - null/undefined edge cases
+              - resource cleanup
+            - Identify potential silent failures.
+
+            3) Architecture & Conventions
+            - Enforce repo rules from CLAUDE.md (layering, DI, logging, patterns).
+            - Check dependency direction and boundaries.
+            - Flag inconsistencies in logging/observability/error reporting.
+
+            4) Test Quality
+            - Verify tests cover:
+              - happy path
+              - at least one meaningful failure/edge path
+            - Flag brittle mocks or overly implementation-coupled tests.
+            - Ensure new logic is tested where appropriate.
+
+            5) Maintainability
+            - Naming clarity, complexity, large functions, dead code, missing comments for non-obvious logic.
+
+            FOLLOW-UP CANDIDATES (post-merge)
+            - If your verdict is APPROVE and you found truly minor/low-risk items that should not block merge,
+              include a section exactly titled:
+
+              ### Follow-up candidates (post-merge)
+              - [ ] <Title> — <1–2 sentence rationale>. Paths: <path1>, <path2>
+
+            Rules for follow-ups:
+            - Do NOT include subjective style nits.
+            - Only include small, clearly actionable improvements (small refactor, small test gap, doc tweak, cleanup).
+            - Include 1–3 items max. If there are more, include ONE item titled "Follow-ups" with a checklist in the description.
+            - If there are no follow-ups, omit the section entirely.
+
+            OUTPUT FORMAT (single PR comment)
+
+            Start with:
+
+            ## Review
+
+            ### Executive Summary
+            - 3–6 sentence summary of overall quality and risk level.
+
+            ### Findings
+            Provide a table with columns:
+            {file, line (if known), severity [info|minor|major|critical], category, issue, suggested fix}
+
+            If changes are required:
+            - Add a section:
+
+            ### Required fixes
+            - Bullet list of concrete required changes.
+
+            End with EXACTLY ONE of:
+
+            Verdict: APPROVE
+            or
+            Verdict: CHANGES_REQUESTED
+
+      - name: Apply labels based on verdict
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          PR="${{ github.event.pull_request.number }}"
+          REPO="${{ github.repository }}"
+
+          # Look at the latest claude[bot] comment that contains "Verdict:"
+          VERDICT="$(gh pr view "$PR" --repo "$REPO" --json comments \
+            -q '.comments | map(select(.author.login == "claude[bot]")) | map(select(.body | test("Verdict:"))) | last | .body // ""' \
+            | sed -n 's/.*Verdict: *//p' | tail -n 1 | tr -d '\r' | tr '[:lower:]' '[:upper:]')"
+
+          echo "Verdict parsed: ${VERDICT:-<none>}"
+
+          if [ "$VERDICT" = "APPROVE" ] || [ "$VERDICT" = "APPROVED" ]; then
+            gh pr edit "$PR" --repo "$REPO" \
+              --remove-label "NEEDS-REVIEW" \
+              --add-label "APPROVED"
+            exit 0
+          fi
+
+          if [ "$VERDICT" = "CHANGES_REQUESTED" ]; then
+            gh pr edit "$PR" --repo "$REPO" \
+              --remove-label "NEEDS-REVIEW" \
+              --add-label "IMPLEMENT"
+            exit 0
+          fi
+
+          echo "No recognized verdict; leaving labels as-is."

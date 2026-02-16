@@ -37,25 +37,24 @@ jobs:
         id: create_pr
         run: |
           set -euo pipefail
-
+      
           ISSUE_NUMBER="${{ github.event.issue.number }}"
           REPO="${{ github.repository }}"
-
+      
           TITLE="$(gh issue view "$ISSUE_NUMBER" --repo "$REPO" --json title -q .title)"
           SAFE_TITLE="$(echo "$TITLE" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-' | sed 's/^-//;s/-$//')"
           BRANCH="agent/issue-${ISSUE_NUMBER}-${SAFE_TITLE}"
           BASE_BRANCH="$(gh repo view "$REPO" --json defaultBranchRef -q .defaultBranchRef.name)"
-
+      
           PLAN="$(gh issue view "$ISSUE_NUMBER" --repo "$REPO" --json comments \
             -q '.comments | map(select(.body | test("^## Plan v[0-9]+"))) | last | .body // ""')"
-
+      
           if [ -z "$PLAN" ]; then
             PLAN="$(gh issue view "$ISSUE_NUMBER" --repo "$REPO" --json body -q .body)"
           fi
-
+      
           git fetch origin "$BASE_BRANCH"
-
-          # Branch existence check
+      
           if git ls-remote --exit-code --heads origin "$BRANCH" > /dev/null 2>&1; then
             echo "Remote branch exists: $BRANCH"
             BRANCH_CREATED="no"
@@ -64,42 +63,30 @@ jobs:
             git push -u origin "$BRANCH"
             BRANCH_CREATED="yes"
           fi
-
-          # PR existence check
+      
           EXISTING_PR_NUMBER="$(
             gh pr list --repo "$REPO" --head "$BRANCH" --state open --json number -q '.[0].number // ""'
           )"
-
+      
           if [ -n "$EXISTING_PR_NUMBER" ]; then
             PR_NUMBER="$EXISTING_PR_NUMBER"
             PR_URL="$(gh pr view "$PR_NUMBER" --repo "$REPO" --json url -q .url)"
             PR_CREATED="no"
           else
-            BODY=$(
-              cat <<EOF
-              Implements: #${ISSUE_NUMBER}
-              
-              ${PLAN}
-              
-              ---
-              Labels/state:
-              - IMPLEMENT: agent should implement the plan
-              EOF
-            )
-
+            BODY="$(printf "Implements: #%s\n\n%s\n\n---\nLabels/state:\n- IMPLEMENT: agent should implement the plan\n" "$ISSUE_NUMBER" "$PLAN")"
+      
             PR_URL="$(gh pr create --repo "$REPO" \
               --title "$TITLE" \
               --body "$BODY" \
               --base "$BASE_BRANCH" \
               --head "$BRANCH")"
-
+      
             PR_NUMBER="$(gh pr view "$PR_URL" --repo "$REPO" --json number -q .number)"
             PR_CREATED="yes"
           fi
-
-          # Ensure IMPLEMENT label present
+      
           gh pr edit "$PR_NUMBER" --repo "$REPO" --add-label "IMPLEMENT" || true
-
+      
           echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
           echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
           echo "pr_created=$PR_CREATED" >> "$GITHUB_OUTPUT"

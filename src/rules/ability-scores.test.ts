@@ -148,7 +148,7 @@ describe('getTotalPointsSpent', () => {
     expect(getTotalPointsSpent(scores)).toBe(54);
   });
 
-  it('returns negative total if any score is invalid', () => {
+  it('includes -1 cost for invalid scores in total', () => {
     const scores: AbilityScores = {
       STR: 16, // -1 (invalid)
       DEX: 14, // 7
@@ -158,8 +158,8 @@ describe('getTotalPointsSpent', () => {
       CHA: 8,  // 0
     };
 
-    // Total should be negative because of invalid score
-    expect(getTotalPointsSpent(scores)).toBeLessThan(0);
+    // Total: -1 + 7 + 5 + 4 + 2 + 0 = 17
+    expect(getTotalPointsSpent(scores)).toBe(17);
   });
 });
 

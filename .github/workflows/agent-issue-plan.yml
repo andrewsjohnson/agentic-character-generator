@@ -1,0 +1,59 @@
+name: Agent - Plan Issue
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  plan:
+    if: github.event.label.name == 'AGENT'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          track_progress: true
+          claude_args: |
+            --settings ./claude/agents/planner.json
+          prompt: |
+            You are the senior engineer PLANNING agent.
+
+            Task: Create an implementation plan for this GitHub Issue.
+
+            Requirements:
+            - Read the repository code as needed.
+            - Produce a plan with:
+              1) Summary / goals
+              2) Scope (in/out)
+              3) Implementation steps (ordered)
+              4) Files/areas likely to change
+              5) Tests to add/update
+              6) Risks / edge cases
+              7) Rollout/flagging (if relevant)
+            - End with a checklist.
+
+            Output format:
+            - A single issue comment starting with:
+              "## Plan v1"
+            - Do not create a PR.
+            - End the comment with:
+              To approve, apply the "APPROVED" label to the issue.
+              To revise, comment with "/revise-plan" followed by the requested revisions
+            
+
+      - name: Relabel issue (AGENT -> PLANNED)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh issue edit ${{ github.event.issue.number }} \
+            --remove-label "AGENT" \
+            --add-label "PLANNED"

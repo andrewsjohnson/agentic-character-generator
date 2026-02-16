@@ -72,7 +72,7 @@ export function ClassStep({ character, updateCharacter }: StepProps) {
         const skillChoices = getClassSkillChoices(selectedClass);
 
         return (
-          <div className="mt-8 pt-8 border-t border-gray-200">
+          <div key={selectedClass.name} className="mt-8 pt-8 border-t border-gray-200">
             <h3 className="text-2xl font-bold mb-4">{selectedClass.name} Details</h3>
 
             {/* Proficiencies Section */}

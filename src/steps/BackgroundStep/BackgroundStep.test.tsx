@@ -1,11 +1,16 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { BackgroundStep } from './BackgroundStep';
+import type { CharacterDraft } from '../../types/character';
+import backgroundsData from '../../data/backgrounds.json';
+import type { Background } from '../../types/background';
+
+const backgrounds = backgroundsData as unknown as Background[];
 
 describe('BackgroundStep', () => {
   it('renders without crashing', () => {
-    const mockCharacter = {};
+    const mockCharacter: CharacterDraft = {};
     const mockUpdate = vi.fn();
 
     render(
@@ -14,33 +19,512 @@ describe('BackgroundStep', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText(/select background/i)).toBeInTheDocument();
+    expect(screen.getByText(/choose your background/i)).toBeInTheDocument();
   });
 
-  it('displays current background selection', () => {
-    const mockCharacter = {
-      background: {
-        name: 'Acolyte',
-        abilityOptions: ['WIS', 'INT', 'CHA'] as ['WIS', 'INT', 'CHA'],
-        skillProficiencies: ['Insight', 'Religion'] as ['Insight', 'Religion'],
-        toolProficiency: 'None',
-        equipment: [],
-        feature: { name: 'Shelter of the Faithful', description: '' },
-        originFeat: 'Magic Initiate',
-        personalityTraits: [],
-        ideals: [],
-        bonds: [],
-        flaws: []
-      }
-    };
-    const mockUpdate = vi.fn();
+  describe('Rendering', () => {
+    it('renders all four backgrounds from data', () => {
+      const mockCharacter: CharacterDraft = {};
+      const mockUpdate = vi.fn();
 
-    render(
-      <MemoryRouter>
-        <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
-      </MemoryRouter>
-    );
+      render(
+        <MemoryRouter>
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+        </MemoryRouter>
+      );
 
-    expect(screen.getByText(/Acolyte/)).toBeInTheDocument();
+      // Check all four backgrounds are rendered
+      expect(screen.getByText('Acolyte')).toBeInTheDocument();
+      expect(screen.getByText('Criminal')).toBeInTheDocument();
+      expect(screen.getByText('Sage')).toBeInTheDocument();
+      expect(screen.getByText('Soldier')).toBeInTheDocument();
+    });
+
+    it('displays background names and skill proficiencies on cards', () => {
+      const mockCharacter: CharacterDraft = {};
+      const mockUpdate = vi.fn();
+
+      render(
+        <MemoryRouter>
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+        </MemoryRouter>
+      );
+
+      // Check Acolyte card shows skills
+      expect(screen.getByText(/Insight, Religion/)).toBeInTheDocument();
+
+      // Check Criminal card shows skills
+      expect(screen.getByText(/Sleight of Hand, Stealth/)).toBeInTheDocument();
+    });
+
+    it('shows detail panel when background selected', () => {
+      const mockCharacter: CharacterDraft = {};
+      const mockUpdate = vi.fn();
+
+      render(
+        <MemoryRouter>
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+        </MemoryRouter>
+      );
+
+      // Detail panel should not be visible initially
+      expect(screen.queryByTestId('background-detail-panel')).not.toBeInTheDocument();
+
+      // Click Acolyte card
+      const acolyteCard = screen.getByTestId('background-card-acolyte');
+      fireEvent.click(acolyteCard);
+
+      // Detail panel should now be visible
+      expect(screen.getByTestId('background-detail-panel')).toBeInTheDocument();
+      expect(screen.getByText(/Shelter of the Faithful/)).toBeInTheDocument();
+    });
+  });
+
+  describe('Selection', () => {
+    it('clicking a background card selects it', () => {
+      const mockCharacter: CharacterDraft = {};
+      const mockUpdate = vi.fn();
+
+      render(
+        <MemoryRouter>
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+        </MemoryRouter>
+      );
+
+      const acolyteCard = screen.getByTestId('background-card-acolyte');
+
+      // Check card is not selected initially
+      expect(acolyteCard).toHaveClass('border-gray-300');
+
+      fireEvent.click(acolyteCard);
+
+      // Check card is now selected
+      expect(acolyteCard).toHaveClass('border-blue-600');
+    });
+
+    it('updateCharacter called with selected background when no conflicts', () => {
+      const mockCharacter: CharacterDraft = {
+        skillProficiencies: [] // No class skills, so no conflicts
+      };
+      const mockUpdate = vi.fn();
+
+      render(
+        <MemoryRouter>
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+        </MemoryRouter>
+      );
+
+      const acolyteCard = screen.getByTestId('background-card-acolyte');
+      fireEvent.click(acolyteCard);
+
+      expect(mockUpdate).toHaveBeenCalledWith({
+        background: expect.objectContaining({
+          name: 'Acolyte',
+          skillProficiencies: ['Insight', 'Religion']
+        }),
+        skillProficiencies: ['Insight', 'Religion']
+      });
+    });
+
+    it('selected card gets highlighted styling', () => {
+      const mockCharacter: CharacterDraft = {};
+      const mockUpdate = vi.fn();
+
+      render(
+        <MemoryRouter>
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+        </MemoryRouter>
+      );
+
+      const acolyteCard = screen.getByTestId('background-card-acolyte');
+      const criminalCard = screen.getByTestId('background-card-criminal');
+
+      // Click Acolyte
+      fireEvent.click(acolyteCard);
+      expect(acolyteCard).toHaveClass('border-blue-600', 'bg-blue-50');
+      expect(criminalCard).toHaveClass('border-gray-300', 'bg-white');
+
+      // Click Criminal
+      fireEvent.click(criminalCard);
+      expect(criminalCard).toHaveClass('border-blue-600', 'bg-blue-50');
+    });
+  });
+
+  describe('Skill Conflicts', () => {
+    it('detects single skill conflict', () => {
+      // Rogue has Stealth, Criminal also has Stealth
+      const mockCharacter: CharacterDraft = {
+        skillProficiencies: ['Stealth', 'Acrobatics']
+      };
+      const mockUpdate = vi.fn();
+
+      render(
+        <MemoryRouter>
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+        </MemoryRouter>
+      );
+
+      // Click Criminal (has Stealth)
+      const criminalCard = screen.getByTestId('background-card-criminal');
+      fireEvent.click(criminalCard);
+
+      // Should show conflict notice
+      expect(screen.getByTestId('skill-conflict-notice')).toBeInTheDocument();
+      expect(screen.getByText(/skill conflicts detected/i)).toBeInTheDocument();
+
+      // Should NOT call updateCharacter yet
+      expect(mockUpdate).not.toHaveBeenCalled();
+    });
+
+    it('detects multiple skill conflicts', () => {
+      // Character has Athletics and Intimidation, Soldier also has both
+      const mockCharacter: CharacterDraft = {
+        skillProficiencies: ['Athletics', 'Intimidation']
+      };
+      const mockUpdate = vi.fn();
+
+      render(
+        <MemoryRouter>
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+        </MemoryRouter>
+      );
+
+      // Click Soldier (has Athletics and Intimidation)
+      const soldierCard = screen.getByTestId('background-card-soldier');
+      fireEvent.click(soldierCard);
+
+      // Should show conflict notice
+      expect(screen.getByTestId('skill-conflict-notice')).toBeInTheDocument();
+
+      // Should show two replacement selects
+      expect(screen.getByTestId('replacement-select-0')).toBeInTheDocument();
+      expect(screen.getByTestId('replacement-select-1')).toBeInTheDocument();
+    });
+
+    it('shows conflict resolution UI when conflicts exist', () => {
+      const mockCharacter: CharacterDraft = {
+        skillProficiencies: ['Stealth']
+      };
+      const mockUpdate = vi.fn();
+
+      render(
+        <MemoryRouter>
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+        </MemoryRouter>
+      );
+
+      // Click Criminal (has Stealth)
+      const criminalCard = screen.getByTestId('background-card-criminal');
+      fireEvent.click(criminalCard);
+
+      // Should show conflict resolution UI
+      expect(screen.getByTestId('skill-conflict-notice')).toBeInTheDocument();
+      expect(screen.getByTestId('replacement-select-0')).toBeInTheDocument();
+      expect(screen.getByTestId('confirm-replacements-button')).toBeInTheDocument();
+    });
+
+    it('does NOT show conflict UI when no conflicts', () => {
+      const mockCharacter: CharacterDraft = {
+        skillProficiencies: ['Perception', 'Investigation']
+      };
+      const mockUpdate = vi.fn();
+
+      render(
+        <MemoryRouter>
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+        </MemoryRouter>
+      );
+
+      // Click Acolyte (has Insight and Religion, no conflict)
+      const acolyteCard = screen.getByTestId('background-card-acolyte');
+      fireEvent.click(acolyteCard);
+
+      // Should NOT show conflict notice
+      expect(screen.queryByTestId('skill-conflict-notice')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Skill Replacement', () => {
+    it('replacement skill selector shows available skills only', () => {
+      const mockCharacter: CharacterDraft = {
+        skillProficiencies: ['Stealth']
+      };
+      const mockUpdate = vi.fn();
+
+      render(
+        <MemoryRouter>
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+        </MemoryRouter>
+      );
+
+      // Click Criminal (has Stealth and Sleight of Hand)
+      const criminalCard = screen.getByTestId('background-card-criminal');
+      fireEvent.click(criminalCard);
+
+      // Get the replacement select
+      const select = screen.getByTestId('replacement-select-0') as HTMLSelectElement;
+
+      // Should have options (need to check that unavailable skills are excluded)
+      const options = Array.from(select.options).map(opt => opt.value).filter(v => v !== '');
+
+      // Should NOT include Stealth (conflicting skill)
+      expect(options).not.toContain('Stealth');
+
+      // Should NOT include Sleight of Hand (non-conflicting background skill)
+      expect(options).not.toContain('Sleight of Hand');
+
+      // Should include other skills like Athletics
+      expect(options).toContain('Athletics');
+    });
+
+    it('confirm button disabled until all conflicts resolved', () => {
+      const mockCharacter: CharacterDraft = {
+        skillProficiencies: ['Athletics', 'Intimidation']
+      };
+      const mockUpdate = vi.fn();
+
+      render(
+        <MemoryRouter>
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+        </MemoryRouter>
+      );
+
+      // Click Soldier (conflicts with both skills)
+      const soldierCard = screen.getByTestId('background-card-soldier');
+      fireEvent.click(soldierCard);
+
+      // Confirm button should be disabled
+      const confirmButton = screen.getByTestId('confirm-replacements-button');
+      expect(confirmButton).toBeDisabled();
+
+      // Select first replacement
+      const select0 = screen.getByTestId('replacement-select-0') as HTMLSelectElement;
+      fireEvent.change(select0, { target: { value: 'Perception' } });
+
+      // Still disabled (need to select second replacement)
+      expect(confirmButton).toBeDisabled();
+
+      // Select second replacement
+      const select1 = screen.getByTestId('replacement-select-1') as HTMLSelectElement;
+      fireEvent.change(select1, { target: { value: 'Survival' } });
+
+      // Now should be enabled
+      expect(confirmButton).not.toBeDisabled();
+    });
+
+    it('updateCharacter called with background and merged skill proficiencies after resolution', () => {
+      const mockCharacter: CharacterDraft = {
+        skillProficiencies: ['Stealth']
+      };
+      const mockUpdate = vi.fn();
+
+      render(
+        <MemoryRouter>
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+        </MemoryRouter>
+      );
+
+      // Click Criminal (has Stealth and Sleight of Hand)
+      const criminalCard = screen.getByTestId('background-card-criminal');
+      fireEvent.click(criminalCard);
+
+      // Select replacement skill
+      const select = screen.getByTestId('replacement-select-0') as HTMLSelectElement;
+      fireEvent.change(select, { target: { value: 'Athletics' } });
+
+      // Click confirm
+      const confirmButton = screen.getByTestId('confirm-replacements-button');
+      fireEvent.click(confirmButton);
+
+      // Should call updateCharacter with:
+      // - class skills: ['Stealth']
+      // - non-conflicting background skills: ['Sleight of Hand']
+      // - replacement skills: ['Athletics']
+      expect(mockUpdate).toHaveBeenCalledWith({
+        background: expect.objectContaining({
+          name: 'Criminal'
+        }),
+        skillProficiencies: ['Stealth', 'Sleight of Hand', 'Athletics']
+      });
+    });
+  });
+
+  describe('Edge Cases', () => {
+    it('no class selected: background selectable, no conflicts shown', () => {
+      const mockCharacter: CharacterDraft = {
+        // No class, no skillProficiencies
+      };
+      const mockUpdate = vi.fn();
+
+      render(
+        <MemoryRouter>
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+        </MemoryRouter>
+      );
+
+      // Click any background
+      const acolyteCard = screen.getByTestId('background-card-acolyte');
+      fireEvent.click(acolyteCard);
+
+      // Should NOT show conflict notice (no class skills to conflict with)
+      expect(screen.queryByTestId('skill-conflict-notice')).not.toBeInTheDocument();
+
+      // Should call updateCharacter
+      expect(mockUpdate).toHaveBeenCalledWith({
+        background: expect.objectContaining({ name: 'Acolyte' }),
+        skillProficiencies: ['Insight', 'Religion']
+      });
+    });
+
+    it('no class skills chosen yet: background selectable, no conflicts', () => {
+      const mockCharacter: CharacterDraft = {
+        skillProficiencies: [] // Empty array
+      };
+      const mockUpdate = vi.fn();
+
+      render(
+        <MemoryRouter>
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+        </MemoryRouter>
+      );
+
+      // Click any background
+      const criminalCard = screen.getByTestId('background-card-criminal');
+      fireEvent.click(criminalCard);
+
+      // Should NOT show conflict notice
+      expect(screen.queryByTestId('skill-conflict-notice')).not.toBeInTheDocument();
+
+      // Should call updateCharacter
+      expect(mockUpdate).toHaveBeenCalledWith({
+        background: expect.objectContaining({ name: 'Criminal' }),
+        skillProficiencies: ['Sleight of Hand', 'Stealth']
+      });
+    });
+
+    it('re-selecting different background clears conflict state', async () => {
+      const mockCharacter: CharacterDraft = {
+        skillProficiencies: ['Stealth']
+      };
+      const mockUpdate = vi.fn();
+
+      render(
+        <MemoryRouter>
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+        </MemoryRouter>
+      );
+
+      // Click Criminal (has conflict with Stealth)
+      const criminalCard = screen.getByTestId('background-card-criminal');
+      fireEvent.click(criminalCard);
+
+      // Should show conflict UI
+      expect(screen.getByTestId('skill-conflict-notice')).toBeInTheDocument();
+
+      // Select a replacement
+      const select = screen.getByTestId('replacement-select-0') as HTMLSelectElement;
+      fireEvent.change(select, { target: { value: 'Athletics' } });
+
+      // Now click Acolyte (no conflicts)
+      const acolyteCard = screen.getByTestId('background-card-acolyte');
+      fireEvent.click(acolyteCard);
+
+      // Conflict UI should be gone
+      await waitFor(() => {
+        expect(screen.queryByTestId('skill-conflict-notice')).not.toBeInTheDocument();
+      });
+
+      // Click Criminal again
+      fireEvent.click(criminalCard);
+
+      // Conflict UI should be back, but replacement should be reset (empty)
+      expect(screen.getByTestId('skill-conflict-notice')).toBeInTheDocument();
+      const newSelect = screen.getByTestId('replacement-select-0') as HTMLSelectElement;
+      expect(newSelect.value).toBe('');
+    });
+  });
+
+  describe('Integration with Character State', () => {
+    it('component initializes from character.background if set', () => {
+      const mockCharacter: CharacterDraft = {
+        background: backgrounds[0] // Acolyte
+      };
+      const mockUpdate = vi.fn();
+
+      render(
+        <MemoryRouter>
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+        </MemoryRouter>
+      );
+
+      // Acolyte card should be selected
+      const acolyteCard = screen.getByTestId('background-card-acolyte');
+      expect(acolyteCard).toHaveClass('border-blue-600', 'bg-blue-50');
+
+      // Detail panel should be showing
+      expect(screen.getByTestId('background-detail-panel')).toBeInTheDocument();
+    });
+
+    it('equipment list formatted correctly with quantities', () => {
+      const mockCharacter: CharacterDraft = {};
+      const mockUpdate = vi.fn();
+
+      render(
+        <MemoryRouter>
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+        </MemoryRouter>
+      );
+
+      // Click Acolyte
+      const acolyteCard = screen.getByTestId('background-card-acolyte');
+      fireEvent.click(acolyteCard);
+
+      // Check equipment formatting
+      // Acolyte has "Parchment" with quantity 10
+      expect(screen.getByText('Parchment (x10)')).toBeInTheDocument();
+
+      // Check single quantity items don't show (x1)
+      expect(screen.getByText('Holy Symbol')).toBeInTheDocument();
+      expect(screen.queryByText('Holy Symbol (x1)')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Detail Panel Content', () => {
+    it('displays all background information in detail panel', () => {
+      const mockCharacter: CharacterDraft = {};
+      const mockUpdate = vi.fn();
+
+      render(
+        <MemoryRouter>
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+        </MemoryRouter>
+      );
+
+      // Click Acolyte
+      const acolyteCard = screen.getByTestId('background-card-acolyte');
+      fireEvent.click(acolyteCard);
+
+      const detailPanel = screen.getByTestId('background-detail-panel');
+
+      // Check feature
+      expect(detailPanel).toHaveTextContent('Shelter of the Faithful');
+      expect(screen.getByText(/command the respect of those who share your faith/i)).toBeInTheDocument();
+
+      // Check origin feat section
+      expect(detailPanel).toHaveTextContent('Origin Feat');
+
+      // Check tool proficiency section
+      expect(detailPanel).toHaveTextContent('Tool Proficiency');
+
+      // Check ability options
+      expect(detailPanel).toHaveTextContent('INT, WIS, CHA');
+
+      // Check skills
+      expect(detailPanel).toHaveTextContent('Insight, Religion');
+
+      // Check equipment section exists
+      expect(detailPanel).toHaveTextContent('Starting Equipment');
+      expect(detailPanel).toHaveTextContent('Parchment (x10)');
+    });
   });
 });

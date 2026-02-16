@@ -313,13 +313,15 @@ describe('ClassStep', () => {
     // Click Fighter
     fireEvent.click(fighterCard!);
     expect(fighterCard).toHaveClass('border-blue-600');
-    expect(screen.getByText('Fighter Details')).toBeInTheDocument();
+    const fighterDetails = screen.getAllByText('Fighter Details');
+    expect(fighterDetails[fighterDetails.length - 1]).toBeInTheDocument();
 
     // Click Wizard
     fireEvent.click(wizardCard!);
     expect(wizardCard).toHaveClass('border-blue-600');
     expect(fighterCard).toHaveClass('border-gray-300');
-    expect(screen.getByText('Wizard Details')).toBeInTheDocument();
+    const wizardDetails = screen.getAllByText('Wizard Details');
+    expect(wizardDetails[wizardDetails.length - 1]).toBeInTheDocument();
     expect(screen.queryByText('Fighter Details')).not.toBeInTheDocument();
   });
 
@@ -327,20 +329,22 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    const { container } = render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    const { container, rerender } = render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
     const classGrid = container.querySelector('.grid') as HTMLElement;
 
     // Bard has 3 skill choices
     const bardCard = within(classGrid).getByText('Bard').closest('button');
     fireEvent.click(bardCard!);
-    let detailPanel = screen.getByText('Bard Details').closest('div') as HTMLElement;
-    expect(within(detailPanel).getByText(/Choose 3 from:/)).toBeInTheDocument();
+    const bardDetailPanels = screen.getAllByText('Bard Details');
+    const bardDetailPanel = bardDetailPanels[bardDetailPanels.length - 1].closest('div') as HTMLElement;
+    expect(within(bardDetailPanel).getByText(/Choose 3 from:/)).toBeInTheDocument();
 
     // Rogue has 4 skill choices
     const rogueCard = within(classGrid).getByText('Rogue').closest('button');
     fireEvent.click(rogueCard!);
-    detailPanel = screen.getByText('Rogue Details').closest('div') as HTMLElement;
-    expect(within(detailPanel).getByText(/Choose 4 from:/)).toBeInTheDocument();
+    const rogueDetailPanels = screen.getAllByText('Rogue Details');
+    const rogueDetailPanel = rogueDetailPanels[rogueDetailPanels.length - 1].closest('div') as HTMLElement;
+    expect(within(rogueDetailPanel).getByText(/Choose 4 from:/)).toBeInTheDocument();
   });
 
   it('displays all class features with descriptions', () => {

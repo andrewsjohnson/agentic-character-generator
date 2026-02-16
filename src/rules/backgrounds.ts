@@ -3,9 +3,9 @@ import type { Background } from '../types/background';
 /**
  * Returns the skill proficiencies granted by the background.
  * @param background - The character background
- * @returns Array of two skill names
+ * @returns Tuple of exactly two skill names
  */
-export function getBackgroundSkills(background: Background): string[] {
+export function getBackgroundSkills(background: Background): [string, string] {
   return background.skillProficiencies;
 }
 

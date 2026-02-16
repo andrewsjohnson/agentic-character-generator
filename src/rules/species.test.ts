@@ -287,3 +287,95 @@ describe('getSpeciesSpeed', () => {
     expect(result).toBe(30);
   });
 });
+
+// Integration tests with real races.json data
+describe('Integration tests with real data', () => {
+  // Import real species data from races.json
+  const realSpeciesData: Species[] = [
+    {
+      name: 'Dwarf',
+      speed: 25,
+      size: 'Medium',
+      traits: [
+        { name: 'Darkvision', description: 'You have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You cannot discern color in darkness, only shades of gray.' },
+        { name: 'Dwarven Resilience', description: 'You have advantage on saving throws against poison, and you have resistance against poison damage.' },
+        { name: 'Dwarven Combat Training', description: 'You have proficiency with the battleaxe, handaxe, light hammer, and warhammer.' },
+        { name: 'Tool Proficiency', description: 'You gain proficiency with the artisan\'s tools of your choice: smith\'s tools, brewer\'s supplies, or mason\'s tools.' },
+        { name: 'Stonecunning', description: 'Whenever you make an Intelligence (History) check related to the origin of stonework, you are considered proficient in the History skill and add double your proficiency bonus to the check, instead of your normal proficiency bonus.' },
+      ],
+      languages: ['Common', 'Dwarvish'],
+      subspecies: [
+        {
+          name: 'Hill Dwarf',
+          traits: [
+            { name: 'Dwarven Toughness', description: 'Your hit point maximum increases by 1, and it increases by 1 every time you gain a level.' },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'Elf',
+      speed: 30,
+      size: 'Medium',
+      traits: [
+        { name: 'Darkvision', description: 'You have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You cannot discern color in darkness, only shades of gray.' },
+        { name: 'Keen Senses', description: 'You have proficiency in the Perception skill.' },
+        { name: 'Fey Ancestry', description: 'You have advantage on saving throws against being charmed, and magic cannot put you to sleep.' },
+        { name: 'Trance', description: 'Elves do not need to sleep. Instead, they meditate deeply, remaining semiconscious, for 4 hours a day. (The Common word for such meditation is "trance.") While meditating, you can dream after a fashion; such dreams are actually mental exercises that have become reflexive through years of practice. After resting this way, you gain the same benefit that a human does from 8 hours of sleep.' },
+      ],
+      languages: ['Common', 'Elvish'],
+      subspecies: [
+        {
+          name: 'High Elf',
+          traits: [
+            { name: 'Elf Weapon Training', description: 'You have proficiency with the longsword, shortsword, shortbow, and longbow.' },
+            { name: 'High Elf Cantrip', description: 'You know one cantrip of your choice from the wizard spell list. Intelligence is your spellcasting ability for it.' },
+            { name: 'Extra Language', description: 'You can speak, read, and write one extra language of your choice.' },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'Human',
+      speed: 30,
+      size: 'Medium',
+      traits: [],
+      languages: ['Common'],
+      subspecies: [],
+    },
+  ];
+
+  it('getSubspecies works with real Dwarf data', () => {
+    const result = getSubspecies('Dwarf', realSpeciesData);
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe('Hill Dwarf');
+  });
+
+  it('getSpeciesTraits works with real Dwarf data', () => {
+    const dwarf = realSpeciesData.find((s) => s.name === 'Dwarf')!;
+    const result = getSpeciesTraits(dwarf);
+    expect(result).toHaveLength(5);
+    expect(result[0].name).toBe('Darkvision');
+    expect(result[4].name).toBe('Stonecunning');
+  });
+
+  it('getSpeciesTraits combines real Dwarf + Hill Dwarf traits', () => {
+    const dwarf = realSpeciesData.find((s) => s.name === 'Dwarf')!;
+    const hillDwarf = dwarf.subspecies[0];
+    const result = getSpeciesTraits(dwarf, hillDwarf);
+    expect(result).toHaveLength(6);
+    expect(result[5].name).toBe('Dwarven Toughness');
+  });
+
+  it('getSpeciesSpeed works with real Elf data', () => {
+    const elf = realSpeciesData.find((s) => s.name === 'Elf')!;
+    const result = getSpeciesSpeed(elf);
+    expect(result).toBe(30);
+  });
+
+  it('getSpeciesBonuses returns empty for real data (no ability bonuses in races.json)', () => {
+    const dwarf = realSpeciesData.find((s) => s.name === 'Dwarf')!;
+    const result = getSpeciesBonuses(dwarf);
+    expect(result).toEqual({});
+  });
+});

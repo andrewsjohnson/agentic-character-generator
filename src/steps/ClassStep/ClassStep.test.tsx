@@ -15,7 +15,7 @@ describe('ClassStep', () => {
     expect(screen.getByText('Choose Your Class')).toBeInTheDocument();
 
     // Check that all 12 classes are rendered
-    (classesData as CharacterClass[]).forEach((charClass) => {
+    (classesData as unknown as CharacterClass[]).forEach((charClass) => {
       const buttons = screen.getAllByRole('button', { name: new RegExp(charClass.name, 'i') });
       expect(buttons.length).toBeGreaterThan(0);
     });
@@ -87,28 +87,32 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    const { container } = render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
 
     // Detail panel should not be visible initially
-    expect(screen.queryByText(/Details$/)).not.toBeInTheDocument();
+    expect(screen.queryByText('Fighter Details')).not.toBeInTheDocument();
+    expect(screen.queryByText('Level 1 Features')).not.toBeInTheDocument();
 
-    // Click Fighter
-    const fighterCard = screen.getByRole('button', { name: /Fighter/i });
-    fireEvent.click(fighterCard);
+    // Click Fighter using grid
+    const classGrid = container.querySelector('.grid') as HTMLElement;
+    const fighterCard = within(classGrid).getByText('Fighter').closest('button');
+    fireEvent.click(fighterCard!);
 
     // Detail panel should now be visible
     expect(screen.getByText('Fighter Details')).toBeInTheDocument();
+    expect(screen.getByText('Level 1 Features')).toBeInTheDocument();
   });
 
   it('displays proficiencies correctly in detail panel', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    const { container } = render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
 
     // Click Fighter
-    const fighterCard = screen.getByRole('button', { name: /Fighter/i });
-    fireEvent.click(fighterCard);
+    const classGrid = container.querySelector('.grid') as HTMLElement;
+    const fighterCard = within(classGrid).getByText('Fighter').closest('button');
+    fireEvent.click(fighterCard!);
 
     // Check proficiencies
     expect(screen.getByText(/Armor:/)).toBeInTheDocument();
@@ -121,11 +125,12 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    const { container } = render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
 
     // Click Monk (has no armor proficiencies)
-    const monkCard = screen.getByRole('button', { name: /^Monk/i });
-    fireEvent.click(monkCard);
+    const classGrid = container.querySelector('.grid') as HTMLElement;
+    const monkCard = within(classGrid).getByText('Monk').closest('button');
+    fireEvent.click(monkCard!);
 
     // Should show "None" for armor
     const armorText = screen.getByText(/Armor:/);
@@ -136,11 +141,12 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    const { container } = render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
 
     // Click Fighter (2 skill choices)
-    const fighterCard = screen.getByRole('button', { name: /Fighter/i });
-    fireEvent.click(fighterCard);
+    const classGrid = container.querySelector('.grid') as HTMLElement;
+    const fighterCard = within(classGrid).getByText('Fighter').closest('button');
+    fireEvent.click(fighterCard!);
 
     // Check skill choices
     expect(screen.getByText(/Choose 2 from:/)).toBeInTheDocument();
@@ -152,11 +158,12 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    const { container } = render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
 
     // Click Fighter
-    const fighterCard = screen.getByRole('button', { name: /Fighter/i });
-    fireEvent.click(fighterCard);
+    const classGrid = container.querySelector('.grid') as HTMLElement;
+    const fighterCard = within(classGrid).getByText('Fighter').closest('button');
+    fireEvent.click(fighterCard!);
 
     // Check features
     expect(screen.getByText('Level 1 Features')).toBeInTheDocument();
@@ -168,11 +175,12 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    const { container } = render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
 
     // Click Wizard (has spellcasting)
-    const wizardCard = screen.getByRole('button', { name: /Wizard/i });
-    fireEvent.click(wizardCard);
+    const classGrid = container.querySelector('.grid') as HTMLElement;
+    const wizardCard = within(classGrid).getByText('Wizard').closest('button');
+    fireEvent.click(wizardCard!);
 
     // Check spellcasting section
     expect(screen.getByText('Spellcasting')).toBeInTheDocument();
@@ -186,11 +194,12 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    const { container } = render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
 
     // Click Fighter (no spellcasting)
-    const fighterCard = screen.getByRole('button', { name: /Fighter/i });
-    fireEvent.click(fighterCard);
+    const classGrid = container.querySelector('.grid') as HTMLElement;
+    const fighterCard = within(classGrid).getByText('Fighter').closest('button');
+    fireEvent.click(fighterCard!);
 
     // Spellcasting section should not be present
     expect(screen.queryByText('Spellcasting')).not.toBeInTheDocument();
@@ -200,11 +209,12 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    const { container } = render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
 
     // Click Warlock
-    const warlockCard = screen.getByRole('button', { name: /Warlock/i });
-    fireEvent.click(warlockCard);
+    const classGrid = container.querySelector('.grid') as HTMLElement;
+    const warlockCard = within(classGrid).getByText('Warlock').closest('button');
+    fireEvent.click(warlockCard!);
 
     // Check for pact magic note
     expect(screen.getByText(/Pact Magic/i)).toBeInTheDocument();
@@ -214,11 +224,12 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    const { container } = render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
 
     // Click Wizard (prepares spells)
-    const wizardCard = screen.getByRole('button', { name: /Wizard/i });
-    fireEvent.click(wizardCard);
+    const classGrid = container.querySelector('.grid') as HTMLElement;
+    const wizardCard = within(classGrid).getByText('Wizard').closest('button');
+    fireEvent.click(wizardCard!);
 
     // Check for spells prepared
     expect(screen.getByText(/Spells Prepared\/Known:/)).toBeInTheDocument();
@@ -295,16 +306,17 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    const { container } = render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    const classGrid = container.querySelector('.grid') as HTMLElement;
 
     // Bard has 3 skill choices
-    const bardCard = screen.getByRole('button', { name: /Bard/i });
-    fireEvent.click(bardCard);
+    const bardCard = within(classGrid).getByText('Bard').closest('button');
+    fireEvent.click(bardCard!);
     expect(screen.getByText(/Choose 3 from:/)).toBeInTheDocument();
 
     // Rogue has 4 skill choices
-    const rogueCard = screen.getByRole('button', { name: /Rogue/i });
-    fireEvent.click(rogueCard);
+    const rogueCard = within(classGrid).getByText('Rogue').closest('button');
+    fireEvent.click(rogueCard!);
     expect(screen.getByText(/Choose 4 from:/)).toBeInTheDocument();
   });
 
@@ -312,11 +324,12 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    const { container } = render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
 
     // Click Barbarian (has Rage and Unarmored Defense)
-    const barbarianCard = screen.getByRole('button', { name: /Barbarian/i });
-    fireEvent.click(barbarianCard);
+    const classGrid = container.querySelector('.grid') as HTMLElement;
+    const barbarianCard = within(classGrid).getByText('Barbarian').closest('button');
+    fireEvent.click(barbarianCard!);
 
     // Check that both features are displayed
     expect(screen.getByText('Rage')).toBeInTheDocument();

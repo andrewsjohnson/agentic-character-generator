@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { StepProps } from '../types';
 import type { CharacterClass } from '../../types/class';
-import { getClassProficiencies, getClassSkillChoices } from '../../rules/classes';
+import { getClassSkillChoices } from '../../rules/classes';
 import classesData from '../../data/classes.json';
 
 type ClassCardProps = {
@@ -57,7 +57,7 @@ export function ClassStep({ character, updateCharacter }: StepProps) {
 
       {/* Class Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        {(classesData as CharacterClass[]).map((charClass) => (
+        {(classesData as unknown as CharacterClass[]).map((charClass) => (
           <ClassCard
             key={charClass.name}
             charClass={charClass}

@@ -1,0 +1,50 @@
+name: Agent - Revise Issue Plan
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  revise:
+    if: github.event.label.name == 'NEEDS-PLAN-REVISION'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          track_progress: true
+          claude_args: |
+            --settings ./claude/agents/planner.json
+          prompt: |
+            You are the PLANNING agent.
+
+            Task: Revise the plan based on the latest human revision request in the issue thread.
+
+            Instructions:
+            - Find the most recent plan comment that starts with "## Plan v".
+            - Find the most recent human comment that starts with "/plan-revise".
+              Treat everything after "/plan-revise" as the revision requirements.
+            - Produce an updated plan as a single new comment starting with:
+              "## Plan vNEXT" (increment the version number by 1).
+            - Include a short "### Changes made" section mapping each request to what you changed.
+            - Minimize unrelated changes.
+
+            Output:
+            - One issue comment only (the new plan).
+
+      - name: Clear revision label (NEEDS-PLAN-REVISION -> PLANNED)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh issue edit ${{ github.event.issue.number }} \
+            --remove-label "NEEDS-PLAN-REVISION" \
+            --add-label "PLANNED"

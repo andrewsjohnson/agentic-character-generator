@@ -1,0 +1,42 @@
+name: CI Failure -> Trigger Fix Pass
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+
+jobs:
+  trigger_fix:
+    if: github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+      contents: read
+
+    steps:
+      - name: Find PR and label it for fixing (unless in-progress/awaiting/halted)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          PR_NUMBER="$(jq -r '.workflow_run.pull_requests[0].number // empty' "$GITHUB_EVENT_PATH")"
+          if [ -z "$PR_NUMBER" ]; then
+            echo "No associated PR (maybe a push run). Exiting."
+            exit 0
+          fi
+
+          REPO="${{ github.repository }}"
+          LABELS="$(gh pr view "$PR_NUMBER" --repo "$REPO" --json labels -q '.labels[].name')"
+
+          echo "$LABELS" | grep -q '^IN-PROGRESS$' && { echo "IN-PROGRESS; skip."; exit 0; }
+          echo "$LABELS" | grep -q '^AWAITING-FEEDBACK$' && { echo "AWAITING-FEEDBACK; skip."; exit 0; }
+          echo "$LABELS" | grep -q '^HALTED$' && { echo "HALTED; skip."; exit 0; }
+
+          gh pr edit "$PR_NUMBER" --repo "$REPO" --add-label "CI-FAILED" || true
+
+          # If review was pending, bounce back to implementer for fixes
+          gh pr edit "$PR_NUMBER" --repo "$REPO" \
+            --remove-label "NEEDS-REVIEW" \
+            --add-label "IMPLEMENT"

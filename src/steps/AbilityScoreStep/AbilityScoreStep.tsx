@@ -153,6 +153,19 @@ export function AbilityScoreStep({ character, updateCharacter }: StepProps) {
     (value) => !assignedStandardValues.includes(value)
   );
 
+  // Update character state when valid ability scores are assigned
+  useEffect(() => {
+    const isValid =
+      mode === 'point-buy' ? isValidPointBuyAssignment : isValidStandardArrayAssignment;
+
+    if (isValid) {
+      updateCharacter({
+        abilityScoreMethod: mode,
+        baseAbilityScores: baseScores,
+      });
+    }
+  }, [baseScores, mode, isValidPointBuyAssignment, isValidStandardArrayAssignment, updateCharacter]);
+
   return (
     <div className="p-8">
       <h2 className="text-3xl font-bold mb-4">Assign Ability Scores</h2>

@@ -6,6 +6,13 @@ import backgroundsData from '../../data/backgrounds.json';
 import classesData from '../../data/classes.json';
 import type { CharacterClass } from '../../types/class';
 
+// Extract all unique skills from classes data (computed once at module level)
+const ALL_SKILLS = Array.from(
+  new Set(
+    (classesData as unknown as CharacterClass[]).flatMap((c) => c.skillChoices.options)
+  )
+).sort();
+
 type BackgroundCardProps = {
   background: Background;
   selected: boolean;
@@ -46,13 +53,6 @@ function BackgroundDetail({ background, conflictingSkills, onResolveConflicts, c
   const equipment = getBackgroundEquipment(background);
   const hasConflicts = conflictingSkills.length > 0;
 
-  // Get all unique skills from classes data
-  const allSkills = Array.from(
-    new Set(
-      (classesData as unknown as CharacterClass[]).flatMap((c) => c.skillChoices.options)
-    )
-  ).sort();
-
   // Get skills the character already has (from class)
   const existingSkills = new Set(character.skillProficiencies || []);
 
@@ -69,15 +69,15 @@ function BackgroundDetail({ background, conflictingSkills, onResolveConflicts, c
   ]);
 
   // Available skills for replacement (excluding those already possessed)
-  const availableSkills = allSkills.filter(skill => !unavailableSkills.has(skill));
+  const availableSkills = ALL_SKILLS.filter(skill => !unavailableSkills.has(skill));
 
   // Track selected replacement skills
   const [replacements, setReplacements] = useState<string[]>([]);
 
-  // Reset replacements when conflicts change
+  // Reset replacements when background changes (conflicts will change accordingly)
   useEffect(() => {
     setReplacements([]);
-  }, [conflictingSkills.length, background.name]);
+  }, [background.name]);
 
   const handleReplacementChange = (index: number, skill: string) => {
     const newReplacements = [...replacements];

@@ -11,7 +11,7 @@ import speciesData from '../../data/races.json';
  * Returns empty string if no bonuses or bonuses object is empty.
  * Example: { CON: 2, WIS: 1 } => "+2 CON, +1 WIS"
  */
-function formatAbilityBonuses(bonuses: AbilityBonuses | undefined): string {
+export function formatAbilityBonuses(bonuses: AbilityBonuses | undefined): string {
   if (!bonuses) return '';
 
   const entries = ABILITY_NAMES

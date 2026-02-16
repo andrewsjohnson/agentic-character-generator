@@ -358,6 +358,30 @@ describe('applyAbilityBonuses', () => {
       CHA: 10,
     });
   });
+
+  it('prevents scores from going below 1 with negative bonuses', () => {
+    const baseScores: AbilityScores = {
+      STR: 3,
+      DEX: 8,
+      CON: 5,
+      INT: 10,
+      WIS: 10,
+      CHA: 10,
+    };
+
+    const bonuses = { STR: -5, CON: -10 };
+
+    const result = applyAbilityBonuses(baseScores, bonuses);
+
+    expect(result).toEqual({
+      STR: 1, // Capped from -2
+      DEX: 8,
+      CON: 1, // Capped from -5
+      INT: 10,
+      WIS: 10,
+      CHA: 10,
+    });
+  });
 });
 
 describe('getStandardArray', () => {

@@ -149,8 +149,8 @@ export function applyAbilityBonuses(
     const bonus = bonuses[ability] ?? 0;
     const total = base + bonus;
 
-    // Cap at 20 (D&D 5e standard maximum)
-    result[ability] = Math.min(total, 20);
+    // Cap at 20 (D&D 5e standard maximum) and prevent going below 1
+    result[ability] = Math.max(1, Math.min(total, 20));
   }
 
   return result;

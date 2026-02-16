@@ -18,7 +18,7 @@ describe('AbilityScoreStep', () => {
         </MemoryRouter>
       );
 
-      expect(screen.getByText(/assign ability scores/i)).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /assign ability scores/i })).toBeInTheDocument();
     });
 
     it('displays mode selector with both Point Buy and Standard Array options', () => {
@@ -416,6 +416,7 @@ describe('AbilityScoreStep', () => {
         abilityBonuses: { STR: 2, CON: 2 },
         traits: [],
         subspecies: [],
+        languages: ['Common', 'Dwarvish'],
       };
 
       const mockCharacter: CharacterDraft = {
@@ -451,6 +452,7 @@ describe('AbilityScoreStep', () => {
         abilityBonuses: { STR: 2, CON: 2 },
         traits: [],
         subspecies: [],
+        languages: ['Common', 'Dwarvish'],
       };
 
       const mockCharacter: CharacterDraft = {

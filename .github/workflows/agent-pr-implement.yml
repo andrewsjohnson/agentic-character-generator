@@ -10,17 +10,25 @@ concurrency:
 
 jobs:
   implement:
-    if: github.event.label.name == 'IMPLEMENT'
+    if: >
+      github.event.label.name == 'IMPLEMENT' &&
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      pull-requests: write
-      issues: write
+      contents: read
 
     steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Export token for gh
+        run: echo "GH_TOKEN=${{ steps.app-token.outputs.token }}" >> "$GITHUB_ENV"
+
       - name: Guardrails (skip if halted/awaiting feedback)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           PR="${{ github.event.pull_request.number }}"
@@ -31,8 +39,6 @@ jobs:
           echo "$LABELS" | grep -q '^AWAITING-FEEDBACK$' && { echo "Awaiting feedback; exiting."; exit 0; }
 
       - name: Mark IN-PROGRESS (remove IMPLEMENT)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           gh pr edit ${{ github.event.pull_request.number }} --repo ${{ github.repository }} \
@@ -46,7 +52,7 @@ jobs:
       - uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ steps.app-token.outputs.token }}
           track_progress: true
           claude_args: |
             --settings ./claude/agents/implementer.json
@@ -55,7 +61,7 @@ jobs:
 
             PRIMARY GOAL
             - Implement the plan contained in the PR body with high reliability and continuity across runs.
-            - You MUST commit and push progress frequently so another run can continue from where you left off.
+            - You MUST commit and push progress frequently so another run can continue from where it left off.
 
             0) Locate the authoritative plan (do this first)
             - The PR body contains the authoritative implementation plan. Use it as the single source of truth.
@@ -67,10 +73,9 @@ jobs:
               - git status
               - git log --oneline -n 20
             - If there are existing commits for this work, CONTINUE from the current state; do not restart.
-            - Mentally reconcile current repo state vs the PR-body plan: what is already done, what remains.
 
             2) Milestoning rules (adaptive; do not skip)
-            - Derive 3–6 checkpoints from the PR-body plan’s checklist/steps by grouping adjacent items into coherent chunks.
+            - Derive 3-6 checkpoints from the PR-body plan's checklist/steps by grouping adjacent items into coherent chunks.
             - Post a PR comment containing:
               - "## Implementation checkpoints"
               - a markdown checklist of the checkpoints
@@ -79,7 +84,6 @@ jobs:
             3) Implementation process
             - Work checkpoint-by-checkpoint.
             - Keep changes minimal and aligned with the PR-body plan.
-            - Prefer safe, incremental edits over broad refactors unless the plan explicitly calls for it.
 
             4) Commit + push discipline (VERY IMPORTANT)
             You must NEVER end the run with uncommitted changes.
@@ -95,86 +99,57 @@ jobs:
             Additional commit triggers (commit + push immediately when any occurs):
             - You have modified 8+ files since the last commit.
             - You completed any runnable verification (typecheck/lint/tests/build).
-            - You are about to take a risky step (large refactor, config changes, dependency changes).
             - You suspect you might be approaching max turns: STOP, COMMIT+PUSH (WIP acceptable), then leave a handoff comment.
 
-            If something is only partially done, commit anyway with a clear checkpoint/WIP message; continuity is more important than perfection.
-
             5) Verification
-            - Prefer the repo’s canonical commands (CLAUDE.md if present).
+            - Prefer the repo's canonical commands (CLAUDE.md if present).
             - Typical checks for this repo:
               - npm ci (or npm install if no lockfile)
               - npm run typecheck
               - npm run lint
               - npx vitest run
               - npm run build
-            - Run the most relevant commands for the touched areas; run the full set when feasible.
-            - If a command fails:
-              - Fix it if reasonable.
-              - If not immediately fixable, still commit your progress and leave a PR comment with:
-                - the exact command run
-                - the failure summary
-                - likely causes and suggested next steps
 
             6) Human decisions / clarifying questions
-            If you need a human decision (requirements ambiguity, risky behavior change, uncertain API contract):
-            - DO NOT guess.
-            - Post a PR comment titled "## Questions for human" with numbered questions and 2–3 options each.
+            If you need a human decision:
+            - Post a PR comment titled "## Questions for human" with numbered questions and 2-3 options each.
             - Add label: AWAITING-FEEDBACK
-            - Commit and push any safe progress already made (even partial), ensure working tree is clean, then stop.
+            - Commit and push any safe progress already made, ensure working tree is clean, then stop.
 
             When the human replies (comment begins with /agent), you will resume and continue from the current branch state.
 
             7) Output and handoff
-            When you complete the PR-body plan:
+            When complete:
             - Ensure everything is committed and pushed.
-            - Post a PR comment titled "## Implementation summary" including:
-              - What changed (high level)
-              - Files/areas touched (brief)
-              - How verified (commands run + results)
-              - Any follow-ups or known limitations
+            - Post "## Implementation summary" with what changed + how verified.
 
-            If you are close to max turns or must stop early:
-            - Commit+push (WIP acceptable), ensure no uncommitted changes.
-            - Post a PR comment titled "## Handoff" including:
-              - What's done
-              - What's next (explicit next checkpoint)
-              - Any blockers / missing permissions / failing commands
-              - Whether CI currently passes (best known)
+            If stopping early:
+            - Commit+push (WIP ok), then post "## Handoff" with what's done / next / blockers.
 
             8) Shell safety rules
             - Avoid shell pipelines/redirection (no &&, ||, |, >, 2>&1).
             - Run commands as separate steps.
-            - Keep commits small and clean.
 
-      # --- Robust "awaiting feedback" handling ---
-      # If Claude couldn't label AWAITING-FEEDBACK due to tool perms, detect the marker comment and apply the label here.
-
-      - name: If Questions for human comment exists, ensure AWAITING-FEEDBACK label
+      - name: If Questions for human comment exists (anywhere), ensure AWAITING-FEEDBACK label
         if: success()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           PR="${{ github.event.pull_request.number }}"
           REPO="${{ github.repository }}"
 
-          # Check if the latest claude-authored comment includes the expected header.
+          # Detect if ANY comment contains the header, not just the latest.
           HAS_Q="$(gh pr view "$PR" --repo "$REPO" --json comments \
-            -q '.comments | map(select(.author.login == "claude[bot]")) | last | .body // ""' \
-            | grep -q '^## Questions for human' && echo yes || echo no)"
+            -q '.comments | map(.body // "") | any(test("^## Questions for human"; "m"))')"
 
-          if [ "$HAS_Q" = "yes" ]; then
-            echo "Detected questions for human; applying AWAITING-FEEDBACK label."
+          if [ "$HAS_Q" = "true" ]; then
+            echo "Detected '## Questions for human' in comments; applying AWAITING-FEEDBACK label."
             gh pr edit "$PR" --repo "$REPO" --add-label "AWAITING-FEEDBACK" || true
           else
-            echo "No questions-for-human marker detected."
+            echo "No 'Questions for human' marker detected."
           fi
 
       - name: Cleanup IN-PROGRESS (always)
         if: always()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           gh pr edit ${{ github.event.pull_request.number }} --repo ${{ github.repository }} \
@@ -182,8 +157,6 @@ jobs:
 
       - name: On success - if awaiting feedback, stop here (do not set NEEDS-REVIEW)
         if: success()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           PR="${{ github.event.pull_request.number }}"
@@ -197,8 +170,6 @@ jobs:
 
       - name: On success -> NEEDS-REVIEW (clear retries)
         if: success()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           gh pr edit ${{ github.event.pull_request.number }} --repo ${{ github.repository }} \
@@ -208,15 +179,12 @@ jobs:
 
       - name: On failure -> retry ladder / halt
         if: failure()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           PR="${{ github.event.pull_request.number }}"
           REPO="${{ github.repository }}"
           LABELS="$(gh pr view "$PR" --repo "$REPO" --json labels -q '.labels[].name')"
 
-          # If the agent intentionally went to awaiting-feedback, do not count as failure.
           if echo "$LABELS" | grep -q '^AWAITING-FEEDBACK$'; then
             echo "AWAITING-FEEDBACK present on failure; not applying retry ladder."
             exit 0

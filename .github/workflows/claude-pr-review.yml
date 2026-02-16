@@ -2,8 +2,6 @@
 name: Claude Code Review (with Progress + Fix Links)
 
 on:
-  pull_request:
-    types: [opened, synchronize, ready_for_review, reopened]
   issue_comment:
     types: [created]
 
@@ -16,24 +14,20 @@ jobs:
       issues: read
       id-token: write
 
-    # Run on:
-    # - PR lifecycle events (existing behavior), OR
-    # - PR comment containing /claude-review by a trusted role
+    # Run ONLY when a trusted user comments "/review" on a PR
     if: |
-      github.event_name == 'pull_request' ||
+      github.event_name == 'issue_comment' &&
+      github.event.issue.pull_request != null &&
+      github.event.comment.body != null &&
+      contains(github.event.comment.body, '/review') &&
       (
-        github.event_name == 'issue_comment' &&
-        github.event.issue.pull_request != null &&
-        contains(github.event.comment.body, '/claude-review') &&
-        (github.event.comment.author_association == 'OWNER' ||
-         github.event.comment.author_association == 'MEMBER' ||
-         github.event.comment.author_association == 'COLLABORATOR')
+        github.event.comment.author_association == 'OWNER' ||
+        github.event.comment.author_association == 'MEMBER' ||
+        github.event.comment.author_association == 'COLLABORATOR'
       )
 
     steps:
-      # For issue_comment events, we need to fetch the PR and checkout its head SHA.
-      - name: Resolve PR metadata (issue_comment only)
-        if: github.event_name == 'issue_comment'
+      - name: Resolve PR metadata
         id: pr
         env:
           GH_TOKEN: ${{ github.token }}
@@ -46,21 +40,13 @@ jobs:
           echo "head_ref=$(echo "$pr_json" | jq -r '.head.ref')" >> "$GITHUB_OUTPUT"
           echo "base_ref=$(echo "$pr_json" | jq -r '.base.ref')" >> "$GITHUB_OUTPUT"
 
-      - name: Checkout repository (pull_request)
-        if: github.event_name == 'pull_request'
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Checkout repository (issue_comment)
-        if: github.event_name == 'issue_comment'
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: ${{ steps.pr.outputs.head_sha }}
 
       - name: Claude PR Review
-        # Pin to avoid the AJV depsCount/deps crash seen in @v1
         uses: anthropics/claude-code-action@01e756b34ef7a1447e9508f674143b07d20c2631
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}

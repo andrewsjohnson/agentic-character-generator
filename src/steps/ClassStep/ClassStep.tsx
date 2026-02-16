@@ -104,6 +104,51 @@ export function ClassStep({ character, updateCharacter }: StepProps) {
               You will choose your skills in a later step.
             </p>
           </div>
+
+          {/* Features Section */}
+          <div className="mb-6">
+            <h4 className="text-lg font-semibold mb-2">Level 1 Features</h4>
+            <div className="space-y-3">
+              {selectedClass.features.map((feature, index) => (
+                <div key={index} className="bg-gray-50 p-3 rounded">
+                  <h5 className="font-semibold text-sm mb-1">{feature.name}</h5>
+                  <p className="text-xs text-gray-700">{feature.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Spellcasting Section */}
+          {selectedClass.spellcasting && (
+            <div className="mb-6">
+              <h4 className="text-lg font-semibold mb-2">Spellcasting</h4>
+              <div className="bg-blue-50 p-3 rounded space-y-2 text-sm">
+                <p>
+                  <span className="font-medium">Spellcasting Ability:</span>{' '}
+                  {selectedClass.spellcasting.ability}
+                </p>
+                <p>
+                  <span className="font-medium">Cantrips Known:</span>{' '}
+                  {selectedClass.spellcasting.cantripsKnown}
+                </p>
+                <p>
+                  <span className="font-medium">Spell Slots (Level 1):</span>{' '}
+                  {selectedClass.spellcasting.spellSlots}
+                </p>
+                {selectedClass.spellcasting.spellsPrepared !== undefined && (
+                  <p>
+                    <span className="font-medium">Spells Prepared/Known:</span>{' '}
+                    {selectedClass.spellcasting.spellsPrepared}
+                  </p>
+                )}
+                {selectedClass.spellcasting.isPactMagic && (
+                  <p className="text-xs text-gray-600 italic">
+                    This class uses Pact Magic instead of standard Spellcasting.
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

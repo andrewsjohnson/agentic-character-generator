@@ -8,13 +8,23 @@ jobs:
   plan:
     if: github.event.label.name == 'AGENT'
     runs-on: ubuntu-latest
+
+    # Keep workflow token minimal; use GitHub App token for gh label edits.
     permissions:
       contents: read
-      issues: write
-      id-token: write
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Export token for gh
+        run: echo "GH_TOKEN=${{ steps.app-token.outputs.token }}" >> "$GITHUB_ENV"
 
       - uses: anthropics/claude-code-action@v1
         with:
@@ -46,14 +56,11 @@ jobs:
             - Do not create a PR.
             - End the comment with:
               To approve, apply the "APPROVED" label to the issue.
-              To revise, comment with "/revise-plan" followed by the requested revisions
-            
+              To revise, comment with "/plan-revise" followed by the requested revisions.
 
       - name: Relabel issue (AGENT -> PLANNED)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          gh issue edit ${{ github.event.issue.number }} \
+          gh issue edit ${{ github.event.issue.number }} --repo ${{ github.repository }} \
             --remove-label "AGENT" \
             --add-label "PLANNED"

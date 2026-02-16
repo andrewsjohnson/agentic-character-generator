@@ -10,13 +10,23 @@ jobs:
       github.event.issue.pull_request == null &&
       startsWith(github.event.comment.body, '/plan-revise')
     runs-on: ubuntu-latest
+
+    # Use GitHub App token via GH_TOKEN; keep default perms minimal.
     permissions:
-      issues: write
+      contents: read
 
     steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Export token for gh
+        run: echo "GH_TOKEN=${{ steps.app-token.outputs.token }}" >> "$GITHUB_ENV"
+
       - name: Add NEEDS-PLAN-REVISION label (idempotent)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           gh issue edit ${{ github.event.issue.number }} --repo ${{ github.repository }} \

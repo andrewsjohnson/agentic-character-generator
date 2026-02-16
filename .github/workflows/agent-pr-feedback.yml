@@ -10,14 +10,23 @@ jobs:
       github.event.issue.pull_request != null &&
       startsWith(github.event.comment.body, '/agent')
     runs-on: ubuntu-latest
+
+    # Use GitHub App token via GH_TOKEN; keep default perms minimal.
     permissions:
-      pull-requests: write
-      issues: write
+      contents: read
 
     steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Export token for gh
+        run: echo "GH_TOKEN=${{ steps.app-token.outputs.token }}" >> "$GITHUB_ENV"
+
       - name: If awaiting feedback, re-trigger implementation
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           PR="${{ github.event.issue.number }}"

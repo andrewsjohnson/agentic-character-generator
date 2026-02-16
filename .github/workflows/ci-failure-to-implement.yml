@@ -9,15 +9,23 @@ jobs:
   trigger_fix:
     if: github.event.workflow_run.conclusion == 'failure'
     runs-on: ubuntu-latest
+
+    # Keep default token minimal; use GitHub App token for gh edits.
     permissions:
-      pull-requests: write
-      issues: write
       contents: read
 
     steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Export token for gh
+        run: echo "GH_TOKEN=${{ steps.app-token.outputs.token }}" >> "$GITHUB_ENV"
+
       - name: Find PR and label it for fixing (unless in-progress/awaiting/halted)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
 
@@ -28,6 +36,14 @@ jobs:
           fi
 
           REPO="${{ github.repository }}"
+
+          # Fork protection: do not automate on forks
+          HEAD_FULL_NAME="$(gh pr view "$PR_NUMBER" --repo "$REPO" --json headRepository -q '.headRepository.full_name // ""')"
+          if [ "$HEAD_FULL_NAME" != "$REPO" ]; then
+            echo "PR is from a fork ($HEAD_FULL_NAME); skipping automation."
+            exit 0
+          fi
+
           LABELS="$(gh pr view "$PR_NUMBER" --repo "$REPO" --json labels -q '.labels[].name')"
 
           echo "$LABELS" | grep -q '^IN-PROGRESS$' && { echo "IN-PROGRESS; skip."; exit 0; }
@@ -36,7 +52,7 @@ jobs:
 
           gh pr edit "$PR_NUMBER" --repo "$REPO" --add-label "CI-FAILED" || true
 
-          # If review was pending, bounce back to implementer for fixes
+          # Bounce back to implementer for fixes
           gh pr edit "$PR_NUMBER" --repo "$REPO" \
             --remove-label "NEEDS-REVIEW" \
             --add-label "IMPLEMENT"

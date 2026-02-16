@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import type { StepProps } from '../types';
 import type { AbilityScores, AbilityName } from '../../types/ability';
 import { ABILITY_NAMES } from '../../types/ability';
@@ -24,25 +24,17 @@ const ABILITY_LABELS: Record<AbilityName, string> = {
   CHA: 'Charisma',
 };
 
-// Default base scores (all 8s for point buy start)
-const DEFAULT_POINT_BUY_SCORES: AbilityScores = {
-  STR: 8,
-  DEX: 8,
-  CON: 8,
-  INT: 8,
-  WIS: 8,
-  CHA: 8,
-};
-
-// Default empty scores for standard array (undefined values)
-const DEFAULT_STANDARD_ARRAY_SCORES: AbilityScores = {
-  STR: 8,
-  DEX: 8,
-  CON: 8,
-  INT: 8,
-  WIS: 8,
-  CHA: 8,
-};
+// Helper function to get default ability scores (all 8s)
+function getDefaultAbilityScores(): AbilityScores {
+  return {
+    STR: 8,
+    DEX: 8,
+    CON: 8,
+    INT: 8,
+    WIS: 8,
+    CHA: 8,
+  };
+}
 
 export function AbilityScoreStep({ character, updateCharacter }: StepProps) {
   // Initialize mode from character or default to point-buy
@@ -55,7 +47,7 @@ export function AbilityScoreStep({ character, updateCharacter }: StepProps) {
     if (character.baseAbilityScores) {
       return character.baseAbilityScores;
     }
-    return mode === 'point-buy' ? DEFAULT_POINT_BUY_SCORES : DEFAULT_STANDARD_ARRAY_SCORES;
+    return getDefaultAbilityScores();
   });
 
   // Sync with character state when navigating back to this step
@@ -81,12 +73,8 @@ export function AbilityScoreStep({ character, updateCharacter }: StepProps) {
   // Handle mode switching
   const handleModeChange = (newMode: Mode) => {
     setMode(newMode);
-    // Reset scores to appropriate defaults when switching modes
-    if (newMode === 'point-buy') {
-      setBaseScores(DEFAULT_POINT_BUY_SCORES);
-    } else {
-      setBaseScores(DEFAULT_STANDARD_ARRAY_SCORES);
-    }
+    // Reset scores to defaults when switching modes
+    setBaseScores(getDefaultAbilityScores());
   };
 
   // Point Buy handlers
@@ -111,7 +99,7 @@ export function AbilityScoreStep({ character, updateCharacter }: StepProps) {
   };
 
   const handleReset = () => {
-    setBaseScores(DEFAULT_POINT_BUY_SCORES);
+    setBaseScores(getDefaultAbilityScores());
   };
 
   // Calculate Point Buy stats
@@ -133,18 +121,17 @@ export function AbilityScoreStep({ character, updateCharacter }: StepProps) {
     setBaseScores({ ...baseScores, [ability]: numValue });
   };
 
-  // Get available values for standard array dropdowns
-  const getAvailableValues = (currentAbility: AbilityName): number[] => {
+  // Memoize available values for standard array dropdowns to avoid recalculating on each render
+  const availableValuesByAbility = useMemo(() => {
     const standardArray = Array.from(getStandardArray());
-    const usedValues = ABILITY_NAMES.filter((ability) => ability !== currentAbility).map(
-      (ability) => baseScores[ability]
-    );
-
-    // Filter out values that are already used by other abilities
-    return standardArray.filter(
-      (value) => !usedValues.includes(value) || value === baseScores[currentAbility]
-    );
-  };
+    return ABILITY_NAMES.reduce((acc, ability) => {
+      const usedValues = ABILITY_NAMES.filter((a) => a !== ability).map((a) => baseScores[a]);
+      acc[ability] = standardArray.filter(
+        (value) => !usedValues.includes(value) || value === baseScores[ability]
+      );
+      return acc;
+    }, {} as Record<AbilityName, number[]>);
+  }, [baseScores]);
 
   // Calculate Standard Array stats
   const isValidStandardArrayAssignment = isValidStandardArray(baseScores);
@@ -235,7 +222,10 @@ export function AbilityScoreStep({ character, updateCharacter }: StepProps) {
               const bonus = speciesBonuses[ability] ?? 0;
               const finalScore = finalScores[ability];
               const modifier = modifiers[ability];
-              const canIncrement = baseScore < 15 && totalPointsSpent < 27;
+              // Calculate if we can increment: check score limit and if we have enough budget for next increment
+              const nextCost = baseScore < 15 ? getPointBuyCost(baseScore + 1) : 0;
+              const incrementCost = nextCost - cost;
+              const canIncrement = baseScore < 15 && totalPointsSpent + incrementCost <= 27;
               const canDecrement = baseScore > 8;
 
               return (
@@ -338,7 +328,7 @@ export function AbilityScoreStep({ character, updateCharacter }: StepProps) {
               const bonus = speciesBonuses[ability] ?? 0;
               const finalScore = finalScores[ability];
               const modifier = modifiers[ability];
-              const availableValues = getAvailableValues(ability);
+              const availableValues = availableValuesByAbility[ability];
 
               return (
                 <div

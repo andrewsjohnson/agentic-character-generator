@@ -113,3 +113,78 @@ export function isValidPointBuy(scores: AbilityScores, budget = 27): boolean {
   const totalSpent = getTotalPointsSpent(scores);
   return totalSpent >= 0 && totalSpent <= budget;
 }
+
+/**
+ * Apply species ability bonuses to a set of base ability scores.
+ * Caps each final score at 20 (the standard D&D 5e maximum).
+ *
+ * @param baseScores - The base ability scores before species bonuses
+ * @param bonuses - The species ability bonuses (may be partial)
+ * @returns A new AbilityScores object with bonuses applied and capped at 20
+ *
+ * @example
+ * applySpeciesBonuses(
+ *   { STR: 15, DEX: 14, CON: 13, INT: 12, WIS: 10, CHA: 8 },
+ *   { STR: 2, CON: 1 }
+ * )
+ * // returns { STR: 17, DEX: 14, CON: 14, INT: 12, WIS: 10, CHA: 8 }
+ *
+ * @example
+ * // Capping at 20
+ * applySpeciesBonuses(
+ *   { STR: 19, DEX: 14, CON: 13, INT: 12, WIS: 10, CHA: 8 },
+ *   { STR: 2 }
+ * )
+ * // returns { STR: 20, DEX: 14, CON: 13, INT: 12, WIS: 10, CHA: 8 }
+ */
+export function applySpeciesBonuses(
+  baseScores: AbilityScores,
+  bonuses: AbilityBonuses
+): AbilityScores {
+  const result = {} as AbilityScores;
+
+  for (const ability of ABILITY_NAMES) {
+    const base = baseScores[ability];
+    const bonus = bonuses[ability] ?? 0;
+    const total = base + bonus;
+
+    // Cap at 20 (D&D 5e standard maximum)
+    result[ability] = Math.min(total, 20);
+  }
+
+  return result;
+}
+
+/**
+ * Get the standard array of ability scores.
+ * These are: 15, 14, 13, 12, 10, 8
+ *
+ * @returns The standard array as a number array
+ */
+export function getStandardArray(): number[] {
+  return [15, 14, 13, 12, 10, 8];
+}
+
+/**
+ * Check if a set of ability scores matches the standard array.
+ * The order doesn't matter - only that the six values match.
+ *
+ * @param scores - A complete set of ability scores
+ * @returns True if the scores match the standard array (in any order)
+ *
+ * @example
+ * isValidStandardArray({ STR: 15, DEX: 14, CON: 13, INT: 12, WIS: 10, CHA: 8 }) // returns true
+ * isValidStandardArray({ STR: 8, DEX: 10, CON: 12, INT: 13, WIS: 14, CHA: 15 }) // returns true
+ * isValidStandardArray({ STR: 15, DEX: 15, CON: 13, INT: 12, WIS: 10, CHA: 8 }) // returns false
+ */
+export function isValidStandardArray(scores: AbilityScores): boolean {
+  // Extract the six values from the scores object
+  const values = ABILITY_NAMES.map((ability) => scores[ability]);
+
+  // Sort both arrays for comparison
+  const sortedValues = [...values].sort((a, b) => a - b);
+  const sortedStandard = [...getStandardArray()].sort((a, b) => a - b);
+
+  // Check if they match exactly
+  return sortedValues.every((value, index) => value === sortedStandard[index]);
+}

@@ -44,7 +44,7 @@ jobs:
           TITLE="$(gh issue view "$ISSUE_NUMBER" --repo "$REPO" --json title -q .title)"
           SAFE_TITLE="$(echo "$TITLE" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-' | sed 's/^-//;s/-$//')"
           BRANCH="agent/issue-${ISSUE_NUMBER}-${SAFE_TITLE}"
-          BASE_BRANCH="$(gh repo view --repo "$REPO" --json defaultBranchRef -q .defaultBranchRef.name)"
+          BASE_BRANCH="$(gh repo view "$REPO" --json defaultBranchRef -q .defaultBranchRef.name)"
 
           PLAN="$(gh issue view "$ISSUE_NUMBER" --repo "$REPO" --json comments \
             -q '.comments | map(select(.body | test("^## Plan v[0-9]+"))) | last | .body // ""')"

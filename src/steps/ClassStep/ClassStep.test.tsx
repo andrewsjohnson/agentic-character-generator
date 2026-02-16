@@ -331,7 +331,8 @@ describe('ClassStep', () => {
     expect(fighterCard).toHaveClass('border-gray-300');
     const wizardDetails = screen.getAllByText('Wizard Details');
     expect(wizardDetails[wizardDetails.length - 1]).toBeInTheDocument();
-    expect(screen.queryByText('Fighter Details')).not.toBeInTheDocument();
+    // Fighter Details should not be in the document (use queryAllByText to handle potential duplicates during transition)
+    expect(screen.queryAllByText('Fighter Details').length).toBe(0);
   });
 
   it('renders correct number of skill choices for each class', () => {

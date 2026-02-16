@@ -1,0 +1,96 @@
+[
+  {
+    "name": "Acolyte",
+    "abilityOptions": ["INT", "WIS", "CHA"],
+    "skillProficiencies": ["Insight", "Religion"],
+    "toolProficiency": "Calligrapher's Supplies",
+    "equipment": [
+      { "name": "Calligrapher's Supplies", "quantity": 1 },
+      { "name": "Book (Prayers)", "quantity": 1 },
+      { "name": "Holy Symbol", "quantity": 1 },
+      { "name": "Parchment", "quantity": 10 },
+      { "name": "Robe", "quantity": 1 },
+      { "name": "8 GP", "quantity": 1 }
+    ],
+    "feature": {
+      "name": "Shelter of the Faithful",
+      "description": "As an acolyte, you command the respect of those who share your faith, and you can perform religious ceremonies. You and your companions can expect to receive free healing and care at a temple, shrine, or other established presence of your faith."
+    },
+    "originFeat": "Magic Initiate (Cleric)",
+    "personalityTraits": [],
+    "ideals": [],
+    "bonds": [],
+    "flaws": []
+  },
+  {
+    "name": "Criminal",
+    "abilityOptions": ["DEX", "CON", "INT"],
+    "skillProficiencies": ["Sleight of Hand", "Stealth"],
+    "toolProficiency": "Thieves' Tools",
+    "equipment": [
+      { "name": "Dagger", "quantity": 2 },
+      { "name": "Thieves' Tools", "quantity": 1 },
+      { "name": "Crowbar", "quantity": 1 },
+      { "name": "Pouch", "quantity": 2 },
+      { "name": "Clothes, Traveler's", "quantity": 1 },
+      { "name": "16 GP", "quantity": 1 }
+    ],
+    "feature": {
+      "name": "Criminal Contact",
+      "description": "You have a reliable and trustworthy contact who acts as your liaison to a network of other criminals. You know how to get messages to and from your contact, even over great distances."
+    },
+    "originFeat": "Alert",
+    "personalityTraits": [],
+    "ideals": [],
+    "bonds": [],
+    "flaws": []
+  },
+  {
+    "name": "Sage",
+    "abilityOptions": ["CON", "INT", "WIS"],
+    "skillProficiencies": ["Arcana", "History"],
+    "toolProficiency": "Calligrapher's Supplies",
+    "equipment": [
+      { "name": "Quarterstaff", "quantity": 1 },
+      { "name": "Calligrapher's Supplies", "quantity": 1 },
+      { "name": "Book (History)", "quantity": 1 },
+      { "name": "Parchment", "quantity": 8 },
+      { "name": "Robe", "quantity": 1 },
+      { "name": "8 GP", "quantity": 1 }
+    ],
+    "feature": {
+      "name": "Researcher",
+      "description": "When you attempt to learn or recall a piece of lore, if you do not know that information, you often know where and from whom you can obtain it. Usually, this information comes from a library, scriptorium, university, or a sage or other learned person or creature."
+    },
+    "originFeat": "Magic Initiate",
+    "personalityTraits": [],
+    "ideals": [],
+    "bonds": [],
+    "flaws": []
+  },
+  {
+    "name": "Soldier",
+    "abilityOptions": ["STR", "DEX", "CON"],
+    "skillProficiencies": ["Athletics", "Intimidation"],
+    "toolProficiency": "Gaming Set (choose one)",
+    "equipment": [
+      { "name": "Spear", "quantity": 1 },
+      { "name": "Shortbow", "quantity": 1 },
+      { "name": "Arrows", "quantity": 20 },
+      { "name": "Gaming Set (choose one)", "quantity": 1 },
+      { "name": "Healer's Kit", "quantity": 1 },
+      { "name": "Quiver", "quantity": 1 },
+      { "name": "Clothes, Traveler's", "quantity": 1 },
+      { "name": "14 GP", "quantity": 1 }
+    ],
+    "feature": {
+      "name": "Military Rank",
+      "description": "You have a military rank from your career as a soldier. Soldiers loyal to your former military organization still recognize your authority and influence, and they defer to you when you are in their presence."
+    },
+    "originFeat": "Savage Attacker",
+    "personalityTraits": [],
+    "ideals": [],
+    "bonds": [],
+    "flaws": []
+  }
+]

@@ -329,7 +329,7 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    const { container, rerender } = render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    const { container } = render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
     const classGrid = container.querySelector('.grid') as HTMLElement;
 
     // Bard has 3 skill choices

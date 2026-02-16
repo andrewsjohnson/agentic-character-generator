@@ -2,8 +2,8 @@
   {
     "name": "Barbarian",
     "hitDie": 12,
-    "primaryAbility": ["Strength"],
-    "savingThrows": ["Strength", "Constitution"],
+    "primaryAbility": ["STR"],
+    "savingThrows": ["STR", "CON"],
     "armorProficiencies": ["light", "medium", "shields"],
     "weaponProficiencies": ["simple", "martial"],
     "skillChoices": {
@@ -25,8 +25,8 @@
   {
     "name": "Bard",
     "hitDie": 8,
-    "primaryAbility": ["Charisma"],
-    "savingThrows": ["Dexterity", "Charisma"],
+    "primaryAbility": ["CHA"],
+    "savingThrows": ["DEX", "CHA"],
     "armorProficiencies": ["light"],
     "weaponProficiencies": ["simple", "hand crossbows", "longswords", "rapiers", "shortswords"],
     "skillChoices": {
@@ -44,7 +44,7 @@
       }
     ],
     "spellcasting": {
-      "ability": "Charisma",
+      "ability": "CHA",
       "cantripsKnown": 2,
       "spellSlots": 2,
       "spellsPrepared": 4
@@ -54,8 +54,8 @@
   {
     "name": "Cleric",
     "hitDie": 8,
-    "primaryAbility": ["Wisdom"],
-    "savingThrows": ["Wisdom", "Charisma"],
+    "primaryAbility": ["WIS"],
+    "savingThrows": ["WIS", "CHA"],
     "armorProficiencies": ["light", "medium", "shields"],
     "weaponProficiencies": ["simple"],
     "skillChoices": {
@@ -73,7 +73,7 @@
       }
     ],
     "spellcasting": {
-      "ability": "Wisdom",
+      "ability": "WIS",
       "cantripsKnown": 3,
       "spellSlots": 2
     },
@@ -82,8 +82,8 @@
   {
     "name": "Druid",
     "hitDie": 8,
-    "primaryAbility": ["Wisdom"],
-    "savingThrows": ["Intelligence", "Wisdom"],
+    "primaryAbility": ["WIS"],
+    "savingThrows": ["INT", "WIS"],
     "armorProficiencies": ["light", "medium", "shields"],
     "weaponProficiencies": ["clubs", "daggers", "darts", "javelins", "maces", "quarterstaffs", "scimitars", "sickles", "slings", "spears"],
     "skillChoices": {
@@ -101,7 +101,7 @@
       }
     ],
     "spellcasting": {
-      "ability": "Wisdom",
+      "ability": "WIS",
       "cantripsKnown": 2,
       "spellSlots": 2
     },
@@ -110,8 +110,8 @@
   {
     "name": "Fighter",
     "hitDie": 10,
-    "primaryAbility": ["Strength", "Dexterity"],
-    "savingThrows": ["Strength", "Constitution"],
+    "primaryAbility": ["STR", "DEX"],
+    "savingThrows": ["STR", "CON"],
     "armorProficiencies": ["light", "medium", "heavy", "shields"],
     "weaponProficiencies": ["simple", "martial"],
     "skillChoices": {
@@ -133,8 +133,8 @@
   {
     "name": "Monk",
     "hitDie": 8,
-    "primaryAbility": ["Dexterity", "Wisdom"],
-    "savingThrows": ["Strength", "Dexterity"],
+    "primaryAbility": ["DEX", "WIS"],
+    "savingThrows": ["STR", "DEX"],
     "armorProficiencies": [],
     "weaponProficiencies": ["simple", "shortswords"],
     "skillChoices": {
@@ -156,8 +156,8 @@
   {
     "name": "Paladin",
     "hitDie": 10,
-    "primaryAbility": ["Strength", "Charisma"],
-    "savingThrows": ["Wisdom", "Charisma"],
+    "primaryAbility": ["STR", "CHA"],
+    "savingThrows": ["WIS", "CHA"],
     "armorProficiencies": ["light", "medium", "heavy", "shields"],
     "weaponProficiencies": ["simple", "martial"],
     "skillChoices": {
@@ -179,8 +179,8 @@
   {
     "name": "Ranger",
     "hitDie": 10,
-    "primaryAbility": ["Dexterity", "Wisdom"],
-    "savingThrows": ["Strength", "Dexterity"],
+    "primaryAbility": ["DEX", "WIS"],
+    "savingThrows": ["STR", "DEX"],
     "armorProficiencies": ["light", "medium", "shields"],
     "weaponProficiencies": ["simple", "martial"],
     "skillChoices": {
@@ -202,8 +202,8 @@
   {
     "name": "Rogue",
     "hitDie": 8,
-    "primaryAbility": ["Dexterity"],
-    "savingThrows": ["Dexterity", "Intelligence"],
+    "primaryAbility": ["DEX"],
+    "savingThrows": ["DEX", "INT"],
     "armorProficiencies": ["light"],
     "weaponProficiencies": ["simple", "hand crossbows", "longswords", "rapiers", "shortswords"],
     "skillChoices": {
@@ -229,8 +229,8 @@
   {
     "name": "Sorcerer",
     "hitDie": 6,
-    "primaryAbility": ["Charisma"],
-    "savingThrows": ["Constitution", "Charisma"],
+    "primaryAbility": ["CHA"],
+    "savingThrows": ["CON", "CHA"],
     "armorProficiencies": [],
     "weaponProficiencies": ["daggers", "darts", "slings", "quarterstaffs", "light crossbows"],
     "skillChoices": {
@@ -248,7 +248,7 @@
       }
     ],
     "spellcasting": {
-      "ability": "Charisma",
+      "ability": "CHA",
       "cantripsKnown": 4,
       "spellSlots": 2,
       "spellsPrepared": 2
@@ -258,8 +258,8 @@
   {
     "name": "Warlock",
     "hitDie": 8,
-    "primaryAbility": ["Charisma"],
-    "savingThrows": ["Wisdom", "Charisma"],
+    "primaryAbility": ["CHA"],
+    "savingThrows": ["WIS", "CHA"],
     "armorProficiencies": ["light"],
     "weaponProficiencies": ["simple"],
     "skillChoices": {
@@ -277,7 +277,7 @@
       }
     ],
     "spellcasting": {
-      "ability": "Charisma",
+      "ability": "CHA",
       "cantripsKnown": 2,
       "spellSlots": 1,
       "spellsPrepared": 2,
@@ -288,8 +288,8 @@
   {
     "name": "Wizard",
     "hitDie": 6,
-    "primaryAbility": ["Intelligence"],
-    "savingThrows": ["Intelligence", "Wisdom"],
+    "primaryAbility": ["INT"],
+    "savingThrows": ["INT", "WIS"],
     "armorProficiencies": [],
     "weaponProficiencies": ["daggers", "darts", "slings", "quarterstaffs", "light crossbows"],
     "skillChoices": {
@@ -307,7 +307,7 @@
       }
     ],
     "spellcasting": {
-      "ability": "Intelligence",
+      "ability": "INT",
       "cantripsKnown": 3,
       "spellSlots": 2,
       "spellsPrepared": 6

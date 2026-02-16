@@ -5,14 +5,14 @@ import {
   getStartingEquipmentOptions,
   getClassSkillChoices,
 } from './classes';
-import type { CharacterClass } from '../types/class';
+import type { CharacterClass, WeaponProficiency } from '../types/class';
 
 // Mock class data matching SRD specifications
 const mockFighter: CharacterClass = {
   name: 'Fighter',
   hitDie: 10,
-  primaryAbility: ['Strength', 'Dexterity'],
-  savingThrows: ['Strength', 'Constitution'],
+  primaryAbility: ['STR', 'DEX'],
+  savingThrows: ['STR', 'CON'],
   armorProficiencies: ['light', 'medium', 'heavy', 'shields'],
   weaponProficiencies: ['simple', 'martial'],
   skillChoices: {
@@ -35,10 +35,10 @@ const mockFighter: CharacterClass = {
 const mockWizard: CharacterClass = {
   name: 'Wizard',
   hitDie: 6,
-  primaryAbility: ['Intelligence'],
-  savingThrows: ['Intelligence', 'Wisdom'],
+  primaryAbility: ['INT'],
+  savingThrows: ['INT', 'WIS'],
   armorProficiencies: [],
-  weaponProficiencies: ['daggers', 'darts', 'slings', 'quarterstaffs', 'light crossbows'],
+  weaponProficiencies: ['daggers', 'darts', 'slings', 'quarterstaffs', 'light crossbows'] as WeaponProficiency[],
   skillChoices: {
     options: ['Arcana', 'History', 'Insight', 'Investigation', 'Medicine', 'Religion'],
     count: 2,
@@ -54,7 +54,7 @@ const mockWizard: CharacterClass = {
     },
   ],
   spellcasting: {
-    ability: 'Intelligence',
+    ability: 'INT',
     cantripsKnown: 3,
     spellSlots: 2,
     spellsPrepared: 6,
@@ -65,10 +65,10 @@ const mockWizard: CharacterClass = {
 const mockRogue: CharacterClass = {
   name: 'Rogue',
   hitDie: 8,
-  primaryAbility: ['Dexterity'],
-  savingThrows: ['Dexterity', 'Intelligence'],
+  primaryAbility: ['DEX'],
+  savingThrows: ['DEX', 'INT'],
   armorProficiencies: ['light'],
-  weaponProficiencies: ['simple', 'hand crossbows', 'longswords', 'rapiers', 'shortswords'],
+  weaponProficiencies: ['simple', 'hand crossbows', 'longswords', 'rapiers', 'shortswords'] as WeaponProficiency[],
   skillChoices: {
     options: ['Acrobatics', 'Athletics', 'Deception', 'Insight', 'Intimidation', 'Investigation', 'Perception', 'Performance', 'Persuasion', 'Sleight of Hand', 'Stealth'],
     count: 4,
@@ -93,8 +93,8 @@ const mockRogue: CharacterClass = {
 const mockCleric: CharacterClass = {
   name: 'Cleric',
   hitDie: 8,
-  primaryAbility: ['Wisdom'],
-  savingThrows: ['Wisdom', 'Charisma'],
+  primaryAbility: ['WIS'],
+  savingThrows: ['WIS', 'CHA'],
   armorProficiencies: ['light', 'medium', 'shields'],
   weaponProficiencies: ['simple'],
   skillChoices: {
@@ -112,7 +112,7 @@ const mockCleric: CharacterClass = {
     },
   ],
   spellcasting: {
-    ability: 'Wisdom',
+    ability: 'WIS',
     cantripsKnown: 3,
     spellSlots: 2,
   },
@@ -122,8 +122,8 @@ const mockCleric: CharacterClass = {
 const mockBarbarian: CharacterClass = {
   name: 'Barbarian',
   hitDie: 12,
-  primaryAbility: ['Strength'],
-  savingThrows: ['Strength', 'Constitution'],
+  primaryAbility: ['STR'],
+  savingThrows: ['STR', 'CON'],
   armorProficiencies: ['light', 'medium', 'shields'],
   weaponProficiencies: ['simple', 'martial'],
   skillChoices: {
@@ -146,10 +146,10 @@ const mockBarbarian: CharacterClass = {
 const mockSorcerer: CharacterClass = {
   name: 'Sorcerer',
   hitDie: 6,
-  primaryAbility: ['Charisma'],
-  savingThrows: ['Constitution', 'Charisma'],
+  primaryAbility: ['CHA'],
+  savingThrows: ['CON', 'CHA'],
   armorProficiencies: [],
-  weaponProficiencies: ['daggers', 'darts', 'slings', 'quarterstaffs', 'light crossbows'],
+  weaponProficiencies: ['daggers', 'darts', 'slings', 'quarterstaffs', 'light crossbows'] as WeaponProficiency[],
   skillChoices: {
     options: ['Arcana', 'Deception', 'Insight', 'Intimidation', 'Persuasion', 'Religion'],
     count: 2,
@@ -165,7 +165,7 @@ const mockSorcerer: CharacterClass = {
     },
   ],
   spellcasting: {
-    ability: 'Charisma',
+    ability: 'CHA',
     cantripsKnown: 4,
     spellSlots: 2,
     spellsPrepared: 2,
@@ -208,7 +208,7 @@ describe('getClassProficiencies', () => {
 
   it('Fighter has STR and CON saving throws', () => {
     const result = getClassProficiencies(mockFighter);
-    expect(result.savingThrows).toEqual(['Strength', 'Constitution']);
+    expect(result.savingThrows).toEqual(['STR', 'CON']);
     expect(result.savingThrows).toHaveLength(2);
   });
 
@@ -224,7 +224,7 @@ describe('getClassProficiencies', () => {
 
   it('Wizard has INT and WIS saving throws', () => {
     const result = getClassProficiencies(mockWizard);
-    expect(result.savingThrows).toEqual(['Intelligence', 'Wisdom']);
+    expect(result.savingThrows).toEqual(['INT', 'WIS']);
     expect(result.savingThrows).toHaveLength(2);
   });
 
@@ -235,7 +235,7 @@ describe('getClassProficiencies', () => {
 
   it('Cleric has WIS and CHA saving throws', () => {
     const result = getClassProficiencies(mockCleric);
-    expect(result.savingThrows).toEqual(['Wisdom', 'Charisma']);
+    expect(result.savingThrows).toEqual(['WIS', 'CHA']);
   });
 
   it('Rogue has light armor only', () => {
@@ -245,7 +245,7 @@ describe('getClassProficiencies', () => {
 
   it('Rogue has DEX and INT saving throws', () => {
     const result = getClassProficiencies(mockRogue);
-    expect(result.savingThrows).toEqual(['Dexterity', 'Intelligence']);
+    expect(result.savingThrows).toEqual(['DEX', 'INT']);
   });
 
   it('All classes have exactly 2 saving throw proficiencies', () => {

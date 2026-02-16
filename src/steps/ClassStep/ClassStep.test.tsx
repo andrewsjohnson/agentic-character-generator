@@ -114,11 +114,14 @@ describe('ClassStep', () => {
     const fighterCard = within(classGrid).getByText('Fighter').closest('button');
     fireEvent.click(fighterCard!);
 
-    // Check proficiencies
-    expect(screen.getByText(/Armor:/)).toBeInTheDocument();
-    expect(screen.getByText(/light, medium, heavy, shields/)).toBeInTheDocument();
-    expect(screen.getByText(/Weapons:/)).toBeInTheDocument();
-    expect(screen.getByText(/Saving Throws:/)).toBeInTheDocument();
+    // Get detail panel
+    const detailPanel = screen.getByText('Fighter Details').closest('div') as HTMLElement;
+
+    // Check proficiencies within detail panel
+    expect(within(detailPanel).getByText(/Armor:/)).toBeInTheDocument();
+    expect(within(detailPanel).getByText(/light, medium, heavy, shields/)).toBeInTheDocument();
+    expect(within(detailPanel).getByText(/Weapons:/)).toBeInTheDocument();
+    expect(within(detailPanel).getByText(/Saving Throws:/)).toBeInTheDocument();
   });
 
   it('displays "None" for classes with no armor proficiencies', () => {
@@ -132,8 +135,11 @@ describe('ClassStep', () => {
     const monkCard = within(classGrid).getByText('Monk').closest('button');
     fireEvent.click(monkCard!);
 
-    // Should show "None" for armor
-    const armorText = screen.getByText(/Armor:/);
+    // Get detail panel
+    const detailPanel = screen.getByText('Monk Details').closest('div') as HTMLElement;
+
+    // Should show "None" for armor within detail panel
+    const armorText = within(detailPanel).getByText(/Armor:/);
     expect(armorText.parentElement).toHaveTextContent('Armor: None');
   });
 
@@ -148,10 +154,13 @@ describe('ClassStep', () => {
     const fighterCard = within(classGrid).getByText('Fighter').closest('button');
     fireEvent.click(fighterCard!);
 
-    // Check skill choices
-    expect(screen.getByText(/Choose 2 from:/)).toBeInTheDocument();
-    expect(screen.getByText(/Acrobatics, Animal Handling, Athletics/)).toBeInTheDocument();
-    expect(screen.getByText(/You will choose your skills in a later step/)).toBeInTheDocument();
+    // Get detail panel
+    const detailPanel = screen.getByText('Fighter Details').closest('div') as HTMLElement;
+
+    // Check skill choices within detail panel
+    expect(within(detailPanel).getByText(/Choose 2 from:/)).toBeInTheDocument();
+    expect(within(detailPanel).getByText(/Acrobatics, Animal Handling, Athletics/)).toBeInTheDocument();
+    expect(within(detailPanel).getByText(/You will choose your skills in a later step/)).toBeInTheDocument();
   });
 
   it('displays features correctly', () => {
@@ -165,10 +174,13 @@ describe('ClassStep', () => {
     const fighterCard = within(classGrid).getByText('Fighter').closest('button');
     fireEvent.click(fighterCard!);
 
-    // Check features
-    expect(screen.getByText('Level 1 Features')).toBeInTheDocument();
-    expect(screen.getByText('Fighting Style')).toBeInTheDocument();
-    expect(screen.getByText('Second Wind')).toBeInTheDocument();
+    // Get detail panel
+    const detailPanel = screen.getByText('Fighter Details').closest('div') as HTMLElement;
+
+    // Check features within detail panel
+    expect(within(detailPanel).getByText('Level 1 Features')).toBeInTheDocument();
+    expect(within(detailPanel).getByText('Fighting Style')).toBeInTheDocument();
+    expect(within(detailPanel).getByText('Second Wind')).toBeInTheDocument();
   });
 
   it('displays spellcasting info for caster classes', () => {
@@ -182,12 +194,15 @@ describe('ClassStep', () => {
     const wizardCard = within(classGrid).getByText('Wizard').closest('button');
     fireEvent.click(wizardCard!);
 
-    // Check spellcasting section
-    expect(screen.getByText('Spellcasting')).toBeInTheDocument();
-    expect(screen.getByText(/Spellcasting Ability:/)).toBeInTheDocument();
-    expect(screen.getByText(/INT/)).toBeInTheDocument();
-    expect(screen.getByText(/Cantrips Known:/)).toBeInTheDocument();
-    expect(screen.getByText(/Spell Slots \(Level 1\):/)).toBeInTheDocument();
+    // Get detail panel
+    const detailPanel = screen.getByText('Wizard Details').closest('div') as HTMLElement;
+
+    // Check spellcasting section within detail panel
+    expect(within(detailPanel).getByText('Spellcasting')).toBeInTheDocument();
+    expect(within(detailPanel).getByText(/Spellcasting Ability:/)).toBeInTheDocument();
+    expect(within(detailPanel).getByText(/INT/)).toBeInTheDocument();
+    expect(within(detailPanel).getByText(/Cantrips Known:/)).toBeInTheDocument();
+    expect(within(detailPanel).getByText(/Spell Slots \(Level 1\):/)).toBeInTheDocument();
   });
 
   it('does not display spellcasting section for non-caster classes', () => {
@@ -216,8 +231,11 @@ describe('ClassStep', () => {
     const warlockCard = within(classGrid).getByText('Warlock').closest('button');
     fireEvent.click(warlockCard!);
 
-    // Check for pact magic note
-    expect(screen.getByText(/Pact Magic/i)).toBeInTheDocument();
+    // Get detail panel
+    const detailPanel = screen.getByText('Warlock Details').closest('div') as HTMLElement;
+
+    // Check for pact magic note within detail panel
+    expect(within(detailPanel).getByText(/Pact Magic/i)).toBeInTheDocument();
   });
 
   it('displays spells prepared for classes that prepare spells', () => {
@@ -231,8 +249,11 @@ describe('ClassStep', () => {
     const wizardCard = within(classGrid).getByText('Wizard').closest('button');
     fireEvent.click(wizardCard!);
 
-    // Check for spells prepared
-    expect(screen.getByText(/Spells Prepared\/Known:/)).toBeInTheDocument();
+    // Get detail panel
+    const detailPanel = screen.getByText('Wizard Details').closest('div') as HTMLElement;
+
+    // Check for spells prepared within detail panel
+    expect(within(detailPanel).getByText(/Spells Prepared\/Known:/)).toBeInTheDocument();
   });
 
   it('initializes with character current class', () => {
@@ -312,12 +333,14 @@ describe('ClassStep', () => {
     // Bard has 3 skill choices
     const bardCard = within(classGrid).getByText('Bard').closest('button');
     fireEvent.click(bardCard!);
-    expect(screen.getByText(/Choose 3 from:/)).toBeInTheDocument();
+    let detailPanel = screen.getByText('Bard Details').closest('div') as HTMLElement;
+    expect(within(detailPanel).getByText(/Choose 3 from:/)).toBeInTheDocument();
 
     // Rogue has 4 skill choices
     const rogueCard = within(classGrid).getByText('Rogue').closest('button');
     fireEvent.click(rogueCard!);
-    expect(screen.getByText(/Choose 4 from:/)).toBeInTheDocument();
+    detailPanel = screen.getByText('Rogue Details').closest('div') as HTMLElement;
+    expect(within(detailPanel).getByText(/Choose 4 from:/)).toBeInTheDocument();
   });
 
   it('displays all class features with descriptions', () => {
@@ -331,12 +354,15 @@ describe('ClassStep', () => {
     const barbarianCard = within(classGrid).getByText('Barbarian').closest('button');
     fireEvent.click(barbarianCard!);
 
-    // Check that both features are displayed
-    expect(screen.getByText('Rage')).toBeInTheDocument();
-    expect(screen.getByText('Unarmored Defense')).toBeInTheDocument();
+    // Get detail panel
+    const detailPanel = screen.getByText('Barbarian Details').closest('div') as HTMLElement;
 
-    // Check that descriptions are present
-    expect(screen.getByText(/primal ferocity/i)).toBeInTheDocument();
-    expect(screen.getByText(/Armor Class equals 10/i)).toBeInTheDocument();
+    // Check that both features are displayed within detail panel
+    expect(within(detailPanel).getByText('Rage')).toBeInTheDocument();
+    expect(within(detailPanel).getByText('Unarmored Defense')).toBeInTheDocument();
+
+    // Check that descriptions are present within detail panel
+    expect(within(detailPanel).getByText(/primal ferocity/i)).toBeInTheDocument();
+    expect(within(detailPanel).getByText(/Armor Class equals 10/i)).toBeInTheDocument();
   });
 });

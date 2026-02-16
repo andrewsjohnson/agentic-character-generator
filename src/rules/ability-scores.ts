@@ -160,10 +160,10 @@ export function applyAbilityBonuses(
  * Get the standard array of ability scores.
  * These are: 15, 14, 13, 12, 10, 8
  *
- * @returns The standard array as a number array
+ * @returns The standard array as a readonly number array
  */
-export function getStandardArray(): number[] {
-  return [15, 14, 13, 12, 10, 8];
+export function getStandardArray(): readonly number[] {
+  return [15, 14, 13, 12, 10, 8] as const;
 }
 
 /**

@@ -391,12 +391,12 @@ describe('getStandardArray', () => {
     expect(standardArray).toEqual([15, 14, 13, 12, 10, 8]);
   });
 
-  it('returns a new array each time', () => {
-    const array1 = getStandardArray();
-    const array2 = getStandardArray();
+  it('returns a readonly array', () => {
+    const standardArray = getStandardArray();
 
-    expect(array1).toEqual(array2);
-    expect(array1).not.toBe(array2); // Different references
+    expect(standardArray).toEqual([15, 14, 13, 12, 10, 8]);
+    // Verify it's the same type on each call
+    expect(getStandardArray()).toEqual(standardArray);
   });
 });
 

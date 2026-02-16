@@ -1,0 +1,317 @@
+[
+  {
+    "name": "Barbarian",
+    "hitDie": 12,
+    "primaryAbility": ["Strength"],
+    "savingThrows": ["Strength", "Constitution"],
+    "armorProficiencies": ["light", "medium", "shields"],
+    "weaponProficiencies": ["simple", "martial"],
+    "skillChoices": {
+      "options": ["Animal Handling", "Athletics", "Intimidation", "Nature", "Perception", "Survival"],
+      "count": 2
+    },
+    "features": [
+      {
+        "name": "Rage",
+        "description": "In battle, you fight with primal ferocity. On your turn, you can enter a rage as a bonus action. While raging, you gain advantage on Strength checks and saving throws, +2 bonus to damage rolls with melee weapons using Strength, resistance to bludgeoning/piercing/slashing damage. Rage lasts 1 minute and you can rage 2 times before needing a long rest."
+      },
+      {
+        "name": "Unarmored Defense",
+        "description": "While you are not wearing any armor, your Armor Class equals 10 + your Dexterity modifier + your Constitution modifier. You can use a shield and still gain this benefit."
+      }
+    ],
+    "subclasses": []
+  },
+  {
+    "name": "Bard",
+    "hitDie": 8,
+    "primaryAbility": ["Charisma"],
+    "savingThrows": ["Dexterity", "Charisma"],
+    "armorProficiencies": ["light"],
+    "weaponProficiencies": ["simple", "hand crossbows", "longswords", "rapiers", "shortswords"],
+    "skillChoices": {
+      "options": ["Acrobatics", "Animal Handling", "Arcana", "Athletics", "Deception", "History", "Insight", "Intimidation", "Investigation", "Medicine", "Nature", "Perception", "Performance", "Persuasion", "Religion", "Sleight of Hand", "Stealth", "Survival"],
+      "count": 3
+    },
+    "features": [
+      {
+        "name": "Spellcasting",
+        "description": "You have learned to untangle and reshape the fabric of reality in harmony with your wishes and music. Your spells are part of your vast repertoire, magic that you can tune to different situations."
+      },
+      {
+        "name": "Bardic Inspiration",
+        "description": "You can inspire others through stirring words or music. As a bonus action, choose one creature other than yourself within 60 feet who can hear you. That creature gains one Bardic Inspiration die, a d6. Once within the next 10 minutes, the creature can roll the die and add the number rolled to one ability check, attack roll, or saving throw. You can use this feature a number of times equal to your Charisma modifier (minimum of 1) and regain expended uses on a long rest."
+      }
+    ],
+    "spellcasting": {
+      "ability": "Charisma",
+      "cantripsKnown": 2,
+      "spellSlots": 2,
+      "spellsPrepared": 4
+    },
+    "subclasses": []
+  },
+  {
+    "name": "Cleric",
+    "hitDie": 8,
+    "primaryAbility": ["Wisdom"],
+    "savingThrows": ["Wisdom", "Charisma"],
+    "armorProficiencies": ["light", "medium", "shields"],
+    "weaponProficiencies": ["simple"],
+    "skillChoices": {
+      "options": ["History", "Insight", "Medicine", "Persuasion", "Religion"],
+      "count": 2
+    },
+    "features": [
+      {
+        "name": "Spellcasting",
+        "description": "As a conduit for divine power, you can cast cleric spells. You prepare the list of cleric spells that are available for you to cast, choosing from the cleric spell list. You can change your list of prepared spells when you finish a long rest."
+      },
+      {
+        "name": "Divine Domain",
+        "description": "Choose one domain related to your deity: Knowledge, Life, Light, Nature, Tempest, Trickery, or War. Your choice grants you domain spells and other features at 1st level."
+      }
+    ],
+    "spellcasting": {
+      "ability": "Wisdom",
+      "cantripsKnown": 3,
+      "spellSlots": 2
+    },
+    "subclasses": []
+  },
+  {
+    "name": "Druid",
+    "hitDie": 8,
+    "primaryAbility": ["Wisdom"],
+    "savingThrows": ["Intelligence", "Wisdom"],
+    "armorProficiencies": ["light", "medium", "shields"],
+    "weaponProficiencies": ["clubs", "daggers", "darts", "javelins", "maces", "quarterstaffs", "scimitars", "sickles", "slings", "spears"],
+    "skillChoices": {
+      "options": ["Arcana", "Animal Handling", "Insight", "Medicine", "Nature", "Perception", "Religion", "Survival"],
+      "count": 2
+    },
+    "features": [
+      {
+        "name": "Druidic",
+        "description": "You know Druidic, the secret language of druids. You can speak the language and use it to leave hidden messages. You and others who know this language automatically spot such a message. Others spot the message's presence with a successful DC 15 Wisdom (Perception) check but can't decipher it without magic."
+      },
+      {
+        "name": "Spellcasting",
+        "description": "Drawing on the divine essence of nature itself, you can cast spells to shape that essence to your will. You prepare the list of druid spells that are available for you to cast, choosing from the druid spell list."
+      }
+    ],
+    "spellcasting": {
+      "ability": "Wisdom",
+      "cantripsKnown": 2,
+      "spellSlots": 2
+    },
+    "subclasses": []
+  },
+  {
+    "name": "Fighter",
+    "hitDie": 10,
+    "primaryAbility": ["Strength", "Dexterity"],
+    "savingThrows": ["Strength", "Constitution"],
+    "armorProficiencies": ["light", "medium", "heavy", "shields"],
+    "weaponProficiencies": ["simple", "martial"],
+    "skillChoices": {
+      "options": ["Acrobatics", "Animal Handling", "Athletics", "History", "Insight", "Intimidation", "Perception", "Survival"],
+      "count": 2
+    },
+    "features": [
+      {
+        "name": "Fighting Style",
+        "description": "You adopt a particular style of fighting as your specialty. Choose one of the following options: Archery, Defense, Dueling, Great Weapon Fighting, Protection, or Two-Weapon Fighting. You can't take a Fighting Style option more than once, even if you later get to choose again."
+      },
+      {
+        "name": "Second Wind",
+        "description": "You have a limited well of stamina that you can draw on to protect yourself from harm. On your turn, you can use a bonus action to regain hit points equal to 1d10 + your fighter level. Once you use this feature, you must finish a short or long rest before you can use it again."
+      }
+    ],
+    "subclasses": []
+  },
+  {
+    "name": "Monk",
+    "hitDie": 8,
+    "primaryAbility": ["Dexterity", "Wisdom"],
+    "savingThrows": ["Strength", "Dexterity"],
+    "armorProficiencies": [],
+    "weaponProficiencies": ["simple", "shortswords"],
+    "skillChoices": {
+      "options": ["Acrobatics", "Athletics", "History", "Insight", "Religion", "Stealth"],
+      "count": 2
+    },
+    "features": [
+      {
+        "name": "Unarmored Defense",
+        "description": "While you are wearing no armor and not wielding a shield, your AC equals 10 + your Dexterity modifier + your Wisdom modifier."
+      },
+      {
+        "name": "Martial Arts",
+        "description": "Your practice of martial arts gives you mastery of combat styles that use unarmed strikes and monk weapons. You gain the following benefits while unarmed or wielding only monk weapons and you aren't wearing armor or wielding a shield: You can use Dexterity instead of Strength for attack and damage rolls, you can roll a d4 in place of the normal damage of your unarmed strike or monk weapon, and when you use the Attack action with an unarmed strike or monk weapon on your turn, you can make one unarmed strike as a bonus action."
+      }
+    ],
+    "subclasses": []
+  },
+  {
+    "name": "Paladin",
+    "hitDie": 10,
+    "primaryAbility": ["Strength", "Charisma"],
+    "savingThrows": ["Wisdom", "Charisma"],
+    "armorProficiencies": ["light", "medium", "heavy", "shields"],
+    "weaponProficiencies": ["simple", "martial"],
+    "skillChoices": {
+      "options": ["Athletics", "Insight", "Intimidation", "Medicine", "Persuasion", "Religion"],
+      "count": 2
+    },
+    "features": [
+      {
+        "name": "Divine Sense",
+        "description": "The presence of strong evil registers on your senses like a noxious odor, and powerful good rings like heavenly music in your ears. As an action, you can open your awareness to detect such forces. Until the end of your next turn, you know the location of any celestial, fiend, or undead within 60 feet of you that is not behind total cover. You can use this feature a number of times equal to 1 + your Charisma modifier. When you finish a long rest, you regain all expended uses."
+      },
+      {
+        "name": "Lay on Hands",
+        "description": "Your blessed touch can heal wounds. You have a pool of healing power that replenishes when you take a long rest. With that pool, you can restore a total number of hit points equal to your paladin level × 5. As an action, you can touch a creature and draw power from the pool to restore a number of hit points to that creature, up to the maximum amount remaining in your pool."
+      }
+    ],
+    "subclasses": []
+  },
+  {
+    "name": "Ranger",
+    "hitDie": 10,
+    "primaryAbility": ["Dexterity", "Wisdom"],
+    "savingThrows": ["Strength", "Dexterity"],
+    "armorProficiencies": ["light", "medium", "shields"],
+    "weaponProficiencies": ["simple", "martial"],
+    "skillChoices": {
+      "options": ["Animal Handling", "Athletics", "Insight", "Investigation", "Nature", "Perception", "Stealth", "Survival"],
+      "count": 3
+    },
+    "features": [
+      {
+        "name": "Favored Enemy",
+        "description": "You have significant experience studying, tracking, hunting, and even talking to a certain type of enemy. Choose a type of favored enemy: aberrations, beasts, celestials, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, or undead. Alternatively, you can select two races of humanoid as favored enemies. You have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them."
+      },
+      {
+        "name": "Natural Explorer",
+        "description": "You are particularly familiar with one type of natural environment and are adept at traveling and surviving in such regions. Choose one type of favored terrain: arctic, coast, desert, forest, grassland, mountain, swamp, or the Underdark. When you make an Intelligence or Wisdom check related to your favored terrain, your proficiency bonus is doubled if you are using a skill that you're proficient in."
+      }
+    ],
+    "subclasses": []
+  },
+  {
+    "name": "Rogue",
+    "hitDie": 8,
+    "primaryAbility": ["Dexterity"],
+    "savingThrows": ["Dexterity", "Intelligence"],
+    "armorProficiencies": ["light"],
+    "weaponProficiencies": ["simple", "hand crossbows", "longswords", "rapiers", "shortswords"],
+    "skillChoices": {
+      "options": ["Acrobatics", "Athletics", "Deception", "Insight", "Intimidation", "Investigation", "Perception", "Performance", "Persuasion", "Sleight of Hand", "Stealth"],
+      "count": 4
+    },
+    "features": [
+      {
+        "name": "Expertise",
+        "description": "At 1st level, choose two of your skill proficiencies, or one of your skill proficiencies and your proficiency with thieves' tools. Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies."
+      },
+      {
+        "name": "Sneak Attack",
+        "description": "You know how to strike subtly and exploit a foe's distraction. Once per turn, you can deal an extra 1d6 damage to one creature you hit with an attack if you have advantage on the attack roll. The attack must use a finesse or a ranged weapon. You don't need advantage on the attack roll if another enemy of the target is within 5 feet of it, that enemy isn't incapacitated, and you don't have disadvantage on the attack roll."
+      },
+      {
+        "name": "Thieves' Cant",
+        "description": "During your rogue training you learned thieves' cant, a secret mix of dialect, jargon, and code that allows you to hide messages in seemingly normal conversation. Only another creature that knows thieves' cant understands such messages."
+      }
+    ],
+    "subclasses": []
+  },
+  {
+    "name": "Sorcerer",
+    "hitDie": 6,
+    "primaryAbility": ["Charisma"],
+    "savingThrows": ["Constitution", "Charisma"],
+    "armorProficiencies": [],
+    "weaponProficiencies": ["daggers", "darts", "slings", "quarterstaffs", "light crossbows"],
+    "skillChoices": {
+      "options": ["Arcana", "Deception", "Insight", "Intimidation", "Persuasion", "Religion"],
+      "count": 2
+    },
+    "features": [
+      {
+        "name": "Spellcasting",
+        "description": "An event in your past, or in the life of a parent or ancestor, left an indelible mark on you, infusing you with arcane magic. This font of magic, whatever its origin, fuels your spells."
+      },
+      {
+        "name": "Sorcerous Origin",
+        "description": "Choose a sorcerous origin, which describes the source of your innate magical power: Draconic Bloodline or Wild Magic. Your choice grants you features when you choose it at 1st level."
+      }
+    ],
+    "spellcasting": {
+      "ability": "Charisma",
+      "cantripsKnown": 4,
+      "spellSlots": 2,
+      "spellsPrepared": 2
+    },
+    "subclasses": []
+  },
+  {
+    "name": "Warlock",
+    "hitDie": 8,
+    "primaryAbility": ["Charisma"],
+    "savingThrows": ["Wisdom", "Charisma"],
+    "armorProficiencies": ["light"],
+    "weaponProficiencies": ["simple"],
+    "skillChoices": {
+      "options": ["Arcana", "Deception", "History", "Intimidation", "Investigation", "Nature", "Religion"],
+      "count": 2
+    },
+    "features": [
+      {
+        "name": "Otherworldly Patron",
+        "description": "At 1st level, you have struck a bargain with an otherworldly being of your choice: the Archfey, the Fiend, or the Great Old One. Your choice grants you features at 1st level and again at 6th, 10th, and 14th level."
+      },
+      {
+        "name": "Pact Magic",
+        "description": "Your arcane research and the magic bestowed on you by your patron have given you facility with spells. You know two cantrips of your choice from the warlock spell list. You also know two 1st-level spells of your choice from the warlock spell list. The Spells Known column of the Warlock table shows when you learn more warlock spells of your choice."
+      }
+    ],
+    "spellcasting": {
+      "ability": "Charisma",
+      "cantripsKnown": 2,
+      "spellSlots": 1,
+      "spellsPrepared": 2,
+      "isPactMagic": true
+    },
+    "subclasses": []
+  },
+  {
+    "name": "Wizard",
+    "hitDie": 6,
+    "primaryAbility": ["Intelligence"],
+    "savingThrows": ["Intelligence", "Wisdom"],
+    "armorProficiencies": [],
+    "weaponProficiencies": ["daggers", "darts", "slings", "quarterstaffs", "light crossbows"],
+    "skillChoices": {
+      "options": ["Arcana", "History", "Insight", "Investigation", "Medicine", "Religion"],
+      "count": 2
+    },
+    "features": [
+      {
+        "name": "Spellcasting",
+        "description": "As a student of arcane magic, you have a spellbook containing spells that show the first glimmerings of your true power. At 1st level, you know three cantrips of your choice from the wizard spell list. You also have a spellbook containing six 1st-level wizard spells of your choice."
+      },
+      {
+        "name": "Arcane Recovery",
+        "description": "You have learned to regain some of your magical energy by studying your spellbook. Once per day when you finish a short rest, you can choose expended spell slots to recover. The spell slots can have a combined level that is equal to or less than half your wizard level (rounded up), and none of the slots can be 6th level or higher."
+      }
+    ],
+    "spellcasting": {
+      "ability": "Intelligence",
+      "cantripsKnown": 3,
+      "spellSlots": 2,
+      "spellsPrepared": 6
+    },
+    "subclasses": []
+  }
+]

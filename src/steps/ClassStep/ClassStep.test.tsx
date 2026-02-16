@@ -99,7 +99,8 @@ describe('ClassStep', () => {
     fireEvent.click(fighterCard!);
 
     // Detail panel should now be visible
-    expect(screen.getByText('Fighter Details')).toBeInTheDocument();
+    const fighterDetailPanels = screen.getAllByText('Fighter Details');
+    expect(fighterDetailPanels[fighterDetailPanels.length - 1]).toBeInTheDocument();
     expect(screen.getByText('Level 1 Features')).toBeInTheDocument();
   });
 
@@ -115,7 +116,8 @@ describe('ClassStep', () => {
     fireEvent.click(fighterCard!);
 
     // Get detail panel
-    const detailPanel = screen.getByText('Fighter Details').closest('div') as HTMLElement;
+    const fighterDetailPanels = screen.getAllByText('Fighter Details');
+    const detailPanel = fighterDetailPanels[fighterDetailPanels.length - 1].closest('div') as HTMLElement;
 
     // Check proficiencies within detail panel
     expect(within(detailPanel).getByText(/Armor:/)).toBeInTheDocument();
@@ -136,7 +138,8 @@ describe('ClassStep', () => {
     fireEvent.click(monkCard!);
 
     // Get detail panel
-    const detailPanel = screen.getByText('Monk Details').closest('div') as HTMLElement;
+    const monkDetailPanels = screen.getAllByText('Monk Details');
+    const detailPanel = monkDetailPanels[monkDetailPanels.length - 1].closest('div') as HTMLElement;
 
     // Should show "None" for armor within detail panel
     const armorText = within(detailPanel).getByText(/Armor:/);
@@ -155,7 +158,8 @@ describe('ClassStep', () => {
     fireEvent.click(fighterCard!);
 
     // Get detail panel
-    const detailPanel = screen.getByText('Fighter Details').closest('div') as HTMLElement;
+    const fighterDetailPanels = screen.getAllByText('Fighter Details');
+    const detailPanel = fighterDetailPanels[fighterDetailPanels.length - 1].closest('div') as HTMLElement;
 
     // Check skill choices within detail panel
     expect(within(detailPanel).getByText(/Choose 2 from:/)).toBeInTheDocument();
@@ -175,7 +179,8 @@ describe('ClassStep', () => {
     fireEvent.click(fighterCard!);
 
     // Get detail panel
-    const detailPanel = screen.getByText('Fighter Details').closest('div') as HTMLElement;
+    const fighterDetailPanels = screen.getAllByText('Fighter Details');
+    const detailPanel = fighterDetailPanels[fighterDetailPanels.length - 1].closest('div') as HTMLElement;
 
     // Check features within detail panel
     expect(within(detailPanel).getByText('Level 1 Features')).toBeInTheDocument();
@@ -195,7 +200,8 @@ describe('ClassStep', () => {
     fireEvent.click(wizardCard!);
 
     // Get detail panel
-    const detailPanel = screen.getByText('Wizard Details').closest('div') as HTMLElement;
+    const wizardDetailPanels = screen.getAllByText('Wizard Details');
+    const detailPanel = wizardDetailPanels[wizardDetailPanels.length - 1].closest('div') as HTMLElement;
 
     // Check spellcasting section within detail panel
     expect(within(detailPanel).getByText('Spellcasting')).toBeInTheDocument();
@@ -232,7 +238,8 @@ describe('ClassStep', () => {
     fireEvent.click(warlockCard!);
 
     // Get detail panel
-    const detailPanel = screen.getByText('Warlock Details').closest('div') as HTMLElement;
+    const warlockDetailPanels = screen.getAllByText('Warlock Details');
+    const detailPanel = warlockDetailPanels[warlockDetailPanels.length - 1].closest('div') as HTMLElement;
 
     // Check for pact magic note within detail panel
     expect(within(detailPanel).getByText(/Pact Magic/i)).toBeInTheDocument();
@@ -250,7 +257,8 @@ describe('ClassStep', () => {
     fireEvent.click(wizardCard!);
 
     // Get detail panel
-    const detailPanel = screen.getByText('Wizard Details').closest('div') as HTMLElement;
+    const wizardDetailPanels = screen.getAllByText('Wizard Details');
+    const detailPanel = wizardDetailPanels[wizardDetailPanels.length - 1].closest('div') as HTMLElement;
 
     // Check for spells prepared within detail panel
     expect(within(detailPanel).getByText(/Spells Prepared\/Known:/)).toBeInTheDocument();
@@ -280,7 +288,8 @@ describe('ClassStep', () => {
     expect(rogueCard).toHaveClass('border-blue-600');
 
     // Detail panel should be visible
-    expect(screen.getByText('Rogue Details')).toBeInTheDocument();
+    const rogueDetailPanels = screen.getAllByText('Rogue Details');
+    expect(rogueDetailPanels[rogueDetailPanels.length - 1]).toBeInTheDocument();
   });
 
   it('handles classes with multiple primary abilities', () => {
@@ -359,7 +368,8 @@ describe('ClassStep', () => {
     fireEvent.click(barbarianCard!);
 
     // Get detail panel
-    const detailPanel = screen.getByText('Barbarian Details').closest('div') as HTMLElement;
+    const barbarianDetailPanels = screen.getAllByText('Barbarian Details');
+    const detailPanel = barbarianDetailPanels[barbarianDetailPanels.length - 1].closest('div') as HTMLElement;
 
     // Check that both features are displayed within detail panel
     expect(within(detailPanel).getByText('Rage')).toBeInTheDocument();

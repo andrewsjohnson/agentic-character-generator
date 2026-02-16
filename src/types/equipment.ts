@@ -78,3 +78,13 @@ export type Gear = {
  * Use the `kind` field to narrow to the specific variant.
  */
 export type EquipmentItem = Weapon | Armor | Gear;
+
+/**
+ * Represents a starting equipment choice for a class.
+ * Each option is a string describing one complete alternative.
+ * Example: "(a) chain mail or (b) leather armor, longbow, and 20 arrows"
+ */
+export type EquipmentChoice = {
+  description: string;
+  options: string[];
+};

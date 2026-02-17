@@ -31,7 +31,6 @@ jobs:
       - name: Export token for gh
         run: echo "GH_TOKEN=${{ steps.app-token.outputs.token }}" >> "$GITHUB_ENV"
 
-
       - name: Fork guard (same-repo branches only)
         run: |
           set -euo pipefail
@@ -50,8 +49,15 @@ jobs:
           REPO="${{ github.repository }}"
           LABELS="$(gh pr view "$PR" --repo "$REPO" --json labels -q '.labels[].name')"
 
-          echo "$LABELS" | grep -q '^HALTED$' && { echo "HALTED set; exiting."; exit 0; }
-          echo "$LABELS" | grep -q '^AWAITING-FEEDBACK$' && { echo "AWAITING-FEEDBACK set; exiting."; exit 0; }
+          if echo "$LABELS" | grep -qx 'HALTED'; then
+            echo "HALTED set; exiting."
+            exit 0
+          fi
+
+          if echo "$LABELS" | grep -qx 'AWAITING-FEEDBACK'; then
+            echo "AWAITING-FEEDBACK set; exiting."
+            exit 0
+          fi
 
       - uses: actions/checkout@v4
         with:
@@ -60,17 +66,29 @@ jobs:
       - name: Checkout PR branch
         run: gh pr checkout ${{ github.event.issue.number }} --repo ${{ github.repository }}
 
-      - uses: anthropics/claude-code-action@v1
+      - name: Agent PR review (interactive comment mode)
+        uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ steps.app-token.outputs.token }}
           allowed_bots: agentic-automation-app[bot]
+          track_progress: true
+          include_fix_links: true
+          show_full_output: true
           claude_args: |
             --model opus
             --max-turns 45
             --settings ./claude/agents/reviewer.json
           prompt: |
             You are the REVIEW agent.
+
+            IMPORTANT WORKFLOW REQUIREMENT
+            - Use interactive review commenting style (progress updates + final review comment with findings).
+            - Post your final review as a normal PR comment (do not overwrite prior comments).
+            - Your final review comment body MUST include exactly one verdict line:
+              Verdict: APPROVE
+              or
+              Verdict: CHANGES_REQUESTED
 
             ROLE
             Senior Code Reviewer focused on correctness, readability, testability, regression risk, and repo conventions.
@@ -125,7 +143,7 @@ jobs:
             - Include 1-3 items max. If there are more, include ONE item titled "Follow-ups" with a checklist in the description.
             - If there are no follow-ups, omit the section entirely.
 
-            OUTPUT FORMAT (single PR comment)
+            OUTPUT FORMAT (single final PR review comment)
 
             Start with:
 
@@ -151,15 +169,18 @@ jobs:
             Verdict: CHANGES_REQUESTED
 
       - name: Apply labels based on verdict
+        id: apply-verdict
         run: |
           set -euo pipefail
           PR="${{ github.event.issue.number }}"
           REPO="${{ github.repository }}"
 
-          # Look at the latest claude[bot] comment that contains "Verdict:"
+          # Parse the latest comment that contains a verdict line.
           VERDICT="$(gh pr view "$PR" --repo "$REPO" --json comments \
-            -q '.comments | map(select(.author.login == "claude[bot]")) | map(select(.body | test("Verdict:"))) | last | .body // ""' \
+            -q '.comments | map(select(.body | test("Verdict:"))) | last | .body // ""' \
             | sed -n 's/.*Verdict: *//p' | tail -n 1 | tr -d '\r' | tr '[:lower:]' '[:upper:]')"
+
+          echo "verdict=${VERDICT}" >> "$GITHUB_OUTPUT"
 
           echo "Verdict parsed: ${VERDICT:-<none>}"
 
@@ -169,7 +190,10 @@ jobs:
           fi
 
           if [ "$VERDICT" = "CHANGES_REQUESTED" ]; then
-            gh pr comment "$PR" --repo "$REPO" --body "/agent-implement"
+            gh api repos/"$REPO"/dispatches \
+              --method POST \
+              --field event_type="agent-implement" \
+              --field client_payload[pr_number]="$PR"
             exit 0
           fi
 

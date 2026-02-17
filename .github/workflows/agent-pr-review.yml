@@ -50,8 +50,15 @@ jobs:
           REPO="${{ github.repository }}"
           LABELS="$(gh pr view "$PR" --repo "$REPO" --json labels -q '.labels[].name')"
 
-          echo "$LABELS" | grep -q '^HALTED$' && { echo "HALTED set; exiting."; exit 0; }
-          echo "$LABELS" | grep -q '^AWAITING-FEEDBACK$' && { echo "AWAITING-FEEDBACK set; exiting."; exit 0; }
+          if echo "$LABELS" | grep -qx 'HALTED'; then
+            echo "HALTED set; exiting."
+            exit 0
+          fi
+
+          if echo "$LABELS" | grep -qx 'AWAITING-FEEDBACK'; then
+            echo "AWAITING-FEEDBACK set; exiting."
+            exit 0
+          fi
 
       - uses: actions/checkout@v4
         with:

@@ -5,7 +5,7 @@ import { EquipmentStep } from './EquipmentStep';
 import type { CharacterDraft } from '../../types/character';
 import type { CharacterClass } from '../../types/class';
 import type { Background } from '../../types/background';
-import type { Species } from '../../types/species';
+import type { Species, Subspecies } from '../../types/species';
 
 // -- Test fixtures --
 
@@ -196,6 +196,24 @@ const mockSpeciesWithDexBonus: Species = {
   languages: ['Common', 'Elvish'],
   subspecies: [],
   abilityBonuses: { DEX: 2 },
+};
+
+const mockHillDwarfSubspecies: Subspecies = {
+  name: 'Hill Dwarf',
+  traits: [
+    { name: 'Dwarven Toughness', description: 'HP max increases by 1 per level' },
+  ],
+  abilityBonuses: { WIS: 1 },
+};
+
+const mockDwarfWithSubspecies: Species = {
+  name: 'Dwarf',
+  speed: 25,
+  size: 'Medium',
+  traits: [],
+  languages: ['Common', 'Dwarvish'],
+  subspecies: [mockHillDwarfSubspecies],
+  abilityBonuses: { CON: 2 },
 };
 
 function renderEquipmentStep(character: CharacterDraft = {}) {
@@ -469,6 +487,28 @@ describe('EquipmentStep', () => {
       expect(acDisplay).toBeInTheDocument();
       // AC = 11 (leather) + 3 (DEX with species bonus) = 14
       expect(acDisplay).toHaveTextContent('14');
+    });
+
+    it('applies stacked species and subspecies bonuses to Monk AC', () => {
+      // Hill Dwarf Monk: Dwarf CON +2, Hill Dwarf WIS +1
+      // Base DEX 14 (+2 mod), no DEX bonus
+      // Base WIS 14 (+2 mod), subspecies +1 WIS → WIS 15 (+2 mod, no change)
+      // Use Base WIS 15 (+2 mod), subspecies +1 WIS → WIS 16 (+3 mod)
+      // Monk unarmored defense: 10 + DEX mod + WIS mod = 10 + 2 + 3 = 15
+      renderEquipmentStep({
+        class: mockMonk,
+        species: mockDwarfWithSubspecies,
+        subspecies: mockHillDwarfSubspecies,
+        baseAbilityScores: { STR: 10, DEX: 14, CON: 13, INT: 8, WIS: 15, CHA: 10 },
+      });
+
+      // Select equipment choice to trigger summary display
+      fireEvent.click(screen.getByTestId('choice-0-option-0'));
+
+      const acDisplay = screen.getByTestId('ac-display');
+      expect(acDisplay).toBeInTheDocument();
+      // AC = 10 + 2 (DEX) + 3 (WIS 15 + Hill Dwarf +1 = 16, mod +3) = 15
+      expect(acDisplay).toHaveTextContent('15');
     });
   });
 });

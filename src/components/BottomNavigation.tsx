@@ -9,7 +9,7 @@ import {
   validateBackgroundStep,
   validateEquipmentStep,
 } from '../rules/validation';
-import { STEPS } from '../App';
+import { STEPS } from '../steps';
 
 type StepPath = (typeof STEPS)[number]['path'];
 
@@ -34,19 +34,22 @@ export function BottomNavigation({ character }: BottomNavigationProps) {
 
   const currentIndex = STEPS.findIndex(step => step.path === location.pathname);
 
-  const isFirstStep = currentIndex === 0;
-  const isLastStep = currentIndex === STEPS.length - 1;
-
-  const previousPath = isFirstStep ? null : STEPS[currentIndex - 1].path;
-  const nextPath = isLastStep ? null : STEPS[currentIndex + 1].path;
-
-  const currentPath = STEPS[currentIndex]?.path as StepPath | undefined;
+  const currentPath = currentIndex >= 0 ? (STEPS[currentIndex].path as StepPath) : null;
   const validateFn = currentPath ? STEP_VALIDATION[currentPath] : null;
 
   const validation = useMemo<ValidationResult | null>(() => {
     if (!validateFn) return null;
     return validateFn(character);
   }, [validateFn, character]);
+
+  // Don't render if we're not on a known step
+  if (currentIndex === -1) return null;
+
+  const isFirstStep = currentIndex === 0;
+  const isLastStep = currentIndex === STEPS.length - 1;
+
+  const previousPath = isFirstStep ? null : STEPS[currentIndex - 1].path;
+  const nextPath = isLastStep ? null : STEPS[currentIndex + 1].path;
 
   const isNextDisabled = isLastStep || (validation !== null && !validation.valid);
 
@@ -70,9 +73,6 @@ export function BottomNavigation({ character }: BottomNavigationProps) {
       navigate(nextPath);
     }
   };
-
-  // Don't render if we're not on a known step
-  if (currentIndex === -1) return null;
 
   return (
     <nav

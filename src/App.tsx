@@ -1,24 +1,8 @@
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
 import type { CharacterDraft } from './types/character';
-import { CharacterNameStep } from './steps/CharacterNameStep/CharacterNameStep';
-import { SpeciesStep } from './steps/SpeciesStep/SpeciesStep';
-import { ClassStep } from './steps/ClassStep/ClassStep';
-import { AbilityScoreStep } from './steps/AbilityScoreStep/AbilityScoreStep';
-import { BackgroundStep } from './steps/BackgroundStep/BackgroundStep';
-import { EquipmentStep } from './steps/EquipmentStep/EquipmentStep';
-import { ReviewStep } from './steps/ReviewStep/ReviewStep';
 import { BottomNavigation } from './components/BottomNavigation';
-
-export const STEPS = [
-  { path: '/name', label: 'Name', component: CharacterNameStep },
-  { path: '/species', label: 'Species', component: SpeciesStep },
-  { path: '/class', label: 'Class', component: ClassStep },
-  { path: '/ability-scores', label: 'Ability Scores', component: AbilityScoreStep },
-  { path: '/background', label: 'Background', component: BackgroundStep },
-  { path: '/equipment', label: 'Equipment', component: EquipmentStep },
-  { path: '/review', label: 'Review', component: ReviewStep },
-];
+import { STEPS } from './steps';
 
 function Navigation() {
   const location = useLocation();

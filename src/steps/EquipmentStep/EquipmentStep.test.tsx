@@ -511,9 +511,10 @@ describe('EquipmentStep', () => {
       expect(acDisplay).toHaveTextContent('15');
     });
 
-    it('applies subspecies CON bonus to Barbarian unarmored defense AC', () => {
+    it('applies base species CON bonus to Barbarian AC when subspecies is present', () => {
       // Hill Dwarf Barbarian: Dwarf CON +2, Hill Dwarf WIS +1
-      // Base CON 13 (+1 mod), species +2 CON → CON 15 (+2 mod)
+      // Note: Hill Dwarf WIS +1 does not affect Barbarian AC (uses CON, not WIS)
+      // Base CON 13 (+1 mod), base species +2 CON → CON 15 (+2 mod)
       // Base DEX 14 (+2 mod), no DEX bonus
       // Barbarian unarmored defense: 10 + DEX mod + CON mod = 10 + 2 + 2 = 14
       renderEquipmentStep({

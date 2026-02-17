@@ -1,5 +1,6 @@
 import type { AbilityName, AbilityModifiers } from '../types/ability';
 import type { HitDie } from '../types/class';
+import { SKILL_NAMES } from '../types/skill';
 import type { SkillName, SkillModifiers } from '../types/skill';
 
 /**
@@ -85,10 +86,11 @@ export function calculateSkillModifiers(
 ): SkillModifiers {
   const result: Partial<SkillModifiers> = {};
 
-  for (const [skill, ability] of Object.entries(SKILL_TO_ABILITY)) {
+  for (const skill of SKILL_NAMES) {
+    const ability = SKILL_TO_ABILITY[skill];
     const abilityMod = abilities[ability];
-    const isProficient = proficientSkills.includes(skill as SkillName);
-    result[skill as SkillName] = abilityMod + (isProficient ? proficiencyBonus : 0);
+    const isProficient = proficientSkills.includes(skill);
+    result[skill] = abilityMod + (isProficient ? proficiencyBonus : 0);
   }
 
   // All 18 skills are populated by the loop above, so the Partial is now complete.

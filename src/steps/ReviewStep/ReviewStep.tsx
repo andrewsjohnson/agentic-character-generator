@@ -1,7 +1,7 @@
 import type { StepProps } from '../types';
 import type { AbilityName } from '../../types/ability';
-import type { SkillName } from '../../types/skill';
 import { ABILITY_NAMES } from '../../types/ability';
+import { SKILL_NAMES } from '../../types/skill';
 import { calculateAllModifiers, applyAbilityBonuses } from '../../rules/ability-scores';
 import { calculateAC, getEquipmentByCategory } from '../../rules/equipment';
 import { getSpeciesTraits, getSpeciesSpeed, getSpeciesBonuses } from '../../rules/species';
@@ -303,7 +303,7 @@ export function ReviewStep({ character }: StepProps) {
             <div className="mb-8" data-testid="skills-section">
               <h3 className="text-xl font-bold mb-4">Skills</h3>
               <div className="space-y-1">
-                {(Object.keys(SKILL_TO_ABILITY) as SkillName[])
+                {[...SKILL_NAMES]
                   .sort((a, b) => a.localeCompare(b))
                   .map((skill) => {
                     const ability = SKILL_TO_ABILITY[skill];

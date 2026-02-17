@@ -25,8 +25,7 @@ describe('CharacterNameStep', () => {
       </MemoryRouter>
     );
 
-    const input = screen.getByLabelText(/character name/i) as HTMLInputElement;
-    expect(input.value).toBe('Gandalf');
+    expect(screen.getByLabelText(/character name/i)).toHaveValue('Gandalf');
   });
 
   it('updates character state when name is entered', () => {
@@ -51,7 +50,6 @@ describe('CharacterNameStep', () => {
       </MemoryRouter>
     );
 
-    const input = screen.getByLabelText(/character name/i) as HTMLInputElement;
-    expect(input.value).toBe('');
+    expect(screen.getByLabelText(/character name/i)).toHaveValue('');
   });
 });

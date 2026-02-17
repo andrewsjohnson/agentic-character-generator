@@ -4,6 +4,7 @@ import type { EquipmentItem, EquipmentChoice } from '../../types/equipment';
 import { getStartingEquipmentOptions, getFixedEquipment, getClassProficiencies } from '../../rules/classes';
 import { getBackgroundEquipment } from '../../rules/backgrounds';
 import { calculateAC, canUseEquipment, resolveStartingEquipment, resolveEquipmentRefs, getEquipmentByCategory } from '../../rules/equipment';
+import type { ACOptions } from '../../rules/equipment';
 import { calculateModifier } from '../../rules/ability-scores';
 
 type EquipmentChoiceCardProps = {
@@ -50,11 +51,12 @@ type EquipmentSummaryProps = {
   equipment: EquipmentItem[];
   proficiencies: string[];
   dexModifier: number | undefined;
+  acOptions?: ACOptions;
 };
 
-function EquipmentSummary({ equipment, proficiencies, dexModifier }: EquipmentSummaryProps) {
+function EquipmentSummary({ equipment, proficiencies, dexModifier, acOptions }: EquipmentSummaryProps) {
   const categorized = getEquipmentByCategory(equipment);
-  const ac = dexModifier !== undefined ? calculateAC(equipment, dexModifier) : undefined;
+  const ac = dexModifier !== undefined ? calculateAC(equipment, dexModifier, acOptions) : undefined;
 
   const categoryLabels: Record<string, string> = {
     weapon: 'Weapons',
@@ -161,6 +163,16 @@ export function EquipmentStep({ character, updateCharacter }: StepProps) {
     if (!character.baseAbilityScores) return undefined;
     return calculateModifier(character.baseAbilityScores.DEX);
   }, [character.baseAbilityScores]);
+
+  // AC options for class-based alternative formulas (Monk/Barbarian unarmored defense)
+  const acOptions = useMemo((): ACOptions | undefined => {
+    if (!character.class || !character.baseAbilityScores) return undefined;
+    return {
+      characterClassName: character.class.name,
+      wisModifier: calculateModifier(character.baseAbilityScores.WIS),
+      conModifier: calculateModifier(character.baseAbilityScores.CON),
+    };
+  }, [character.class, character.baseAbilityScores]);
 
   // Track selections for each choice
   const [selections, setSelections] = useState<Record<number, number>>({});
@@ -289,6 +301,7 @@ export function EquipmentStep({ character, updateCharacter }: StepProps) {
               equipment={resolvedEquipment}
               proficiencies={proficiencies}
               dexModifier={dexModifier}
+              acOptions={acOptions}
             />
           )}
         </div>

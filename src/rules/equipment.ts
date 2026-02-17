@@ -1,5 +1,5 @@
 import type { EquipmentItem, EquipmentChoice, Armor, EquipmentRef } from '../types/equipment';
-import equipmentData from '../data/equipment.json';
+import equipmentData from '../data/equipment-data';
 
 /**
  * Calculates Armor Class based on equipped items and DEX modifier.
@@ -98,7 +98,7 @@ export function canUseEquipment(
  * Returns undefined if the item is not found.
  */
 export function findEquipmentByName(name: string): EquipmentItem | undefined {
-  return (equipmentData as EquipmentItem[]).find(
+  return equipmentData.find(
     (item) => item.name === name
   );
 }

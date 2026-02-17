@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import type { StepProps } from '../types';
 import type { EquipmentItem, EquipmentChoice } from '../../types/equipment';
 import { getStartingEquipmentOptions, getFixedEquipment, getClassProficiencies } from '../../rules/classes';
@@ -166,22 +166,33 @@ export function EquipmentStep({ character, updateCharacter }: StepProps) {
   const [selections, setSelections] = useState<Record<number, number>>({});
 
   // Reset selections when class changes
-  useEffect(() => {
-    setSelections({});
-  }, [character.class?.name]);
+  const prevClassRef = useRef(character.class);
+  if (character.class !== prevClassRef.current) {
+    prevClassRef.current = character.class;
+    if (Object.keys(selections).length > 0) {
+      setSelections({});
+    }
+  }
 
   const handleOptionSelect = (choiceIndex: number, optionIndex: number) => {
-    setSelections((prev) => ({
-      ...prev,
-      [choiceIndex]: optionIndex,
-    }));
+    const newSelections = { ...selections, [choiceIndex]: optionIndex };
+    setSelections(newSelections);
+
+    // Check if all choices are now made and update character directly
+    const allMade = equipmentChoices.every((_, index) => newSelections[index] !== undefined);
+    if (allMade) {
+      const selectionArray = equipmentChoices.map((_, index) => newSelections[index] ?? 0);
+      const choiceItems = resolveStartingEquipment(equipmentChoices, selectionArray);
+      const fixedItems = resolveEquipmentRefs(fixedClassEquipment);
+      updateCharacter({ equipment: [...choiceItems, ...fixedItems] });
+    }
   };
 
-  // Check if all choices have been made
+  // Check if all choices have been made (for rendering)
   const allChoicesMade = equipmentChoices.length === 0 ||
     equipmentChoices.every((_, index) => selections[index] !== undefined);
 
-  // Build the resolved equipment list
+  // Build the resolved equipment list (for display only)
   const resolvedEquipment = useMemo((): EquipmentItem[] => {
     if (!allChoicesMade) return [];
 
@@ -191,13 +202,6 @@ export function EquipmentStep({ character, updateCharacter }: StepProps) {
 
     return [...choiceItems, ...fixedItems];
   }, [allChoicesMade, equipmentChoices, selections, fixedClassEquipment]);
-
-  // Update character state when equipment is resolved
-  useEffect(() => {
-    if (allChoicesMade && resolvedEquipment.length > 0) {
-      updateCharacter({ equipment: resolvedEquipment });
-    }
-  }, [resolvedEquipment, allChoicesMade]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!hasClass) {
     return (

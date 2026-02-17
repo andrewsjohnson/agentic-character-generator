@@ -79,12 +79,30 @@ export type Gear = {
  */
 export type EquipmentItem = Weapon | Armor | Gear;
 
+/** A reference to an equipment item by name, with an optional quantity. */
+export type EquipmentRef = {
+  name: string;
+  quantity?: number;
+};
+
 /**
  * Represents a starting equipment choice for a class.
- * Each option is a string describing one complete alternative.
- * Example: "(a) chain mail or (b) leather armor, longbow, and 20 arrows"
+ * Each option has a label for display and an array of item references
+ * that map to entries in equipment.json by name.
  */
 export type EquipmentChoice = {
   description: string;
-  options: string[];
+  options: {
+    label: string;
+    items: EquipmentRef[];
+  }[];
+};
+
+/**
+ * Starting equipment configuration for a class.
+ * Includes choices the player must make and fixed items everyone gets.
+ */
+export type StartingEquipment = {
+  choices: EquipmentChoice[];
+  fixed: EquipmentRef[];
 };

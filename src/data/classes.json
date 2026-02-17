@@ -10,6 +10,27 @@
       "options": ["Animal Handling", "Athletics", "Intimidation", "Nature", "Perception", "Survival"],
       "count": 2
     },
+    "startingEquipment": {
+      "choices": [
+        {
+          "description": "Choose a martial weapon",
+          "options": [
+            { "label": "Greataxe", "items": [{ "name": "Greataxe" }] },
+            { "label": "Any martial melee weapon", "items": [{ "name": "Handaxe", "quantity": 2 }] }
+          ]
+        },
+        {
+          "description": "Choose a secondary weapon",
+          "options": [
+            { "label": "Two handaxes", "items": [{ "name": "Handaxe", "quantity": 2 }] },
+            { "label": "Any simple weapon", "items": [{ "name": "Javelin" }] }
+          ]
+        }
+      ],
+      "fixed": [
+        { "name": "Javelin", "quantity": 4 }
+      ]
+    },
     "features": [
       {
         "name": "Rage",
@@ -32,6 +53,22 @@
     "skillChoices": {
       "options": ["Acrobatics", "Animal Handling", "Arcana", "Athletics", "Deception", "History", "Insight", "Intimidation", "Investigation", "Medicine", "Nature", "Perception", "Performance", "Persuasion", "Religion", "Sleight of Hand", "Stealth", "Survival"],
       "count": 3
+    },
+    "startingEquipment": {
+      "choices": [
+        {
+          "description": "Choose a weapon",
+          "options": [
+            { "label": "Rapier", "items": [{ "name": "Rapier" }] },
+            { "label": "Longsword", "items": [{ "name": "Longsword" }] },
+            { "label": "Any simple weapon", "items": [{ "name": "Dagger" }] }
+          ]
+        }
+      ],
+      "fixed": [
+        { "name": "Leather Armor" },
+        { "name": "Dagger" }
+      ]
     },
     "features": [
       {
@@ -62,6 +99,36 @@
       "options": ["History", "Insight", "Medicine", "Persuasion", "Religion"],
       "count": 2
     },
+    "startingEquipment": {
+      "choices": [
+        {
+          "description": "Choose a weapon",
+          "options": [
+            { "label": "Mace", "items": [{ "name": "Mace" }] },
+            { "label": "Warhammer (if proficient)", "items": [{ "name": "Warhammer" }] }
+          ]
+        },
+        {
+          "description": "Choose armor",
+          "options": [
+            { "label": "Scale Mail", "items": [{ "name": "Scale Mail" }] },
+            { "label": "Leather Armor", "items": [{ "name": "Leather Armor" }] },
+            { "label": "Chain Mail (if proficient)", "items": [{ "name": "Chain Mail" }] }
+          ]
+        },
+        {
+          "description": "Choose a secondary weapon",
+          "options": [
+            { "label": "Light crossbow and 20 bolts", "items": [{ "name": "Crossbow, Light" }, { "name": "Bolts (20)" }] },
+            { "label": "Any simple weapon", "items": [{ "name": "Club" }] }
+          ]
+        }
+      ],
+      "fixed": [
+        { "name": "Shield" },
+        { "name": "Holy Symbol (Amulet)" }
+      ]
+    },
     "features": [
       {
         "name": "Spellcasting",
@@ -89,6 +156,28 @@
     "skillChoices": {
       "options": ["Arcana", "Animal Handling", "Insight", "Medicine", "Nature", "Perception", "Religion", "Survival"],
       "count": 2
+    },
+    "startingEquipment": {
+      "choices": [
+        {
+          "description": "Choose a shield or weapon",
+          "options": [
+            { "label": "Wooden shield", "items": [{ "name": "Shield" }] },
+            { "label": "Any simple weapon", "items": [{ "name": "Club" }] }
+          ]
+        },
+        {
+          "description": "Choose a weapon",
+          "options": [
+            { "label": "Scimitar", "items": [{ "name": "Scimitar" }] },
+            { "label": "Any simple melee weapon", "items": [{ "name": "Quarterstaff" }] }
+          ]
+        }
+      ],
+      "fixed": [
+        { "name": "Leather Armor" },
+        { "name": "Druidic Focus (Sprig of Mistletoe)" }
+      ]
     },
     "features": [
       {
@@ -118,6 +207,32 @@
       "options": ["Acrobatics", "Animal Handling", "Athletics", "History", "Insight", "Intimidation", "Perception", "Survival"],
       "count": 2
     },
+    "startingEquipment": {
+      "choices": [
+        {
+          "description": "Choose armor",
+          "options": [
+            { "label": "Chain Mail", "items": [{ "name": "Chain Mail" }] },
+            { "label": "Leather Armor and Longbow with 20 arrows", "items": [{ "name": "Leather Armor" }, { "name": "Longbow" }, { "name": "Arrows (20)" }] }
+          ]
+        },
+        {
+          "description": "Choose a martial weapon and shield, or two martial weapons",
+          "options": [
+            { "label": "Martial weapon and shield", "items": [{ "name": "Longsword" }, { "name": "Shield" }] },
+            { "label": "Two martial weapons", "items": [{ "name": "Longsword" }, { "name": "Handaxe" }] }
+          ]
+        },
+        {
+          "description": "Choose a ranged weapon",
+          "options": [
+            { "label": "Light crossbow and 20 bolts", "items": [{ "name": "Crossbow, Light" }, { "name": "Bolts (20)" }] },
+            { "label": "Two handaxes", "items": [{ "name": "Handaxe", "quantity": 2 }] }
+          ]
+        }
+      ],
+      "fixed": []
+    },
     "features": [
       {
         "name": "Fighting Style",
@@ -140,6 +255,20 @@
     "skillChoices": {
       "options": ["Acrobatics", "Athletics", "History", "Insight", "Religion", "Stealth"],
       "count": 2
+    },
+    "startingEquipment": {
+      "choices": [
+        {
+          "description": "Choose a starting weapon",
+          "options": [
+            { "label": "Shortsword", "items": [{ "name": "Shortsword" }] },
+            { "label": "Any simple weapon", "items": [{ "name": "Handaxe" }] }
+          ]
+        }
+      ],
+      "fixed": [
+        { "name": "Dart", "quantity": 10 }
+      ]
     },
     "features": [
       {
@@ -164,6 +293,28 @@
       "options": ["Athletics", "Insight", "Intimidation", "Medicine", "Persuasion", "Religion"],
       "count": 2
     },
+    "startingEquipment": {
+      "choices": [
+        {
+          "description": "Choose weapons",
+          "options": [
+            { "label": "Martial weapon and shield", "items": [{ "name": "Longsword" }, { "name": "Shield" }] },
+            { "label": "Two martial weapons", "items": [{ "name": "Longsword" }, { "name": "Warhammer" }] }
+          ]
+        },
+        {
+          "description": "Choose a ranged weapon",
+          "options": [
+            { "label": "Five javelins", "items": [{ "name": "Javelin", "quantity": 5 }] },
+            { "label": "Any simple melee weapon", "items": [{ "name": "Mace" }] }
+          ]
+        }
+      ],
+      "fixed": [
+        { "name": "Chain Mail" },
+        { "name": "Holy Symbol (Amulet)" }
+      ]
+    },
     "features": [
       {
         "name": "Divine Sense",
@@ -187,6 +338,28 @@
       "options": ["Animal Handling", "Athletics", "Insight", "Investigation", "Nature", "Perception", "Stealth", "Survival"],
       "count": 3
     },
+    "startingEquipment": {
+      "choices": [
+        {
+          "description": "Choose armor",
+          "options": [
+            { "label": "Scale Mail", "items": [{ "name": "Scale Mail" }] },
+            { "label": "Leather Armor", "items": [{ "name": "Leather Armor" }] }
+          ]
+        },
+        {
+          "description": "Choose melee weapons",
+          "options": [
+            { "label": "Two shortswords", "items": [{ "name": "Shortsword", "quantity": 2 }] },
+            { "label": "Two simple melee weapons", "items": [{ "name": "Handaxe", "quantity": 2 }] }
+          ]
+        }
+      ],
+      "fixed": [
+        { "name": "Longbow" },
+        { "name": "Arrows (20)" }
+      ]
+    },
     "features": [
       {
         "name": "Favored Enemy",
@@ -209,6 +382,28 @@
     "skillChoices": {
       "options": ["Acrobatics", "Athletics", "Deception", "Insight", "Intimidation", "Investigation", "Perception", "Performance", "Persuasion", "Sleight of Hand", "Stealth"],
       "count": 4
+    },
+    "startingEquipment": {
+      "choices": [
+        {
+          "description": "Choose a weapon",
+          "options": [
+            { "label": "Rapier", "items": [{ "name": "Rapier" }] },
+            { "label": "Shortsword", "items": [{ "name": "Shortsword" }] }
+          ]
+        },
+        {
+          "description": "Choose a ranged weapon",
+          "options": [
+            { "label": "Shortbow and 20 arrows", "items": [{ "name": "Shortbow" }, { "name": "Arrows (20)" }] },
+            { "label": "Shortsword", "items": [{ "name": "Shortsword" }] }
+          ]
+        }
+      ],
+      "fixed": [
+        { "name": "Leather Armor" },
+        { "name": "Dagger", "quantity": 2 }
+      ]
     },
     "features": [
       {
@@ -236,6 +431,27 @@
     "skillChoices": {
       "options": ["Arcana", "Deception", "Insight", "Intimidation", "Persuasion", "Religion"],
       "count": 2
+    },
+    "startingEquipment": {
+      "choices": [
+        {
+          "description": "Choose a weapon",
+          "options": [
+            { "label": "Light crossbow and 20 bolts", "items": [{ "name": "Crossbow, Light" }, { "name": "Bolts (20)" }] },
+            { "label": "Any simple weapon", "items": [{ "name": "Quarterstaff" }] }
+          ]
+        },
+        {
+          "description": "Choose a focus",
+          "options": [
+            { "label": "Component pouch", "items": [{ "name": "Component Pouch" }] },
+            { "label": "Arcane focus", "items": [{ "name": "Arcane Focus (Rod)" }] }
+          ]
+        }
+      ],
+      "fixed": [
+        { "name": "Dagger", "quantity": 2 }
+      ]
     },
     "features": [
       {
@@ -266,6 +482,28 @@
       "options": ["Arcana", "Deception", "History", "Intimidation", "Investigation", "Nature", "Religion"],
       "count": 2
     },
+    "startingEquipment": {
+      "choices": [
+        {
+          "description": "Choose a weapon",
+          "options": [
+            { "label": "Light crossbow and 20 bolts", "items": [{ "name": "Crossbow, Light" }, { "name": "Bolts (20)" }] },
+            { "label": "Any simple weapon", "items": [{ "name": "Quarterstaff" }] }
+          ]
+        },
+        {
+          "description": "Choose a focus",
+          "options": [
+            { "label": "Component pouch", "items": [{ "name": "Component Pouch" }] },
+            { "label": "Arcane focus", "items": [{ "name": "Arcane Focus (Rod)" }] }
+          ]
+        }
+      ],
+      "fixed": [
+        { "name": "Leather Armor" },
+        { "name": "Dagger", "quantity": 2 }
+      ]
+    },
     "features": [
       {
         "name": "Otherworldly Patron",
@@ -295,6 +533,27 @@
     "skillChoices": {
       "options": ["Arcana", "History", "Insight", "Investigation", "Medicine", "Religion"],
       "count": 2
+    },
+    "startingEquipment": {
+      "choices": [
+        {
+          "description": "Choose a weapon",
+          "options": [
+            { "label": "Quarterstaff", "items": [{ "name": "Quarterstaff" }] },
+            { "label": "Dagger", "items": [{ "name": "Dagger" }] }
+          ]
+        },
+        {
+          "description": "Choose a focus",
+          "options": [
+            { "label": "Component pouch", "items": [{ "name": "Component Pouch" }] },
+            { "label": "Arcane focus", "items": [{ "name": "Arcane Focus (Crystal)" }] }
+          ]
+        }
+      ],
+      "fixed": [
+        { "name": "Spellbook" }
+      ]
     },
     "features": [
       {

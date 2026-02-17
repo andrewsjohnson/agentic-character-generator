@@ -3,9 +3,11 @@ import {
   calculateAC,
   canUseEquipment,
   resolveStartingEquipment,
+  resolveEquipmentRefs,
+  findEquipmentByName,
   getEquipmentByCategory,
 } from './equipment';
-import type { Armor, Weapon, Gear, EquipmentItem } from '../types/equipment';
+import type { Armor, Weapon, Gear, EquipmentItem, EquipmentChoice } from '../types/equipment';
 
 // -- Test fixtures using real SRD values from equipment.json --
 
@@ -404,19 +406,142 @@ describe('canUseEquipment', () => {
   });
 });
 
+describe('findEquipmentByName', () => {
+  it('finds Longsword in equipment data', () => {
+    const item = findEquipmentByName('Longsword');
+    expect(item).toBeDefined();
+    expect(item?.name).toBe('Longsword');
+    expect(item?.kind).toBe('weapon');
+  });
+
+  it('finds Chain Mail in equipment data', () => {
+    const item = findEquipmentByName('Chain Mail');
+    expect(item).toBeDefined();
+    expect(item?.kind).toBe('armor');
+  });
+
+  it('finds Spellbook in equipment data', () => {
+    const item = findEquipmentByName('Spellbook');
+    expect(item).toBeDefined();
+    expect(item?.kind).toBe('gear');
+  });
+
+  it('returns undefined for nonexistent item', () => {
+    const item = findEquipmentByName('Nonexistent Item');
+    expect(item).toBeUndefined();
+  });
+});
+
+describe('resolveEquipmentRefs', () => {
+  it('resolves a single weapon reference', () => {
+    const result = resolveEquipmentRefs([{ name: 'Longsword' }]);
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe('Longsword');
+    expect(result[0].kind).toBe('weapon');
+  });
+
+  it('resolves multiple references', () => {
+    const result = resolveEquipmentRefs([
+      { name: 'Chain Mail' },
+      { name: 'Longsword' },
+      { name: 'Shield' },
+    ]);
+    expect(result).toHaveLength(3);
+    expect(result[0].name).toBe('Chain Mail');
+    expect(result[1].name).toBe('Longsword');
+    expect(result[2].name).toBe('Shield');
+  });
+
+  it('handles quantity > 1 for weapons by repeating items', () => {
+    const result = resolveEquipmentRefs([{ name: 'Handaxe', quantity: 2 }]);
+    expect(result).toHaveLength(2);
+    expect(result[0].name).toBe('Handaxe');
+    expect(result[1].name).toBe('Handaxe');
+  });
+
+  it('handles quantity > 1 for Dart (weapon) by repeating items', () => {
+    const result = resolveEquipmentRefs([{ name: 'Dart', quantity: 10 }]);
+    // Dart is a weapon, so each is a separate item
+    expect(result).toHaveLength(10);
+    expect(result[0].name).toBe('Dart');
+    expect(result[0].kind).toBe('weapon');
+  });
+
+  it('creates generic gear for unknown items', () => {
+    const result = resolveEquipmentRefs([{ name: 'Unknown Item' }]);
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe('Unknown Item');
+    expect(result[0].kind).toBe('gear');
+  });
+
+  it('returns empty array for empty refs', () => {
+    expect(resolveEquipmentRefs([])).toEqual([]);
+  });
+});
+
 describe('resolveStartingEquipment', () => {
+  const fighterArmorChoice: EquipmentChoice = {
+    description: 'Choose armor',
+    options: [
+      { label: 'Chain Mail', items: [{ name: 'Chain Mail' }] },
+      { label: 'Leather Armor and Longbow', items: [{ name: 'Leather Armor' }, { name: 'Longbow' }, { name: 'Arrows (20)' }] },
+    ],
+  };
+
+  const fighterWeaponChoice: EquipmentChoice = {
+    description: 'Choose weapons',
+    options: [
+      { label: 'Martial weapon and shield', items: [{ name: 'Longsword' }, { name: 'Shield' }] },
+      { label: 'Two martial weapons', items: [{ name: 'Longsword' }, { name: 'Handaxe' }] },
+    ],
+  };
+
   it('returns an empty array for empty choices', () => {
     expect(resolveStartingEquipment([], [])).toEqual([]);
   });
 
-  it('returns an empty array (stub implementation)', () => {
-    const choices = [
-      {
-        description: 'Choose a weapon',
-        options: ['(a) a longsword', '(b) any simple weapon'],
-      },
-    ];
-    expect(resolveStartingEquipment(choices, [0])).toEqual([]);
+  it('resolves first option of a single choice', () => {
+    const result = resolveStartingEquipment([fighterArmorChoice], [0]);
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe('Chain Mail');
+    expect(result[0].kind).toBe('armor');
+  });
+
+  it('resolves second option of a single choice', () => {
+    const result = resolveStartingEquipment([fighterArmorChoice], [1]);
+    expect(result).toHaveLength(3);
+    expect(result[0].name).toBe('Leather Armor');
+    expect(result[1].name).toBe('Longbow');
+    expect(result[2].name).toBe('Arrows (20)');
+  });
+
+  it('resolves multiple choices with different selections', () => {
+    const result = resolveStartingEquipment(
+      [fighterArmorChoice, fighterWeaponChoice],
+      [0, 1]
+    );
+    // Chain Mail + Longsword + Handaxe
+    expect(result).toHaveLength(3);
+    expect(result[0].name).toBe('Chain Mail');
+    expect(result[1].name).toBe('Longsword');
+    expect(result[2].name).toBe('Handaxe');
+  });
+
+  it('resolves shield option correctly', () => {
+    const result = resolveStartingEquipment(
+      [fighterWeaponChoice],
+      [0]
+    );
+    expect(result).toHaveLength(2);
+    expect(result[0].name).toBe('Longsword');
+    expect(result[1].name).toBe('Shield');
+    expect(result[1].kind).toBe('armor');
+  });
+
+  it('defaults to first option when selection index is missing', () => {
+    const result = resolveStartingEquipment([fighterArmorChoice], []);
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe('Chain Mail');
   });
 });
 

@@ -3,11 +3,9 @@ name: Agent - Implement PR
 on:
   issue_comment:
     types: [created]
-  repository_dispatch:
-    types: [agent-implement]
 
 concurrency:
-  group: implement-${{ github.event.issue.number || github.event.client_payload.pr_number }}
+  group: implement-${{ github.event.issue.number }}
   cancel-in-progress: false
 
 jobs:
@@ -15,15 +13,12 @@ jobs:
     if: >
       (github.event_name == 'issue_comment' &&
       github.event.issue.pull_request != null &&
-      contains(github.event.comment.body, '/agent-implement')) ||
-      (github.event_name == 'repository_dispatch' &&
-      github.event.action == 'agent-implement' &&
-      github.event.client_payload.pr_number != null)
+      startsWith(github.event.comment.body, '/agent-implement'))
     runs-on: ubuntu-latest
     permissions:
       contents: read
     env:
-      PR_NUMBER: ${{ github.event.issue.number || github.event.client_payload.pr_number }}
+      PR_NUMBER: ${{ github.event.issue.number }}
 
     steps:
       - name: Generate GitHub App token
@@ -231,15 +226,9 @@ jobs:
 
           if echo "$LABELS" | grep -q '^RETRY-ONE$'; then
             gh pr edit "$PR" --repo "$REPO" --add-label "RETRY-TWO"
-            gh api repos/"$REPO"/dispatches \
-              --method POST \
-              --field event_type="agent-implement" \
-              --field client_payload[pr_number]="$PR"
+            gh pr comment "$PR" --repo "$REPO" --body "/agent-implement"
             exit 0
           fi
 
           gh pr edit "$PR" --repo "$REPO" --add-label "RETRY-ONE"
-          gh api repos/"$REPO"/dispatches \
-            --method POST \
-            --field event_type="agent-implement" \
-            --field client_payload[pr_number]="$PR"
+          gh pr comment "$PR" --repo "$REPO" --body "/agent-implement"

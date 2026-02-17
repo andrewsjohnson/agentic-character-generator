@@ -1,4 +1,5 @@
 import type { AbilityName } from './ability';
+import type { StartingEquipment } from './equipment';
 
 /** Hit die sizes used by the various classes. */
 export type HitDie = 6 | 8 | 10 | 12;
@@ -49,6 +50,7 @@ export type CharacterClass = {
     options: string[];
     count: number;
   };
+  startingEquipment?: StartingEquipment;
   features: ClassFeature[];
   spellcasting?: SpellcastingInfo;
   subclasses: Subclass[];

@@ -38,6 +38,7 @@ jobs:
         with:
           show_full_output: true
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          allowed_bots: agentic-automation-app[bot]
           track_progress: true
 
           # IMPORTANT: no '#' comment lines inside this block

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { CharacterDraft } from '../types/character';
 import type { ValidationResult } from '../rules/validation';
@@ -31,6 +31,10 @@ export function BottomNavigation({ character }: BottomNavigationProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const [errors, setErrors] = useState<string[]>([]);
+
+  useEffect(() => {
+    setErrors([]);
+  }, [location.pathname]);
 
   const currentIndex = STEPS.findIndex(step => step.path === location.pathname);
 
@@ -110,12 +114,13 @@ export function BottomNavigation({ character }: BottomNavigationProps) {
           type="button"
           onClick={handleNext}
           disabled={isLastStep}
+          aria-disabled={isNextDisabled}
           aria-label="Go to next step"
           className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${
             isLastStep
               ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
               : isNextDisabled
-              ? 'bg-blue-300 text-white cursor-not-allowed'
+              ? 'bg-blue-300 text-white'
               : 'bg-blue-600 text-white hover:bg-blue-700'
           }`}
         >

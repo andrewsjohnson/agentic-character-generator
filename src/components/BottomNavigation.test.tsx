@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Routes, Route, Link } from 'react-router-dom';
 import { BottomNavigation } from './BottomNavigation';
 import type { CharacterDraft } from '../types/character';
 import type { Species } from '../types/species';
@@ -101,6 +101,33 @@ describe('BottomNavigation', () => {
       // Click Back to clear errors
       const backButton = screen.getByRole('button', { name: /previous step/i });
       fireEvent.click(backButton);
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    });
+
+    it('clears errors when navigating to a different step via pathname change', () => {
+      // Render with a link to simulate top breadcrumb navigation
+      // BottomNavigation persists across route changes, so useEffect detects pathname change
+      render(
+        <MemoryRouter initialEntries={['/species']}>
+          <Routes>
+            <Route path="*" element={
+              <>
+                <Link to="/background">Go to Background</Link>
+                <BottomNavigation character={{}} />
+              </>
+            } />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      // Click Next to trigger validation errors
+      fireEvent.click(screen.getByRole('button', { name: /next step/i }));
+      expect(screen.getByRole('alert')).toBeInTheDocument();
+
+      // Simulate navigating via top breadcrumb by clicking a link
+      fireEvent.click(screen.getByText('Go to Background'));
+
+      // Errors from species step should be cleared by useEffect
       expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     });
   });
@@ -274,6 +301,18 @@ describe('BottomNavigation', () => {
       renderOnStep('/species');
       expect(screen.getByRole('button', { name: /previous step/i })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /next step/i })).toBeInTheDocument();
+    });
+
+    it('Next button has aria-disabled when validation fails', () => {
+      renderOnStep('/species');
+      const nextButton = screen.getByRole('button', { name: /next step/i });
+      expect(nextButton).toHaveAttribute('aria-disabled', 'true');
+    });
+
+    it('Next button does not have aria-disabled when validation passes', () => {
+      renderOnStep('/species', { species: human });
+      const nextButton = screen.getByRole('button', { name: /next step/i });
+      expect(nextButton).toHaveAttribute('aria-disabled', 'false');
     });
   });
 

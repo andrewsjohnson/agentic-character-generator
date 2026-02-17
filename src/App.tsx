@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
 import type { CharacterDraft } from './types/character';
+import { CharacterNameStep } from './steps/CharacterNameStep/CharacterNameStep';
 import { SpeciesStep } from './steps/SpeciesStep/SpeciesStep';
 import { ClassStep } from './steps/ClassStep/ClassStep';
 import { AbilityScoreStep } from './steps/AbilityScoreStep/AbilityScoreStep';
@@ -9,6 +10,7 @@ import { EquipmentStep } from './steps/EquipmentStep/EquipmentStep';
 import { ReviewStep } from './steps/ReviewStep/ReviewStep';
 
 const STEPS = [
+  { path: '/name', label: 'Name', component: CharacterNameStep },
   { path: '/species', label: 'Species', component: SpeciesStep },
   { path: '/class', label: 'Class', component: ClassStep },
   { path: '/ability-scores', label: 'Ability Scores', component: AbilityScoreStep },
@@ -64,7 +66,7 @@ function WizardContent() {
       <Navigation />
       <main className="max-w-4xl mx-auto">
         <Routes>
-          <Route path="/" element={<Navigate to="/species" replace />} />
+          <Route path="/" element={<Navigate to="/name" replace />} />
           {STEPS.map(({ path, component: Component }) => (
             <Route
               key={path}

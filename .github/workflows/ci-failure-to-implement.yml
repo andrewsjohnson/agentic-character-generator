@@ -52,5 +52,8 @@ jobs:
 
           gh pr edit "$PR_NUMBER" --repo "$REPO" --add-label "CI-FAILED" || true
 
-          # Bounce back to implementer for fixes
-          gh pr comment "$PR_NUMBER" --repo "$REPO" --body "/agent-implement"
+          # Bounce back to implementer for fixes via direct dispatch (reliable for bot-originated events)
+          gh api repos/"$REPO"/dispatches \
+            --method POST \
+            --field event_type="agent-implement" \
+            --field client_payload[pr_number]="$PR_NUMBER"

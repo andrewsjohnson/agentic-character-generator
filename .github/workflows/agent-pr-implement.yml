@@ -3,19 +3,27 @@ name: Agent - Implement PR
 on:
   issue_comment:
     types: [created]
+  repository_dispatch:
+    types: [agent-implement]
 
 concurrency:
-  group: implement-${{ github.event.issue.number }}
+  group: implement-${{ github.event.issue.number || github.event.client_payload.pr_number }}
   cancel-in-progress: false
 
 jobs:
   implement:
     if: >
+      (github.event_name == 'issue_comment' &&
       github.event.issue.pull_request != null &&
-      contains(github.event.comment.body, '/agent-implement')
+      contains(github.event.comment.body, '/agent-implement')) ||
+      (github.event_name == 'repository_dispatch' &&
+      github.event.action == 'agent-implement' &&
+      github.event.client_payload.pr_number != null)
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    env:
+      PR_NUMBER: ${{ github.event.issue.number || github.event.client_payload.pr_number }}
 
     steps:
       - name: Generate GitHub App token
@@ -32,7 +40,7 @@ jobs:
       - name: Fork guard (same-repo branches only)
         run: |
           set -euo pipefail
-          PR="${{ github.event.issue.number }}"
+          PR="$PR_NUMBER"
           REPO="${{ github.repository }}"
           HEAD_FULL_NAME="$(gh pr view "$PR" --repo "$REPO" --json headRepository -q '.headRepository.full_name // ""')"
           if [ "$HEAD_FULL_NAME" != "$REPO" ]; then
@@ -43,7 +51,7 @@ jobs:
       - name: Guardrails (skip if halted/awaiting feedback)
         run: |
           set -euo pipefail
-          PR="${{ github.event.issue.number }}"
+          PR="$PR_NUMBER"
           REPO="${{ github.repository }}"
           LABELS="$(gh pr view "$PR" --repo "$REPO" --json labels -q '.labels[].name')"
       
@@ -64,7 +72,7 @@ jobs:
           persist-credentials: true
 
       - name: Checkout PR branch
-        run: gh pr checkout ${{ github.event.issue.number }} --repo ${{ github.repository }}
+        run: gh pr checkout "$PR_NUMBER" --repo ${{ github.repository }}
 
       - name: Configure git identity
         run: |
@@ -158,7 +166,7 @@ jobs:
         if: success()
         run: |
           set -euo pipefail
-          PR="${{ github.event.issue.number }}"
+          PR="$PR_NUMBER"
           REPO="${{ github.repository }}"
 
           # Detect if ANY comment contains the header, not just the latest.
@@ -176,7 +184,7 @@ jobs:
         if: success()
         run: |
           set -euo pipefail
-          PR="${{ github.event.issue.number }}"
+          PR="$PR_NUMBER"
           REPO="${{ github.repository }}"
           LABELS="$(gh pr view "$PR" --repo "$REPO" --json labels -q '.labels[].name')"
 
@@ -189,7 +197,7 @@ jobs:
         if: success()
         run: |
           set -euo pipefail
-          PR="${{ github.event.issue.number }}"
+          PR="$PR_NUMBER"
           REPO="${{ github.repository }}"
 
           gh pr comment "$PR" --repo "$REPO" --body "/agent-review"
@@ -198,7 +206,7 @@ jobs:
         if: failure()
         run: |
           set -euo pipefail
-          PR="${{ github.event.issue.number }}"
+          PR="$PR_NUMBER"
           REPO="${{ github.repository }}"
           LABELS="$(gh pr view "$PR" --repo "$REPO" --json labels -q '.labels[].name')"
 
@@ -217,9 +225,15 @@ jobs:
 
           if echo "$LABELS" | grep -q '^RETRY-ONE$'; then
             gh pr edit "$PR" --repo "$REPO" --add-label "RETRY-TWO"
-            gh pr comment "$PR" --repo "$REPO" --body "/agent-implement"
+            gh api repos/"$REPO"/dispatches \
+              --method POST \
+              --field event_type="agent-implement" \
+              --field client_payload[pr_number]="$PR"
             exit 0
           fi
 
           gh pr edit "$PR" --repo "$REPO" --add-label "RETRY-ONE"
-          gh pr comment "$PR" --repo "$REPO" --body "/agent-implement"
+          gh api repos/"$REPO"/dispatches \
+            --method POST \
+            --field event_type="agent-implement" \
+            --field client_payload[pr_number]="$PR"

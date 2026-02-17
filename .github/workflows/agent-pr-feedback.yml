@@ -39,7 +39,4 @@ jobs:
 
           gh pr edit "$PR" --repo "$REPO" --remove-label "AWAITING-FEEDBACK" || true
 
-          gh api repos/"$REPO"/dispatches \
-            --method POST \
-            --field event_type="agent-implement" \
-            --field client_payload[pr_number]="$PR"
+          gh pr comment "$PR" --repo "$REPO" --body "/agent-implement"

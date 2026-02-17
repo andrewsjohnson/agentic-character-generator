@@ -155,10 +155,7 @@ jobs:
       - name: Trigger implementation on PR
         run: |
           set -euo pipefail
-          gh api repos/"${{ github.repository }}"/dispatches \
-            --method POST \
-            --field event_type="agent-implement" \
-            --field client_payload[pr_number]="${{ steps.create_pr.outputs.pr_number }}"
+          gh pr comment "${{ steps.create_pr.outputs.pr_number }}" --repo "${{ github.repository }}" --body "/agent-implement"
 
       - name: Comment on issue with PR link
         run: |

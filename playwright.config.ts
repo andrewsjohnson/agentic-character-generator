@@ -29,15 +29,4 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,
   },
-
-  expect: {
-    toHaveScreenshot: {
-      // Allow up to 1% of pixels to differ before failing — guards
-      // against subpixel antialiasing noise while still catching real
-      // layout or colour regressions.
-      maxDiffPixelRatio: 0.01,
-      // Disable CSS animations/transitions so screenshots are stable.
-      animations: 'disabled',
-    },
-  },
 });

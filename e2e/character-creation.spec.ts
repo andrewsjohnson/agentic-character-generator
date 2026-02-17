@@ -1,15 +1,17 @@
 import { test, expect } from '@playwright/test';
+import { percySnapshot } from '@percy/playwright';
 
 /**
  * End-to-end flow for the full D&D character creation wizard.
  *
- * Each step navigates via the top nav link, makes a concrete choice, then
- * captures a full-page screenshot.  Screenshots are stored as baselines in
- * the adjacent `character-creation.spec.ts-snapshots/` directory (committed
- * to git) and compared on every subsequent CI run to catch styling regressions.
+ * Playwright drives the browser and asserts functional correctness;
+ * percySnapshot() uploads each step to Percy for visual diff review.
+ * Percy compares against the approved baseline and posts a status check on
+ * the PR.  An automated Claude vision agent (percy-review.yml) reviews any
+ * diffs and either auto-approves or flags them for human attention.
  *
- * To regenerate baselines after an intentional UI change, run:
- *   npx playwright test --update-snapshots
+ * Running locally without PERCY_TOKEN set is fine — percySnapshot() is a
+ * no-op when the token is absent, so the functional assertions still run.
  */
 
 test('full character creation wizard', async ({ page }) => {
@@ -22,7 +24,7 @@ test('full character creation wizard', async ({ page }) => {
 
   await page.getByLabel('Character Name').fill('Aria Swiftwind');
 
-  await expect(page).toHaveScreenshot('01-name-step.png', { fullPage: true });
+  await percySnapshot(page, '01 Name step', { fullPage: true });
 
   // ─── Step 2: Species ───────────────────────────────────────────────────────
   await page.getByRole('link', { name: 'Species' }).click();
@@ -37,7 +39,7 @@ test('full character creation wizard', async ({ page }) => {
     })
     .click();
 
-  await expect(page).toHaveScreenshot('02-species-step.png', { fullPage: true });
+  await percySnapshot(page, '02 Species step — Human selected', { fullPage: true });
 
   // ─── Step 3: Class ─────────────────────────────────────────────────────────
   await page.getByRole('link', { name: 'Class' }).click();
@@ -48,7 +50,7 @@ test('full character creation wizard', async ({ page }) => {
   await page.getByTestId('class-card-fighter').click();
   await expect(page.getByTestId('class-detail-panel')).toBeVisible();
 
-  await expect(page).toHaveScreenshot('03-class-step.png', { fullPage: true });
+  await percySnapshot(page, '03 Class step — Fighter selected', { fullPage: true });
 
   // ─── Step 4: Ability Scores ────────────────────────────────────────────────
   await page.getByRole('link', { name: 'Ability Scores' }).click();
@@ -56,7 +58,6 @@ test('full character creation wizard', async ({ page }) => {
     page.getByRole('heading', { name: 'Assign Ability Scores' })
   ).toBeVisible();
 
-  // Switch to Standard Array mode.
   await page.getByRole('button', { name: 'Standard Array' }).click();
 
   // Assign the standard array [15, 14, 13, 12, 10, 8] across the six abilities.
@@ -65,13 +66,11 @@ test('full character creation wizard', async ({ page }) => {
   await page.getByLabel('Select score for CON').selectOption('13');
   await page.getByLabel('Select score for INT').selectOption('12');
   await page.getByLabel('Select score for WIS').selectOption('10');
-  // CHA defaults to 8 (the only remaining value); selecting it explicitly
-  // confirms the assignment and triggers the "All values assigned!" banner.
   await page.getByLabel('Select score for CHA').selectOption('8');
 
   await expect(page.getByText('✓ All values assigned!')).toBeVisible();
 
-  await expect(page).toHaveScreenshot('04-ability-scores-step.png', { fullPage: true });
+  await percySnapshot(page, '04 Ability Scores step — standard array assigned', { fullPage: true });
 
   // ─── Step 5: Background ────────────────────────────────────────────────────
   await page.getByRole('link', { name: 'Background' }).click();
@@ -79,12 +78,10 @@ test('full character creation wizard', async ({ page }) => {
     page.getByRole('heading', { name: 'Choose Your Background' })
   ).toBeVisible();
 
-  // Soldier — Athletics + Perception (no skill conflict with Fighter since
-  // class skill choices haven't been made yet in the wizard).
   await page.getByTestId('background-card-soldier').click();
   await expect(page.getByTestId('background-detail-panel')).toBeVisible();
 
-  await expect(page).toHaveScreenshot('05-background-step.png', { fullPage: true });
+  await percySnapshot(page, '05 Background step — Soldier selected', { fullPage: true });
 
   // ─── Step 6: Equipment ─────────────────────────────────────────────────────
   await page.getByRole('link', { name: 'Equipment' }).click();
@@ -99,7 +96,7 @@ test('full character creation wizard', async ({ page }) => {
 
   await expect(page.getByTestId('equipment-summary')).toBeVisible();
 
-  await expect(page).toHaveScreenshot('06-equipment-step.png', { fullPage: true });
+  await percySnapshot(page, '06 Equipment step — all choices made', { fullPage: true });
 
   // ─── Step 7: Review (Character Sheet) ─────────────────────────────────────
   await page.getByRole('link', { name: 'Review' }).click();
@@ -107,10 +104,9 @@ test('full character creation wizard', async ({ page }) => {
     page.getByRole('heading', { name: 'Character Sheet' })
   ).toBeVisible();
 
-  // Sanity-check a few key values before screenshotting.
   await expect(page.getByTestId('character-name')).toHaveText('Aria Swiftwind');
   await expect(page.getByTestId('character-class')).toHaveText('Fighter');
   await expect(page.getByTestId('character-background')).toHaveText('Soldier');
 
-  await expect(page).toHaveScreenshot('07-review-step.png', { fullPage: true });
+  await percySnapshot(page, '07 Review step — complete character sheet', { fullPage: true });
 });

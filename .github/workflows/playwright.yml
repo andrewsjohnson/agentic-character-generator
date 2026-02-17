@@ -11,13 +11,8 @@ concurrency:
 
 jobs:
   playwright:
-    name: Visual regression tests
+    name: E2E tests + Percy upload
     runs-on: ubuntu-latest
-
-    permissions:
-      # Needed so the job can push newly-generated baseline screenshots back
-      # to the branch on the first run (when no baselines exist yet).
-      contents: write
 
     steps:
       - uses: actions/checkout@v4
@@ -33,38 +28,18 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Run Playwright tests
-        run: npx playwright test
+      - name: Run Playwright tests (with Percy snapshot upload)
+        # percy exec starts a Percy agent, runs the test command, then finalises
+        # the Percy build.  Without PERCY_TOKEN the agent is a no-op, so the
+        # tests still run and pass locally or in forks without the secret.
+        run: npx percy exec -- npx playwright test
+        env:
+          PERCY_TOKEN: ${{ secrets.PERCY_TOKEN }}
 
-      # On a push event (not a PR), commit any newly-generated baseline
-      # screenshots back to the branch.  This handles the first-run bootstrap:
-      # the initial push creates the baseline PNGs, subsequent runs compare
-      # against them.  The "[skip ci]" trailer prevents an infinite workflow loop.
-      - name: Commit new baseline screenshots
-        if: github.event_name == 'push'
-        run: |
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config user.name "github-actions[bot]"
-          git add e2e/
-          if ! git diff --staged --quiet; then
-            git commit -m "chore: add Playwright baseline screenshots [skip ci]"
-            git push
-          fi
-
-      # Always upload the HTML report so developers can inspect results.
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
           path: playwright-report/
-          retention-days: 14
-
-      # On failure, upload the diff images so you can see exactly what changed.
-      - name: Upload screenshot diffs
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: screenshot-diffs
-          path: test-results/
           retention-days: 14

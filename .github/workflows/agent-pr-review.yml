@@ -168,6 +168,18 @@ jobs:
             or
             Verdict: CHANGES_REQUESTED
 
+      - name: Ensure review-round labels exist
+        run: |
+          set -euo pipefail
+          REPO="${{ github.repository }}"
+          for N in 1 2 3; do
+            gh label create "REVIEW-ROUND-${N}" \
+              --repo "$REPO" \
+              --description "Review↔implement cycle ${N}" \
+              --color "D93F0B" \
+              2>/dev/null || true
+          done
+
       - name: Apply labels based on verdict
         id: apply-verdict
         run: |
@@ -190,6 +202,34 @@ jobs:
           fi
 
           if [ "$VERDICT" = "CHANGES_REQUESTED" ]; then
+            # Circuit breaker: count review rounds via REVIEW-ROUND-N labels.
+            # Halt after 3 rounds to prevent infinite review↔implement loops.
+            LABELS="$(gh pr view "$PR" --repo "$REPO" --json labels -q '.labels[].name')"
+
+            if echo "$LABELS" | grep -qx 'REVIEW-ROUND-3'; then
+              echo "Review round 3 reached; halting to require human intervention."
+              gh pr edit "$PR" --repo "$REPO" \
+                --remove-label "REVIEW-ROUND-1" \
+                --remove-label "REVIEW-ROUND-2" \
+                --remove-label "REVIEW-ROUND-3" \
+                --add-label "HALTED" || true
+              gh pr comment "$PR" --repo "$REPO" \
+                --body "## Halted — review loop circuit breaker
+
+          This PR has gone through 3 review↔implement cycles without reaching approval. Halting for human intervention.
+
+          To resume, remove the \`HALTED\` label and comment \`/agent-implement\`."
+              exit 0
+            fi
+
+            if echo "$LABELS" | grep -qx 'REVIEW-ROUND-2'; then
+              gh pr edit "$PR" --repo "$REPO" --add-label "REVIEW-ROUND-3" || true
+            elif echo "$LABELS" | grep -qx 'REVIEW-ROUND-1'; then
+              gh pr edit "$PR" --repo "$REPO" --add-label "REVIEW-ROUND-2" || true
+            else
+              gh pr edit "$PR" --repo "$REPO" --add-label "REVIEW-ROUND-1" || true
+            fi
+
             gh pr comment "$PR" --repo "$REPO" --body "/agent-implement"
             exit 0
           fi

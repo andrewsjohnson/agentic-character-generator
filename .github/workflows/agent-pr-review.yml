@@ -168,6 +168,18 @@ jobs:
             or
             Verdict: CHANGES_REQUESTED
 
+      - name: Ensure review-round labels exist
+        run: |
+          set -euo pipefail
+          REPO="${{ github.repository }}"
+          for N in 1 2 3; do
+            gh label create "REVIEW-ROUND-${N}" \
+              --repo "$REPO" \
+              --description "Review↔implement cycle ${N}" \
+              --color "D93F0B" \
+              2>/dev/null || true
+          done
+
       - name: Apply labels based on verdict
         id: apply-verdict
         run: |

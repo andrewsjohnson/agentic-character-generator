@@ -8,8 +8,9 @@ import { AbilityScoreStep } from './steps/AbilityScoreStep/AbilityScoreStep';
 import { BackgroundStep } from './steps/BackgroundStep/BackgroundStep';
 import { EquipmentStep } from './steps/EquipmentStep/EquipmentStep';
 import { ReviewStep } from './steps/ReviewStep/ReviewStep';
+import { BottomNavigation } from './components/BottomNavigation';
 
-const STEPS = [
+export const STEPS = [
   { path: '/name', label: 'Name', component: CharacterNameStep },
   { path: '/species', label: 'Species', component: SpeciesStep },
   { path: '/class', label: 'Class', component: ClassStep },
@@ -64,7 +65,7 @@ function WizardContent() {
   return (
     <>
       <Navigation />
-      <main className="max-w-4xl mx-auto">
+      <main className="max-w-4xl mx-auto pb-24">
         <Routes>
           <Route path="/" element={<Navigate to="/name" replace />} />
           {STEPS.map(({ path, component: Component }) => (
@@ -76,6 +77,7 @@ function WizardContent() {
           ))}
         </Routes>
       </main>
+      <BottomNavigation character={character} />
     </>
   );
 }

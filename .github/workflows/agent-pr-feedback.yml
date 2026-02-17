@@ -6,9 +6,13 @@ on:
 
 jobs:
   resume:
+    # Only trigger for human comments — bot-to-bot handoff comments
+    # (e.g. /agent-implement posted by the review workflow) are excluded
+    # to avoid wasteful no-op runs.
     if: >
       github.event.issue.pull_request != null &&
-      startsWith(github.event.comment.body, '/agent')
+      startsWith(github.event.comment.body, '/agent') &&
+      !endsWith(github.event.comment.user.login, '[bot]')
     runs-on: ubuntu-latest
 
     # Use GitHub App token via GH_TOKEN; keep default perms minimal.

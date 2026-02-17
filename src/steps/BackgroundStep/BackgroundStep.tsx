@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import type { StepProps } from '../types';
 import type { Background } from '../../types/background';
 import type { SkillName } from '../../types/skill';
+import { isSkillName } from '../../types/skill';
 import { getBackgroundSkills, getBackgroundEquipment, hasSkillConflict } from '../../rules/backgrounds';
 import backgroundsData from '../../data/backgrounds.json';
 import classesData from '../../data/classes.json';
@@ -155,8 +156,8 @@ function BackgroundDetail({ background, conflictingSkills, onResolveConflicts, c
                 <select
                   value={replacements[index] || ''}
                   onChange={(e) => {
-                    if (e.target.value) {
-                      handleReplacementChange(index, e.target.value as SkillName);
+                    if (isSkillName(e.target.value)) {
+                      handleReplacementChange(index, e.target.value);
                     }
                   }}
                   className="flex-1 p-2 border border-gray-300 rounded text-sm"

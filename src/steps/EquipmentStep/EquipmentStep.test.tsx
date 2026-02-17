@@ -510,5 +510,27 @@ describe('EquipmentStep', () => {
       // AC = 10 + 2 (DEX) + 3 (WIS 15 + Hill Dwarf +1 = 16, mod +3) = 15
       expect(acDisplay).toHaveTextContent('15');
     });
+
+    it('applies subspecies CON bonus to Barbarian unarmored defense AC', () => {
+      // Hill Dwarf Barbarian: Dwarf CON +2, Hill Dwarf WIS +1
+      // Base CON 13 (+1 mod), species +2 CON → CON 15 (+2 mod)
+      // Base DEX 14 (+2 mod), no DEX bonus
+      // Barbarian unarmored defense: 10 + DEX mod + CON mod = 10 + 2 + 2 = 14
+      renderEquipmentStep({
+        class: mockBarbarian,
+        species: mockDwarfWithSubspecies,
+        subspecies: mockHillDwarfSubspecies,
+        baseAbilityScores: { STR: 15, DEX: 14, CON: 13, INT: 8, WIS: 10, CHA: 10 },
+      });
+
+      // Select both equipment choices to trigger summary display
+      fireEvent.click(screen.getByTestId('choice-0-option-0'));
+      fireEvent.click(screen.getByTestId('choice-1-option-0'));
+
+      const acDisplay = screen.getByTestId('ac-display');
+      expect(acDisplay).toBeInTheDocument();
+      // AC = 10 + 2 (DEX) + 2 (CON 13 + Dwarf +2 = 15, mod +2) = 14
+      expect(acDisplay).toHaveTextContent('14');
+    });
   });
 });

@@ -1,12 +1,14 @@
 name: Agent - Plan Issue
 
 on:
-  issues:
-    types: [labeled]
+  issue_comment:
+    types: [created]
 
 jobs:
   plan:
-    if: github.event.label.name == 'AGENT'
+    if: >
+      github.event.issue.pull_request == null &&
+      startsWith(github.event.comment.body, '/agent-plan')
     runs-on: ubuntu-latest
 
     # Keep workflow token minimal; use GitHub App token for gh label edits.
@@ -56,12 +58,5 @@ jobs:
               "## Plan v1"
             - Do not create a PR.
             - End the comment with:
-              To approve, apply the "APPROVED" label to the issue.
+              To approve, comment with "/agent-approve".
               To revise, comment with "/plan-revise" followed by the requested revisions.
-
-      - name: Relabel issue (AGENT -> PLANNED)
-        run: |
-          set -euo pipefail
-          gh issue edit ${{ github.event.issue.number }} --repo ${{ github.repository }} \
-            --remove-label "AGENT" \
-            --add-label "PLANNED"

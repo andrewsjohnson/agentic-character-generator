@@ -37,6 +37,6 @@ jobs:
           echo "$LABELS" | grep -q '^HALTED$' && { echo "HALTED; no-op."; exit 0; }
           echo "$LABELS" | grep -q '^AWAITING-FEEDBACK$' || { echo "Not awaiting feedback; no-op."; exit 0; }
 
-          gh pr edit "$PR" --repo "$REPO" \
-            --remove-label "AWAITING-FEEDBACK" \
-            --add-label "IMPLEMENT"
+          gh pr edit "$PR" --repo "$REPO" --remove-label "AWAITING-FEEDBACK" || true
+
+          gh pr comment "$PR" --repo "$REPO" --body "/agent-implement"

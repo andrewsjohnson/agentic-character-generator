@@ -1,19 +1,19 @@
 name: Agent - Review PR
 
 on:
-  pull_request_target:
-    types: [labeled]
+  issue_comment:
+    types: [created]
 
 concurrency:
-  group: review-${{ github.event.pull_request.number }}
+  group: review-${{ github.event.issue.number }}
   cancel-in-progress: false
 
 jobs:
   review:
-    # Fork protection: only run on same-repo branches, and only when NEEDS-REVIEW is applied.
+    # Fork protection: only run on same-repo branches for /agent-review commands.
     if: >
-      github.event.label.name == 'NEEDS-REVIEW' &&
-      github.event.pull_request.head.repo.full_name == github.repository
+      github.event.issue.pull_request != null &&
+      startsWith(github.event.comment.body, '/agent-review')
     runs-on: ubuntu-latest
 
     # Keep default token minimal; use GitHub App token for gh edits.
@@ -31,10 +31,22 @@ jobs:
       - name: Export token for gh
         run: echo "GH_TOKEN=${{ steps.app-token.outputs.token }}" >> "$GITHUB_ENV"
 
+
+      - name: Fork guard (same-repo branches only)
+        run: |
+          set -euo pipefail
+          PR="${{ github.event.issue.number }}"
+          REPO="${{ github.repository }}"
+          HEAD_FULL_NAME="$(gh pr view "$PR" --repo "$REPO" --json headRepository -q '.headRepository.full_name // ""')"
+          if [ "$HEAD_FULL_NAME" != "$REPO" ]; then
+            echo "PR is from a fork ($HEAD_FULL_NAME); skipping automation."
+            exit 0
+          fi
+
       - name: Guardrails (skip if halted / awaiting feedback)
         run: |
           set -euo pipefail
-          PR="${{ github.event.pull_request.number }}"
+          PR="${{ github.event.issue.number }}"
           REPO="${{ github.repository }}"
           LABELS="$(gh pr view "$PR" --repo "$REPO" --json labels -q '.labels[].name')"
 
@@ -43,7 +55,10 @@ jobs:
 
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Checkout PR branch
+        run: gh pr checkout ${{ github.event.issue.number }} --repo ${{ github.repository }}
 
       - uses: anthropics/claude-code-action@v1
         with:
@@ -137,7 +152,7 @@ jobs:
       - name: Apply labels based on verdict
         run: |
           set -euo pipefail
-          PR="${{ github.event.pull_request.number }}"
+          PR="${{ github.event.issue.number }}"
           REPO="${{ github.repository }}"
 
           # Look at the latest claude[bot] comment that contains "Verdict:"
@@ -148,16 +163,12 @@ jobs:
           echo "Verdict parsed: ${VERDICT:-<none>}"
 
           if [ "$VERDICT" = "APPROVE" ] || [ "$VERDICT" = "APPROVED" ]; then
-            gh pr edit "$PR" --repo "$REPO" \
-              --remove-label "NEEDS-REVIEW" \
-              --add-label "APPROVED"
+            echo "Review approved; no follow-up automation required."
             exit 0
           fi
 
           if [ "$VERDICT" = "CHANGES_REQUESTED" ]; then
-            gh pr edit "$PR" --repo "$REPO" \
-              --remove-label "NEEDS-REVIEW" \
-              --add-label "IMPLEMENT"
+            gh pr comment "$PR" --repo "$REPO" --body "/agent-implement"
             exit 0
           fi
 

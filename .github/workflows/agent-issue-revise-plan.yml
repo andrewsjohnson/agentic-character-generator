@@ -1,12 +1,14 @@
 name: Agent - Revise Issue Plan
 
 on:
-  issues:
-    types: [labeled]
+  issue_comment:
+    types: [created]
 
 jobs:
   revise:
-    if: github.event.label.name == 'NEEDS-PLAN-REVISION'
+    if: >
+      github.event.issue.pull_request == null &&
+      startsWith(github.event.comment.body, '/plan-revise')
     runs-on: ubuntu-latest
 
     # Keep workflow token minimal; use GitHub App token for gh label edits.
@@ -50,10 +52,3 @@ jobs:
 
             Output:
             - One issue comment only (the new plan).
-
-      - name: Clear revision label (NEEDS-PLAN-REVISION -> PLANNED)
-        run: |
-          set -euo pipefail
-          gh issue edit ${{ github.event.issue.number }} --repo ${{ github.repository }} \
-            --remove-label "NEEDS-PLAN-REVISION" \
-            --add-label "PLANNED"

@@ -53,6 +53,4 @@ jobs:
           gh pr edit "$PR_NUMBER" --repo "$REPO" --add-label "CI-FAILED" || true
 
           # Bounce back to implementer for fixes
-          gh pr edit "$PR_NUMBER" --repo "$REPO" \
-            --remove-label "NEEDS-REVIEW" \
-            --add-label "IMPLEMENT"
+          gh pr comment "$PR_NUMBER" --repo "$REPO" --body "/agent-implement"

@@ -6,6 +6,7 @@ import {
   hasSkillConflict,
 } from './backgrounds';
 import type { Background } from '../types/background';
+import type { SkillName } from '../types/skill';
 
 // Mock background data matching SRD specifications
 const mockAcolyte: Background = {
@@ -193,28 +194,28 @@ describe('getBackgroundLanguagesOrTools', () => {
 
 describe('hasSkillConflict', () => {
   it('Rogue with Stealth picking Criminal shows Stealth conflict', () => {
-    const rogueSkills = ['Stealth', 'Investigation', 'Deception'];
+    const rogueSkills: SkillName[] = ['Stealth', 'Investigation', 'Deception'];
     const criminalSkills = getBackgroundSkills(mockCriminal); // ['Sleight of Hand', 'Stealth']
     const conflicts = hasSkillConflict(criminalSkills, rogueSkills);
     expect(conflicts).toEqual(['Stealth']);
   });
 
   it('Wizard with Arcana picking Sage shows Arcana conflict', () => {
-    const wizardSkills = ['Arcana', 'Investigation'];
+    const wizardSkills: SkillName[] = ['Arcana', 'Investigation'];
     const sageSkills = getBackgroundSkills(mockSage); // ['Arcana', 'History']
     const conflicts = hasSkillConflict(sageSkills, wizardSkills);
     expect(conflicts).toEqual(['Arcana']);
   });
 
   it('Fighter with Athletics picking Soldier shows Athletics conflict', () => {
-    const fighterSkills = ['Athletics', 'Intimidation'];
+    const fighterSkills: SkillName[] = ['Athletics', 'Intimidation'];
     const soldierSkills = getBackgroundSkills(mockSoldier); // ['Athletics', 'Intimidation']
     const conflicts = hasSkillConflict(soldierSkills, fighterSkills);
     expect(conflicts).toEqual(['Athletics', 'Intimidation']);
   });
 
   it('Non-overlapping skills return empty array', () => {
-    const wizardSkills = ['Arcana', 'Investigation'];
+    const wizardSkills: SkillName[] = ['Arcana', 'Investigation'];
     const acolyteSkills = getBackgroundSkills(mockAcolyte); // ['Insight', 'Religion']
     const conflicts = hasSkillConflict(acolyteSkills, wizardSkills);
     expect(conflicts).toEqual([]);
@@ -226,19 +227,19 @@ describe('hasSkillConflict', () => {
   });
 
   it('Empty background skills return empty array', () => {
-    const classSkills = ['Stealth', 'Investigation'];
+    const classSkills: SkillName[] = ['Stealth', 'Investigation'];
     const conflicts = hasSkillConflict([], classSkills);
     expect(conflicts).toEqual([]);
   });
 
   it('Empty class skills return empty array', () => {
-    const backgroundSkills = ['Stealth', 'Investigation'];
+    const backgroundSkills: SkillName[] = ['Stealth', 'Investigation'];
     const conflicts = hasSkillConflict(backgroundSkills, []);
     expect(conflicts).toEqual([]);
   });
 
   it('Multiple conflicts are detected', () => {
-    const classSkills = ['Stealth', 'Sleight of Hand', 'Investigation'];
+    const classSkills: SkillName[] = ['Stealth', 'Sleight of Hand', 'Investigation'];
     const criminalSkills = getBackgroundSkills(mockCriminal); // ['Sleight of Hand', 'Stealth']
     const conflicts = hasSkillConflict(criminalSkills, classSkills);
     expect(conflicts).toHaveLength(2);

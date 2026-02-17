@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { ClassStep } from './ClassStep';
 import classesData from '../../data/classes.json';
 import type { CharacterClass } from '../../types/class';
+import type { SkillName } from '../../types/skill';
 
 describe('ClassStep', () => {
   it('renders all classes from data file', () => {
@@ -235,7 +236,7 @@ describe('ClassStep', () => {
         savingThrows: ['DEX', 'INT'] as ['DEX', 'INT'],
         armorProficiencies: ['light' as const],
         weaponProficiencies: ['simple' as const],
-        skillChoices: { options: ['Acrobatics', 'Athletics'], count: 4 },
+        skillChoices: { options: ['Acrobatics', 'Athletics'] satisfies SkillName[], count: 4 },
         features: [],
         subclasses: [],
       },

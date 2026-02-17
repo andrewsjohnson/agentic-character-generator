@@ -1,11 +1,12 @@
 import type { AbilityName, AbilityModifiers } from '../types/ability';
 import type { HitDie } from '../types/class';
+import type { SkillName, SkillModifiers } from '../types/skill';
 
 /**
  * Maps each of the 18 D&D 5e skills to its governing ability.
  * Skill names use the official SRD names with standard casing.
  */
-export const SKILL_TO_ABILITY: Record<string, AbilityName> = {
+export const SKILL_TO_ABILITY: Record<SkillName, AbilityName> = {
   'Acrobatics': 'DEX',
   'Animal Handling': 'WIS',
   'Arcana': 'INT',
@@ -79,18 +80,19 @@ export function calculateHP(hitDie: HitDie, conModifier: number): number {
  */
 export function calculateSkillModifiers(
   abilities: AbilityModifiers,
-  proficientSkills: string[],
+  proficientSkills: SkillName[],
   proficiencyBonus: number,
-): Record<string, number> {
-  const result: Record<string, number> = {};
+): SkillModifiers {
+  const result: Partial<SkillModifiers> = {};
 
   for (const [skill, ability] of Object.entries(SKILL_TO_ABILITY)) {
     const abilityMod = abilities[ability];
-    const isProficient = proficientSkills.includes(skill);
-    result[skill] = abilityMod + (isProficient ? proficiencyBonus : 0);
+    const isProficient = proficientSkills.includes(skill as SkillName);
+    result[skill as SkillName] = abilityMod + (isProficient ? proficiencyBonus : 0);
   }
 
-  return result;
+  // All 18 skills are populated by the loop above, so the Partial is now complete.
+  return result as SkillModifiers;
 }
 
 /**

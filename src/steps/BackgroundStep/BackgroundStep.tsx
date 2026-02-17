@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { StepProps } from '../types';
 import type { Background } from '../../types/background';
+import type { SkillName } from '../../types/skill';
 import { getBackgroundSkills, getBackgroundEquipment, hasSkillConflict } from '../../rules/backgrounds';
 import backgroundsData from '../../data/backgrounds.json';
 import classesData from '../../data/classes.json';
@@ -44,8 +45,8 @@ function BackgroundCard({ background, selected, onClick }: BackgroundCardProps) 
 
 type BackgroundDetailProps = {
   background: Background;
-  conflictingSkills: string[];
-  onResolveConflicts: (replacements: string[]) => void;
+  conflictingSkills: SkillName[];
+  onResolveConflicts: (replacements: SkillName[]) => void;
   character: StepProps['character'];
 };
 
@@ -72,21 +73,20 @@ function BackgroundDetail({ background, conflictingSkills, onResolveConflicts, c
   const availableSkills = ALL_SKILLS.filter(skill => !unavailableSkills.has(skill));
 
   // Track selected replacement skills
-  const [replacements, setReplacements] = useState<string[]>([]);
+  const [replacements, setReplacements] = useState<SkillName[]>([]);
 
   // Reset replacements when background changes (conflicts will change accordingly)
   useEffect(() => {
     setReplacements([]);
   }, [background.name]);
 
-  const handleReplacementChange = (index: number, skill: string) => {
+  const handleReplacementChange = (index: number, skill: SkillName) => {
     const newReplacements = [...replacements];
     newReplacements[index] = skill;
     setReplacements(newReplacements);
   };
 
-  const allConflictsResolved = replacements.length === conflictingSkills.length &&
-    replacements.every(skill => skill !== '');
+  const allConflictsResolved = replacements.length === conflictingSkills.length;
 
   const handleConfirm = () => {
     if (allConflictsResolved) {
@@ -154,7 +154,11 @@ function BackgroundDetail({ background, conflictingSkills, onResolveConflicts, c
                 <span className="text-sm font-medium text-gray-700 w-32">{skill} →</span>
                 <select
                   value={replacements[index] || ''}
-                  onChange={(e) => handleReplacementChange(index, e.target.value)}
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      handleReplacementChange(index, e.target.value as SkillName);
+                    }
+                  }}
                   className="flex-1 p-2 border border-gray-300 rounded text-sm"
                   data-testid={`replacement-select-${index}`}
                 >
@@ -220,7 +224,7 @@ export function BackgroundStep({ character, updateCharacter }: StepProps) {
     // If conflicts exist, wait for user to resolve them (handled in BackgroundDetail)
   };
 
-  const handleResolveConflicts = (replacements: string[]) => {
+  const handleResolveConflicts = (replacements: SkillName[]) => {
     if (!selectedBackground) return;
 
     // Get class skills

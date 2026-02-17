@@ -1,11 +1,12 @@
 import type { Background } from '../types/background';
+import type { SkillName } from '../types/skill';
 
 /**
  * Returns the skill proficiencies granted by the background.
  * @param background - The character background
  * @returns Tuple of exactly two skill names
  */
-export function getBackgroundSkills(background: Background): [string, string] {
+export function getBackgroundSkills(background: Background): [SkillName, SkillName] {
   return background.skillProficiencies;
 }
 
@@ -53,9 +54,9 @@ export function getBackgroundLanguagesOrTools(
  * @returns Array of conflicting skill names
  */
 export function hasSkillConflict(
-  backgroundSkills: string[],
-  classSkills: string[]
-): string[] {
+  backgroundSkills: SkillName[],
+  classSkills: SkillName[]
+): SkillName[] {
   // Create a Set for O(1) lookup of class skills
   const classSkillSet = new Set(classSkills);
 

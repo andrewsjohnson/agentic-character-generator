@@ -57,9 +57,11 @@ export function validateAbilityScoresStep(character: CharacterDraft): Validation
     return { valid: false, errors };
   }
 
+  const baseAbilityScores = character.baseAbilityScores;
+
   // Check all six abilities are present
   const missingAbilities = ABILITY_NAMES.filter(
-    (ability) => character.baseAbilityScores![ability] === undefined
+    (ability) => baseAbilityScores[ability] === undefined
   );
   if (missingAbilities.length > 0) {
     errors.push(`Missing ability scores: ${missingAbilities.join(', ')}.`);
@@ -68,11 +70,11 @@ export function validateAbilityScoresStep(character: CharacterDraft): Validation
 
   // Validate based on method
   if (character.abilityScoreMethod === 'point-buy') {
-    if (!isValidPointBuy(character.baseAbilityScores)) {
+    if (!isValidPointBuy(baseAbilityScores)) {
       errors.push('Point buy scores are invalid. All scores must be 8\u201315 and total cost must not exceed 27 points.');
     }
   } else if (character.abilityScoreMethod === 'standard-array') {
-    if (!isValidStandardArray(character.baseAbilityScores)) {
+    if (!isValidStandardArray(baseAbilityScores)) {
       errors.push('Standard array values must be exactly 15, 14, 13, 12, 10, and 8 (in any order).');
     }
   }

@@ -34,11 +34,16 @@ jobs:
           github_token: ${{ steps.app-token.outputs.token }}
           allowed_bots: agentic-automation-app[bot]
           track_progress: true
+          show_full_output: true
           claude_args: |
             --max-turns 60
             --settings ./claude/agents/planner.json
           prompt: |
             You are the senior engineer PLANNING agent.
+
+            IMPORTANT WORKFLOW REQUIREMENT
+            - Use interactive issue commenting style (progress updates + final plan comment).
+            - Post your final plan as a new issue comment (do not overwrite prior comments).
 
             Task: Create an implementation plan for this GitHub Issue.
 
@@ -61,3 +66,23 @@ jobs:
             - End the comment with:
               To approve, comment with "/agent-approve".
               To revise, comment with "/plan-revise" followed by the requested revisions.
+
+            If requirements are ambiguous and you need a decision before planning:
+            - Post an issue comment starting with "## Questions for human" and include numbered options.
+            - Do not post a plan until questions are answered.
+
+      - name: If Questions for human comment exists, ensure AWAITING-FEEDBACK label
+        if: success()
+        run: |
+          set -euo pipefail
+          ISSUE="${{ github.event.issue.number }}"
+          REPO="${{ github.repository }}"
+
+          HAS_Q="$(gh issue view "$ISSUE" --repo "$REPO" --json comments -q '.comments | map(.body // "") | any(test("^## Questions for human"; "m"))')"
+
+          if [ "$HAS_Q" = "true" ]; then
+            echo "Detected '## Questions for human'; applying AWAITING-FEEDBACK label."
+            gh issue edit "$ISSUE" --repo "$REPO" --add-label "AWAITING-FEEDBACK" || true
+          else
+            echo "No 'Questions for human' marker detected."
+          fi

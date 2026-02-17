@@ -350,6 +350,42 @@ describe('validateBackgroundStep', () => {
       // Class chose Athletics + Perception; background has Athletics (conflict) + Intimidation
       // Conflict resolved: replaced Athletics with Survival
       skillProficiencies: ['Athletics', 'Perception', 'Survival', 'Intimidation'],
+      backgroundSkillReplacements: { 'Athletics': 'Survival' } as Record<import('../types/skill').SkillName, import('../types/skill').SkillName>,
+    };
+
+    const result = validateBackgroundStep(character);
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toEqual([]);
+  });
+
+  it('returns invalid when conflicts exist but not resolved', () => {
+    // Soldier background (Athletics, Intimidation) + Fighter choosing Athletics, Perception
+    // Conflict on Athletics - NOT resolved (no backgroundSkillReplacements)
+    const character: CharacterDraft = {
+      class: makeClass(),
+      background: makeBackground(), // Soldier: Athletics, Intimidation
+      skillProficiencies: ['Athletics', 'Perception'],
+      // backgroundSkillReplacements not set
+    };
+
+    const result = validateBackgroundStep(character);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain('You must resolve all skill conflicts before proceeding.');
+  });
+
+  it('returns valid when no conflicts exist (no replacements needed)', () => {
+    // Sage background (Arcana, History) - no overlap with Fighter's class skills
+    const sage = makeBackground({
+      name: 'Sage',
+      skillProficiencies: ['Arcana', 'History'],
+    });
+    const character: CharacterDraft = {
+      class: makeClass(),
+      background: sage,
+      skillProficiencies: ['Perception', 'Survival', 'Arcana', 'History'],
+      // No backgroundSkillReplacements needed
     };
 
     const result = validateBackgroundStep(character);

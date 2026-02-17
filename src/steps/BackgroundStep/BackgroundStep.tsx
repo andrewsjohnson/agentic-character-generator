@@ -64,9 +64,17 @@ function BackgroundDetail({ background, conflictingSkills, onResolveConflicts, c
     skill => !conflictingSkills.includes(skill)
   );
 
-  // Skills unavailable for replacement: existing class skills + non-conflicting background skills
+  // Previously resolved replacement skills should remain selectable
+  const resolvedReplacements = new Set(
+    character.backgroundSkillReplacements
+      ? Object.values(character.backgroundSkillReplacements)
+      : []
+  );
+
+  // Skills unavailable for replacement: existing skills + non-conflicting background skills,
+  // but exclude already-selected replacements so they remain available in the dropdowns
   const unavailableSkills = new Set([
-    ...existingSkills,
+    ...Array.from(existingSkills).filter(skill => !resolvedReplacements.has(skill as SkillName)),
     ...nonConflictingBackgroundSkills
   ]);
 
@@ -281,13 +289,24 @@ export function BackgroundStep({ character, updateCharacter }: StepProps) {
     });
   };
 
-  // Calculate current conflicts for the detail panel
-  const currentConflicts = selectedBackground
-    ? hasSkillConflict(
-        getBackgroundSkills(selectedBackground),
-        character.skillProficiencies || []
-      )
-    : [];
+  // Calculate current conflicts for the detail panel.
+  // If conflicts have already been resolved (backgroundSkillReplacements is populated),
+  // show the original conflicts so the UI can display the resolved state.
+  const currentConflicts = (() => {
+    if (!selectedBackground) return [];
+    const backgroundSkills = getBackgroundSkills(selectedBackground);
+    const allSkills = character.skillProficiencies || [];
+
+    if (character.backgroundSkillReplacements) {
+      // Conflicts were resolved — return the original conflicting skills
+      // (the keys of backgroundSkillReplacements)
+      return Object.keys(character.backgroundSkillReplacements).filter(
+        (skill): skill is SkillName => backgroundSkills.includes(skill as SkillName)
+      );
+    }
+
+    return hasSkillConflict(backgroundSkills, allSkills);
+  })();
 
   return (
     <div className="p-8">

@@ -95,18 +95,27 @@ export function validateBackgroundStep(character: CharacterDraft): ValidationRes
     return { valid: false, errors };
   }
 
-  // Check for unresolved skill conflicts
+  // Check for unresolved skill conflicts.
+  // When a background with conflicting skills is selected, the user must resolve
+  // the conflicts before proceeding. We detect unresolved conflicts by checking
+  // whether the background's skills (or their replacements) are present in
+  // skillProficiencies.
   if (character.class && character.skillProficiencies) {
     const backgroundSkills = getBackgroundSkills(character.background);
-    const classSkills = character.skillProficiencies.filter(
-      (skill) => !backgroundSkills.includes(skill)
-    );
-    const conflicts = hasSkillConflict(backgroundSkills, classSkills);
 
-    if (conflicts.length > 0) {
+    // Check if all background skills are accounted for in the proficiency list.
+    // After a successful no-conflict merge, all background skills are in the list.
+    // After conflict resolution, the non-conflicting background skills and
+    // replacement skills are in the list instead.
+    const allBgSkillsPresent = backgroundSkills.every(
+      (skill) => character.skillProficiencies!.includes(skill)
+    );
+
+    if (!allBgSkillsPresent) {
+      // Some background skills are missing — check if conflicts were resolved
       if (
         !character.backgroundSkillReplacements ||
-        Object.keys(character.backgroundSkillReplacements).length !== conflicts.length
+        Object.keys(character.backgroundSkillReplacements).length === 0
       ) {
         errors.push('You must resolve all skill conflicts before proceeding.');
       }

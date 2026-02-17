@@ -300,6 +300,87 @@ describe('calculateAC', () => {
       );
     });
   });
+
+  describe('Monk unarmored defense', () => {
+    it('computes 10 + DEX + WIS when no armor and no shield', () => {
+      // DEX +3, WIS +2 → 10 + 3 + 2 = 15
+      expect(calculateAC([], 3, { characterClassName: 'Monk', wisModifier: 2 })).toBe(15);
+    });
+
+    it('uses standard unarmored AC when WIS is 0', () => {
+      // DEX +2, WIS +0 → 10 + 2 + 0 = 12 (same as standard)
+      expect(calculateAC([], 2, { characterClassName: 'Monk', wisModifier: 0 })).toBe(12);
+    });
+
+    it('benefits from high WIS modifier', () => {
+      // DEX +2, WIS +4 → 10 + 2 + 4 = 16
+      expect(calculateAC([], 2, { characterClassName: 'Monk', wisModifier: 4 })).toBe(16);
+    });
+
+    it('uses standard armor AC when wearing armor', () => {
+      // Leather (11 + DEX +3 = 14) vs Monk unarmored (10 + 3 + 2 = 15)
+      // But Monk unarmored defense doesn't apply when wearing armor
+      expect(calculateAC([leatherArmor], 3, { characterClassName: 'Monk', wisModifier: 2 })).toBe(14);
+    });
+
+    it('uses standard AC when using a shield', () => {
+      // Shield: 10 + DEX +3 + 2 = 15 (standard with shield)
+      // Monk unarmored defense doesn't apply with shield
+      expect(calculateAC([shield], 3, { characterClassName: 'Monk', wisModifier: 2 })).toBe(15);
+    });
+
+    it('uses standard AC when wearing armor and shield', () => {
+      // Leather + shield: 11 + 3 + 2 = 16
+      expect(calculateAC([leatherArmor, shield], 3, { characterClassName: 'Monk', wisModifier: 2 })).toBe(16);
+    });
+  });
+
+  describe('Barbarian unarmored defense', () => {
+    it('computes 10 + DEX + CON when no armor', () => {
+      // DEX +2, CON +3 → 10 + 2 + 3 = 15
+      expect(calculateAC([], 2, { characterClassName: 'Barbarian', conModifier: 3 })).toBe(15);
+    });
+
+    it('allows shield bonus with unarmored defense', () => {
+      // DEX +2, CON +3 → 10 + 2 + 3 + 2(shield) = 17
+      expect(calculateAC([shield], 2, { characterClassName: 'Barbarian', conModifier: 3 })).toBe(17);
+    });
+
+    it('uses standard armor AC when wearing armor', () => {
+      // Chain Mail (16) vs Barbarian unarmored (10 + 2 + 3 = 15)
+      // Standard armor wins when wearing armor
+      expect(calculateAC([chainMail], 2, { characterClassName: 'Barbarian', conModifier: 3 })).toBe(16);
+    });
+
+    it('uses standard AC when armor is better', () => {
+      // Plate (18) vs Barbarian unarmored (10 + 2 + 3 = 15)
+      expect(calculateAC([plateArmor], 2, { characterClassName: 'Barbarian', conModifier: 3 })).toBe(18);
+    });
+
+    it('uses standard unarmored AC when CON is 0', () => {
+      // DEX +2, CON +0 → 10 + 2 + 0 = 12 (same as standard)
+      expect(calculateAC([], 2, { characterClassName: 'Barbarian', conModifier: 0 })).toBe(12);
+    });
+
+    it('benefits from high CON modifier', () => {
+      // DEX +2, CON +5 → 10 + 2 + 5 = 17
+      expect(calculateAC([], 2, { characterClassName: 'Barbarian', conModifier: 5 })).toBe(17);
+    });
+  });
+
+  describe('non-Monk/Barbarian classes', () => {
+    it('Fighter uses standard AC only', () => {
+      expect(calculateAC([], 3, { characterClassName: 'Fighter', wisModifier: 2, conModifier: 3 })).toBe(13);
+    });
+
+    it('Wizard uses standard AC only', () => {
+      expect(calculateAC([], 2, { characterClassName: 'Wizard', wisModifier: 4, conModifier: 1 })).toBe(12);
+    });
+
+    it('undefined class uses standard AC', () => {
+      expect(calculateAC([], 3, { wisModifier: 2, conModifier: 3 })).toBe(13);
+    });
+  });
 });
 
 describe('canUseEquipment', () => {

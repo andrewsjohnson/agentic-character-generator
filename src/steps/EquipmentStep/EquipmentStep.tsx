@@ -4,7 +4,9 @@ import type { EquipmentItem, EquipmentChoice } from '../../types/equipment';
 import { getStartingEquipmentOptions, getFixedEquipment, getClassProficiencies } from '../../rules/classes';
 import { getBackgroundEquipment } from '../../rules/backgrounds';
 import { calculateAC, canUseEquipment, resolveStartingEquipment, resolveEquipmentRefs, getEquipmentByCategory } from '../../rules/equipment';
-import { calculateModifier } from '../../rules/ability-scores';
+import type { ACOptions } from '../../rules/equipment';
+import { calculateModifier, applyAbilityBonuses } from '../../rules/ability-scores';
+import { getSpeciesBonuses } from '../../rules/species';
 
 type EquipmentChoiceCardProps = {
   choice: EquipmentChoice;
@@ -50,11 +52,12 @@ type EquipmentSummaryProps = {
   equipment: EquipmentItem[];
   proficiencies: string[];
   dexModifier: number | undefined;
+  acOptions?: ACOptions;
 };
 
-function EquipmentSummary({ equipment, proficiencies, dexModifier }: EquipmentSummaryProps) {
+function EquipmentSummary({ equipment, proficiencies, dexModifier, acOptions }: EquipmentSummaryProps) {
   const categorized = getEquipmentByCategory(equipment);
-  const ac = dexModifier !== undefined ? calculateAC(equipment, dexModifier) : undefined;
+  const ac = dexModifier !== undefined ? calculateAC(equipment, dexModifier, acOptions) : undefined;
 
   const categoryLabels: Record<string, string> = {
     weapon: 'Weapons',
@@ -156,11 +159,30 @@ export function EquipmentStep({ character, updateCharacter }: StepProps) {
     return [...profs.armor, ...profs.weapons];
   }, [character.class]);
 
+  // Compute final ability scores (base + species bonuses) to match ReviewStep
+  const finalScores = useMemo(() => {
+    if (!character.baseAbilityScores) return undefined;
+    const speciesBonuses = character.species
+      ? getSpeciesBonuses(character.species, character.subspecies)
+      : {};
+    return applyAbilityBonuses(character.baseAbilityScores, speciesBonuses);
+  }, [character.baseAbilityScores, character.species, character.subspecies]);
+
   // DEX modifier for AC calculation
   const dexModifier = useMemo(() => {
-    if (!character.baseAbilityScores) return undefined;
-    return calculateModifier(character.baseAbilityScores.DEX);
-  }, [character.baseAbilityScores]);
+    if (!finalScores) return undefined;
+    return calculateModifier(finalScores.DEX);
+  }, [finalScores]);
+
+  // AC options for class-based alternative formulas (Monk/Barbarian unarmored defense)
+  const acOptions = useMemo((): ACOptions | undefined => {
+    if (!character.class || !finalScores) return undefined;
+    return {
+      characterClassName: character.class.name,
+      wisModifier: calculateModifier(finalScores.WIS),
+      conModifier: calculateModifier(finalScores.CON),
+    };
+  }, [character.class, finalScores]);
 
   // Track selections for each choice
   const [selections, setSelections] = useState<Record<number, number>>({});
@@ -289,6 +311,7 @@ export function EquipmentStep({ character, updateCharacter }: StepProps) {
               equipment={resolvedEquipment}
               proficiencies={proficiencies}
               dexModifier={dexModifier}
+              acOptions={acOptions}
             />
           )}
         </div>

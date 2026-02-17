@@ -6,7 +6,7 @@ import {
   getFixedEquipment,
   getClassSkillChoices,
 } from './classes';
-import type { CharacterClass, WeaponProficiency } from '../types/class';
+import type { CharacterClass } from '../types/class';
 
 // Mock class data matching SRD specifications
 const mockFighter: CharacterClass = {
@@ -65,7 +65,7 @@ const mockWizard: CharacterClass = {
   primaryAbility: ['INT'],
   savingThrows: ['INT', 'WIS'],
   armorProficiencies: [],
-  weaponProficiencies: ['daggers', 'darts', 'slings', 'quarterstaffs', 'light crossbows'] as WeaponProficiency[],
+  weaponProficiencies: ['daggers', 'darts', 'slings', 'quarterstaffs', 'light crossbows'],
   skillChoices: {
     options: ['Arcana', 'History', 'Insight', 'Investigation', 'Medicine', 'Religion'],
     count: 2,
@@ -116,7 +116,7 @@ const mockRogue: CharacterClass = {
   primaryAbility: ['DEX'],
   savingThrows: ['DEX', 'INT'],
   armorProficiencies: ['light'],
-  weaponProficiencies: ['simple', 'hand crossbows', 'longswords', 'rapiers', 'shortswords'] as WeaponProficiency[],
+  weaponProficiencies: ['simple', 'hand crossbows', 'longswords', 'rapiers', 'shortswords'],
   skillChoices: {
     options: ['Acrobatics', 'Athletics', 'Deception', 'Insight', 'Intimidation', 'Investigation', 'Perception', 'Performance', 'Persuasion', 'Sleight of Hand', 'Stealth'],
     count: 4,
@@ -197,7 +197,7 @@ const mockSorcerer: CharacterClass = {
   primaryAbility: ['CHA'],
   savingThrows: ['CON', 'CHA'],
   armorProficiencies: [],
-  weaponProficiencies: ['daggers', 'darts', 'slings', 'quarterstaffs', 'light crossbows'] as WeaponProficiency[],
+  weaponProficiencies: ['daggers', 'darts', 'slings', 'quarterstaffs', 'light crossbows'],
   skillChoices: {
     options: ['Arcana', 'Deception', 'Insight', 'Intimidation', 'Persuasion', 'Religion'],
     count: 2,

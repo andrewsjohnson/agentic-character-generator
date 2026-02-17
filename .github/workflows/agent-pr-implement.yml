@@ -84,12 +84,18 @@ jobs:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ steps.app-token.outputs.token }}
           allowed_bots: agentic-automation-app[bot]
+          track_progress: true
+          show_full_output: true
           claude_args: |
             --model opus
             --max-turns 120
             --settings ./claude/agents/implementer.json
           prompt: |
             You are the IMPLEMENTATION agent working on the CURRENT PR branch.
+
+            IMPORTANT WORKFLOW REQUIREMENT
+            - Use interactive PR commenting style (progress updates + final implementation summary comment).
+            - Post final outputs as normal PR comments (do not overwrite prior comments).
 
             PRIMARY GOAL
             - Implement the plan contained in the PR body with high reliability and continuity across runs.

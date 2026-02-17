@@ -45,12 +45,31 @@ export function calculateAC(
 }
 
 /**
+ * Converts an equipment item name to its lowercase plural proficiency form.
+ *
+ * Handles the "Crossbow, Light" → "light crossbows" format used in class data,
+ * as well as standard names like "Dagger" → "daggers".
+ */
+function toWeaponProficiencyKey(name: string): string {
+  const lower = name.toLowerCase();
+  const commaIndex = lower.indexOf(', ');
+  if (commaIndex !== -1) {
+    const base = lower.slice(0, commaIndex);
+    const qualifier = lower.slice(commaIndex + 2);
+    return `${qualifier} ${base}s`;
+  }
+  return `${lower}s`;
+}
+
+/**
  * Determines whether a character is proficient with a piece of equipment.
  *
  * - Armor: proficiencies must include the armor's category ('light', 'medium', 'heavy')
  *   or 'shields' for shields.
  * - Weapons: proficiencies must include the weapon's category ('simple', 'martial')
- *   or the specific weapon name.
+ *   or a specific proficiency that matches the weapon name. Specific proficiencies
+ *   use lowercase plural form (e.g., 'daggers' matches 'Dagger',
+ *   'light crossbows' matches 'Crossbow, Light').
  * - Gear: always returns true (no proficiency required).
  */
 export function canUseEquipment(
@@ -66,7 +85,7 @@ export function canUseEquipment(
     case 'weapon':
       return (
         proficiencies.includes(item.category) ||
-        proficiencies.includes(item.name)
+        proficiencies.includes(toWeaponProficiencyKey(item.name))
       );
     case 'gear':
       return true;

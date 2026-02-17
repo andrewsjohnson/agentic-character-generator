@@ -112,6 +112,30 @@ const rapier: Weapon = {
   cost: '25 gp',
 };
 
+const lightCrossbow: Weapon = {
+  kind: 'weapon',
+  name: 'Crossbow, Light',
+  category: 'simple',
+  damage: '1d8',
+  damageType: 'piercing',
+  properties: ['ammunition', 'loading', 'two-handed'],
+  range: { normal: 80, long: 320 },
+  weight: 5,
+  cost: '25 gp',
+};
+
+const handCrossbow: Weapon = {
+  kind: 'weapon',
+  name: 'Crossbow, Hand',
+  category: 'martial',
+  damage: '1d6',
+  damageType: 'piercing',
+  properties: ['ammunition', 'light', 'loading'],
+  range: { normal: 30, long: 120 },
+  weight: 3,
+  cost: '75 gp',
+};
+
 const backpack: Gear = {
   kind: 'gear',
   name: 'Backpack',
@@ -332,16 +356,14 @@ describe('canUseEquipment', () => {
       expect(canUseEquipment(longsword, wizardProficiencies)).toBe(false);
     });
 
-    it('wizard cannot use dagger by category but lacks simple proficiency', () => {
-      // Wizard does not have 'simple' category proficiency
-      // but has specific weapon proficiencies like 'daggers'
-      expect(canUseEquipment(dagger, wizardProficiencies)).toBe(false);
+    it('wizard can use dagger via specific weapon proficiency', () => {
+      // Wizard has 'daggers' proficiency which matches 'Dagger'
+      expect(canUseEquipment(dagger, wizardProficiencies)).toBe(true);
     });
 
     it('rogue can use rapier via specific weapon proficiency', () => {
-      // Rogue has 'rapiers' as a specific proficiency but Rapier.name is 'Rapier'
-      // With exact matching, this will not match since 'rapiers' !== 'Rapier'
-      expect(canUseEquipment(rapier, rogueProficiencies)).toBe(false);
+      // Rogue has 'rapiers' proficiency which matches 'Rapier'
+      expect(canUseEquipment(rapier, rogueProficiencies)).toBe(true);
     });
 
     it('rogue can use dagger (has simple proficiency)', () => {
@@ -349,7 +371,21 @@ describe('canUseEquipment', () => {
     });
 
     it('character with specific weapon name proficiency can use it', () => {
-      expect(canUseEquipment(longsword, ['Longsword'])).toBe(true);
+      expect(canUseEquipment(longsword, ['longswords'])).toBe(true);
+    });
+
+    it('wizard can use light crossbow via specific proficiency', () => {
+      // Wizard has 'light crossbows' which matches 'Crossbow, Light'
+      expect(canUseEquipment(lightCrossbow, wizardProficiencies)).toBe(true);
+    });
+
+    it('rogue can use hand crossbow via specific proficiency', () => {
+      // Rogue has 'hand crossbows' which matches 'Crossbow, Hand'
+      expect(canUseEquipment(handCrossbow, rogueProficiencies)).toBe(true);
+    });
+
+    it('wizard cannot use hand crossbow (not in proficiency list)', () => {
+      expect(canUseEquipment(handCrossbow, wizardProficiencies)).toBe(false);
     });
 
     it('empty proficiency list blocks weapon use', () => {

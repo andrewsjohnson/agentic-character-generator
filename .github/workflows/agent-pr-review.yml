@@ -67,6 +67,20 @@ jobs:
       - name: Checkout PR branch
         run: gh pr checkout ${{ github.event.issue.number }} --repo ${{ github.repository }}
 
+      - name: Post review progress comment
+        id: review-progress
+        run: |
+          set -euo pipefail
+          PR="${{ github.event.issue.number }}"
+          REPO="${{ github.repository }}"
+
+          COMMENT_ID="$(gh api repos/"$REPO"/issues/"$PR"/comments \
+            --method POST \
+            --field body='🔍 Agent review started. I will update this comment with findings and final verdict once analysis is complete.' \
+            --jq '.id')"
+
+          echo "comment_id=$COMMENT_ID" >> "$GITHUB_OUTPUT"
+
       - uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -78,6 +92,22 @@ jobs:
             --settings ./claude/agents/reviewer.json
           prompt: |
             You are the REVIEW agent.
+
+            IMPORTANT WORKFLOW REQUIREMENT
+            - A progress comment has already been created for this run.
+            - Update that existing comment in place (do not create a new final review comment).
+            - Progress comment id: ${{ steps.review-progress.outputs.comment_id }}
+            - Repository: ${{ github.repository }}
+            - PR number: ${{ github.event.issue.number }}
+            - Use gh api patch to update comment body, e.g.:
+              gh api repos/${{ github.repository }}/issues/comments/${{ steps.review-progress.outputs.comment_id }} --method PATCH --field body@- <<'EOF'
+              ...comment body...
+              EOF
+            - While working, first update the comment with an "in progress" note, then replace with final review output.
+            - Your final comment body MUST include exactly one verdict line:
+              Verdict: APPROVE
+              or
+              Verdict: CHANGES_REQUESTED
 
             ROLE
             Senior Code Reviewer focused on correctness, readability, testability, regression risk, and repo conventions.
@@ -158,15 +188,18 @@ jobs:
             Verdict: CHANGES_REQUESTED
 
       - name: Apply labels based on verdict
+        id: apply-verdict
         run: |
           set -euo pipefail
           PR="${{ github.event.issue.number }}"
           REPO="${{ github.repository }}"
 
-          # Look at the latest claude[bot] comment that contains "Verdict:"
+          # Parse the latest comment that contains a verdict line.
           VERDICT="$(gh pr view "$PR" --repo "$REPO" --json comments \
-            -q '.comments | map(select(.author.login == "claude[bot]")) | map(select(.body | test("Verdict:"))) | last | .body // ""' \
+            -q '.comments | map(select(.body | test("Verdict:"))) | last | .body // ""' \
             | sed -n 's/.*Verdict: *//p' | tail -n 1 | tr -d '\r' | tr '[:lower:]' '[:upper:]')"
+
+          echo "verdict=${VERDICT}" >> "$GITHUB_OUTPUT"
 
           echo "Verdict parsed: ${VERDICT:-<none>}"
 
@@ -184,3 +217,25 @@ jobs:
           fi
 
           echo "No recognized verdict; leaving labels as-is."
+
+      - name: Ensure progress comment reflects review outcome
+        if: always()
+        run: |
+          set -euo pipefail
+          REPO="${{ github.repository }}"
+          COMMENT_ID="${{ steps.review-progress.outputs.comment_id }}"
+          VERDICT="${{ steps.apply-verdict.outputs.verdict }}"
+
+          if [ -z "${COMMENT_ID}" ]; then
+            echo "No progress comment id available; skipping final status update."
+            exit 0
+          fi
+
+          if [ "${VERDICT}" = "APPROVE" ] || [ "${VERDICT}" = "APPROVED" ] || [ "${VERDICT}" = "CHANGES_REQUESTED" ]; then
+            echo "Recognized verdict already present; leaving detailed review comment untouched."
+            exit 0
+          fi
+
+          gh api repos/"$REPO"/issues/comments/"$COMMENT_ID" \
+            --method PATCH \
+            --field body="⚠️ Review run completed, but no machine-readable verdict was detected.\n\nPlease re-run /agent-review so the final updated comment includes one of:\n- Verdict: APPROVE\n- Verdict: CHANGES_REQUESTED"

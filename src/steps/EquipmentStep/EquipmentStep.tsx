@@ -5,7 +5,8 @@ import { getStartingEquipmentOptions, getFixedEquipment, getClassProficiencies }
 import { getBackgroundEquipment } from '../../rules/backgrounds';
 import { calculateAC, canUseEquipment, resolveStartingEquipment, resolveEquipmentRefs, getEquipmentByCategory } from '../../rules/equipment';
 import type { ACOptions } from '../../rules/equipment';
-import { calculateModifier } from '../../rules/ability-scores';
+import { calculateModifier, applyAbilityBonuses } from '../../rules/ability-scores';
+import { getSpeciesBonuses } from '../../rules/species';
 
 type EquipmentChoiceCardProps = {
   choice: EquipmentChoice;
@@ -158,21 +159,30 @@ export function EquipmentStep({ character, updateCharacter }: StepProps) {
     return [...profs.armor, ...profs.weapons];
   }, [character.class]);
 
+  // Compute final ability scores (base + species bonuses) to match ReviewStep
+  const finalScores = useMemo(() => {
+    if (!character.baseAbilityScores) return undefined;
+    const speciesBonuses = character.species
+      ? getSpeciesBonuses(character.species, character.subspecies)
+      : {};
+    return applyAbilityBonuses(character.baseAbilityScores, speciesBonuses);
+  }, [character.baseAbilityScores, character.species, character.subspecies]);
+
   // DEX modifier for AC calculation
   const dexModifier = useMemo(() => {
-    if (!character.baseAbilityScores) return undefined;
-    return calculateModifier(character.baseAbilityScores.DEX);
-  }, [character.baseAbilityScores]);
+    if (!finalScores) return undefined;
+    return calculateModifier(finalScores.DEX);
+  }, [finalScores]);
 
   // AC options for class-based alternative formulas (Monk/Barbarian unarmored defense)
   const acOptions = useMemo((): ACOptions | undefined => {
-    if (!character.class || !character.baseAbilityScores) return undefined;
+    if (!character.class || !finalScores) return undefined;
     return {
       characterClassName: character.class.name,
-      wisModifier: calculateModifier(character.baseAbilityScores.WIS),
-      conModifier: calculateModifier(character.baseAbilityScores.CON),
+      wisModifier: calculateModifier(finalScores.WIS),
+      conModifier: calculateModifier(finalScores.CON),
     };
-  }, [character.class, character.baseAbilityScores]);
+  }, [character.class, finalScores]);
 
   // Track selections for each choice
   const [selections, setSelections] = useState<Record<number, number>>({});

@@ -98,7 +98,7 @@ jobs:
 
             0) Locate the authoritative plan (do this first)
             - The PR body contains the authoritative implementation plan. Use it as the single source of truth.
-            - The PR body also includes a reference like "Implements: #<N>". You may open the linked issue for extra context,
+            - The PR body also includes a reference like "Closes #<N>". You may open the linked issue for extra context,
               but do not replace or override the PR-body plan with issue comments.
 
             1) Resume check (before coding)

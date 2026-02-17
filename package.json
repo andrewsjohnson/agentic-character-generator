@@ -10,7 +10,8 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "typecheck": "tsc -b --noEmit",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "test:e2e": "percy exec -- playwright test"
   },
   "dependencies": {
     "react": "^18.3.1",
@@ -18,6 +19,9 @@
     "react-router-dom": "^6.22.0"
   },
   "devDependencies": {
+    "@percy/cli": "^1.31.8",
+    "@percy/playwright": "^1.0.10",
+    "@playwright/test": "^1.58.2",
     "@testing-library/jest-dom": "^6.2.0",
     "@testing-library/react": "^14.1.2",
     "@types/react": "^18.3.12",

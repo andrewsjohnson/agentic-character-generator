@@ -1,0 +1,46 @@
+name: Percy Visual Review
+
+on:
+  workflow_run:
+    # Triggers once the Playwright E2E job finishes (regardless of outcome).
+    # The review script handles the case where Percy has no build yet.
+    workflows: ["Playwright E2E"]
+    types: [completed]
+
+jobs:
+  review:
+    name: Claude vision review of Percy diffs
+    runs-on: ubuntu-latest
+
+    # Only bother reviewing if the E2E job itself succeeded (so Percy got
+    # snapshots).  If Playwright failed there's nothing to visually diff.
+    if: github.event.workflow_run.conclusion == 'success'
+
+    permissions:
+      pull-requests: write   # post / update the review comment
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          # No npm install needed — the script uses only Node built-ins + fetch.
+
+      - name: Run Percy visual review
+        run: node .github/scripts/percy-review.mjs
+        env:
+          PERCY_TOKEN:       ${{ secrets.PERCY_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # PERCY_PROJECT must be set as a GitHub Actions variable (not secret)
+          # in the format "org-slug/project-slug" as shown in your Percy URL.
+          # e.g. Settings → Variables → PERCY_PROJECT = "acme/character-gen"
+          PERCY_PROJECT:     ${{ vars.PERCY_PROJECT }}
+          GH_SHA:            ${{ github.event.workflow_run.head_sha }}
+          GH_TOKEN:          ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO:           ${{ github.repository }}
+          # pull_requests[0] is populated for PRs from the same repo.
+          # For pushes to branches without an open PR this will be empty,
+          # and the script skips the comment step gracefully.
+          PR_NUMBER:         ${{ github.event.workflow_run.pull_requests[0].number }}

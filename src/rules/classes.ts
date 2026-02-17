@@ -6,6 +6,7 @@ import type {
 } from '../types/class';
 import type { AbilityName } from '../types/ability';
 import type { EquipmentChoice, StartingEquipment, EquipmentRef } from '../types/equipment';
+import type { SkillName } from '../types/skill';
 
 /**
  * Returns the hit die size for a given class.
@@ -73,7 +74,7 @@ export function getStartingEquipment(
  * @returns Object with skill options array and count of choices allowed
  */
 export function getClassSkillChoices(charClass: CharacterClass): {
-  options: string[];
+  options: SkillName[];
   count: number;
 } {
   return charClass.skillChoices;

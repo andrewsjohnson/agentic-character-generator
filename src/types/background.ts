@@ -1,4 +1,5 @@
 import type { AbilityName } from './ability';
+import type { SkillName } from './skill';
 
 /** Equipment granted by a background (name and quantity). */
 export type BackgroundEquipment = {
@@ -17,7 +18,7 @@ export type Background = {
   name: string;
   /** Three abilities this background can increase. Player chooses +2/+1 or +1/+1/+1 split. */
   abilityOptions: [AbilityName, AbilityName, AbilityName];
-  skillProficiencies: [string, string];
+  skillProficiencies: [SkillName, SkillName];
   toolProficiency: string;
   equipment: BackgroundEquipment[];
   feature: BackgroundFeature;

@@ -3,6 +3,7 @@ import type { Species, Subspecies } from './species';
 import type { CharacterClass, Subclass } from './class';
 import type { Background } from './background';
 import type { EquipmentItem } from './equipment';
+import type { SkillName } from './skill';
 
 /**
  * The top-level character draft. Represents a work-in-progress character
@@ -46,7 +47,7 @@ export type CharacterDraft = {
   level?: number;
 
   /** Skill proficiencies chosen by the player (from class + background). */
-  skillProficiencies?: string[];
+  skillProficiencies?: SkillName[];
 
   /** Equipment selected during character creation. */
   equipment?: EquipmentItem[];

@@ -1,5 +1,6 @@
 import type { AbilityName } from './ability';
 import type { StartingEquipment } from './equipment';
+import type { SkillName } from './skill';
 
 /** Hit die sizes used by the various classes. */
 export type HitDie = 6 | 8 | 10 | 12;
@@ -47,7 +48,7 @@ export type CharacterClass = {
   armorProficiencies: ArmorProficiency[];
   weaponProficiencies: WeaponProficiency[];
   skillChoices: {
-    options: string[];
+    options: SkillName[];
     count: number;
   };
   startingEquipment?: StartingEquipment;

@@ -56,7 +56,9 @@ async function percyPost(path) {
 
 /** Find the Percy build for a specific git SHA, retrying for up to ~60 s. */
 async function findBuild(sha) {
-  const project = encodeURIComponent(process.env.PERCY_PROJECT);
+  // PERCY_PROJECT is "org-slug/project-slug" — the slash is a path separator
+  // so we must NOT encode the whole string. Encode each slug individually.
+  const project = process.env.PERCY_PROJECT.split('/').map(encodeURIComponent).join('/');
   for (let attempt = 0; attempt < 6; attempt++) {
     if (attempt > 0) await sleep(10_000);
     const { data } = await percyGet(

@@ -49,6 +49,12 @@ export type CharacterDraft = {
   /** Skill proficiencies chosen by the player (from class + background). */
   skillProficiencies?: SkillName[];
 
+  /**
+   * Resolved skill conflicts from background selection.
+   * Maps conflicting background skills to their chosen replacements.
+   */
+  backgroundSkillReplacements?: Record<SkillName, SkillName>;
+
   /** Equipment selected during character creation. */
   equipment?: EquipmentItem[];
 

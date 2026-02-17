@@ -73,13 +73,27 @@ function BackgroundDetail({ background, conflictingSkills, onResolveConflicts, c
   // Available skills for replacement (excluding those already possessed)
   const availableSkills = ALL_SKILLS.filter(skill => !unavailableSkills.has(skill));
 
-  // Track selected replacement skills
-  const [replacements, setReplacements] = useState<SkillName[]>([]);
+  // Track selected replacement skills — initialize from character state if available
+  const [replacements, setReplacements] = useState<SkillName[]>(() => {
+    if (character.backgroundSkillReplacements && conflictingSkills.length > 0) {
+      return conflictingSkills.map(
+        (skill) => character.backgroundSkillReplacements![skill]
+      ).filter(Boolean);
+    }
+    return [];
+  });
 
   // Reset replacements when background changes (conflicts will change accordingly)
   useEffect(() => {
-    setReplacements([]);
-  }, [background.name]);
+    if (character.backgroundSkillReplacements && conflictingSkills.length > 0) {
+      const restored = conflictingSkills.map(
+        (skill) => character.backgroundSkillReplacements![skill]
+      ).filter(Boolean);
+      setReplacements(restored);
+    } else {
+      setReplacements([]);
+    }
+  }, [background.name]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleReplacementChange = (index: number, skill: SkillName) => {
     const newReplacements = [...replacements];
@@ -213,16 +227,22 @@ export function BackgroundStep({ character, updateCharacter }: StepProps) {
     // Check for conflicts
     const conflicts = hasSkillConflict(backgroundSkills, classSkills);
 
-    // If no conflicts, update character immediately
     if (conflicts.length === 0) {
-      // Merge skills: class skills + background skills
+      // No conflicts: merge skills and clear any stale replacements
       const mergedSkills = [...classSkills, ...backgroundSkills];
       updateCharacter({
         background,
-        skillProficiencies: mergedSkills
+        skillProficiencies: mergedSkills,
+        backgroundSkillReplacements: undefined
+      });
+    } else {
+      // Conflicts exist: set the background but clear stale replacements.
+      // User must resolve conflicts before proceeding (enforced by validation).
+      updateCharacter({
+        background,
+        backgroundSkillReplacements: undefined
       });
     }
-    // If conflicts exist, wait for user to resolve them (handled in BackgroundDetail)
   };
 
   const handleResolveConflicts = (replacements: SkillName[]) => {
@@ -237,6 +257,12 @@ export function BackgroundStep({ character, updateCharacter }: StepProps) {
     // Find conflicts
     const conflicts = hasSkillConflict(backgroundSkills, classSkills);
 
+    // Build the backgroundSkillReplacements mapping
+    const replacementMap: Record<string, SkillName> = {};
+    conflicts.forEach((conflictSkill, index) => {
+      replacementMap[conflictSkill] = replacements[index];
+    });
+
     // Build final skill list: class skills + non-conflicting background skills + replacements
     const nonConflictingBackgroundSkills = backgroundSkills.filter(
       skill => !conflicts.includes(skill)
@@ -250,7 +276,8 @@ export function BackgroundStep({ character, updateCharacter }: StepProps) {
 
     updateCharacter({
       background: selectedBackground,
-      skillProficiencies: finalSkills
+      skillProficiencies: finalSkills,
+      backgroundSkillReplacements: replacementMap as Record<SkillName, SkillName>
     });
   };
 

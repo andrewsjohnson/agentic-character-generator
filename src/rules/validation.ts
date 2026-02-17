@@ -103,19 +103,12 @@ export function validateBackgroundStep(character: CharacterDraft): ValidationRes
     );
     const conflicts = hasSkillConflict(backgroundSkills, classSkills);
 
-    // If there are conflicts, check whether the character's skillProficiencies
-    // includes *both* background skills (possibly as replacements).
-    // When conflicts are resolved, the background step replaces conflicting
-    // skills with alternatives, so all background skills should be present
-    // in the final list (either original or replacement).
     if (conflicts.length > 0) {
-      // The character has conflicts. The total skill count should reflect
-      // that replacements were made. If skillProficiencies doesn't contain
-      // at least (classSkills.length + backgroundSkills.length) entries,
-      // the conflicts haven't been resolved.
-      const expectedCount = classSkills.length + backgroundSkills.length;
-      if (character.skillProficiencies.length < expectedCount) {
-        errors.push('Skill conflicts between class and background must be resolved.');
+      if (
+        !character.backgroundSkillReplacements ||
+        Object.keys(character.backgroundSkillReplacements).length !== conflicts.length
+      ) {
+        errors.push('You must resolve all skill conflicts before proceeding.');
       }
     }
   } else if (character.class && !character.skillProficiencies) {

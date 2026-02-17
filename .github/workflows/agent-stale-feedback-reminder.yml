@@ -1,0 +1,62 @@
+name: Agent - Stale AWAITING-FEEDBACK Reminder
+
+on:
+  schedule:
+    # Run daily at 09:00 UTC
+    - cron: '0 9 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Export token for gh
+        run: echo "GH_TOKEN=${{ steps.app-token.outputs.token }}" >> "$GITHUB_ENV"
+
+      - name: Nudge stale AWAITING-FEEDBACK PRs and issues
+        run: |
+          set -euo pipefail
+
+          REPO="${{ github.repository }}"
+          STALE_DAYS=3
+          CUTOFF="$(date -u -d "${STALE_DAYS} days ago" +%Y-%m-%dT%H:%M:%SZ)"
+
+          # --- PRs ---
+          gh pr list --repo "$REPO" --label "AWAITING-FEEDBACK" --state open --json number,updatedAt -q '.[]' |
+          while IFS= read -r ROW; do
+            PR="$(echo "$ROW" | jq -r '.number')"
+            UPDATED="$(echo "$ROW" | jq -r '.updatedAt')"
+
+            if [ "$UPDATED" \< "$CUTOFF" ]; then
+              echo "PR #${PR} last updated ${UPDATED} — posting reminder."
+              gh pr comment "$PR" --repo "$REPO" --body "**Reminder:** This PR has been awaiting human feedback for over ${STALE_DAYS} days. Please review the open questions above and respond so automation can continue."
+            else
+              echo "PR #${PR} updated recently (${UPDATED}); skipping."
+            fi
+          done
+
+          # --- Issues ---
+          gh issue list --repo "$REPO" --label "AWAITING-FEEDBACK" --state open --json number,updatedAt -q '.[]' |
+          while IFS= read -r ROW; do
+            ISSUE="$(echo "$ROW" | jq -r '.number')"
+            UPDATED="$(echo "$ROW" | jq -r '.updatedAt')"
+
+            if [ "$UPDATED" \< "$CUTOFF" ]; then
+              echo "Issue #${ISSUE} last updated ${UPDATED} — posting reminder."
+              gh issue comment "$ISSUE" --repo "$REPO" --body "**Reminder:** This issue has been awaiting human feedback for over ${STALE_DAYS} days. Please review the open questions above and respond so planning can continue."
+            else
+              echo "Issue #${ISSUE} updated recently (${UPDATED}); skipping."
+            fi
+          done
+
+          echo "Done."

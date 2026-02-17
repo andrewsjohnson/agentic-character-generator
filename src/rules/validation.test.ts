@@ -88,8 +88,8 @@ function makeStandardArrayScores(): AbilityScores {
 }
 
 function makeValidPointBuyScores(): AbilityScores {
-  // 9+7+5+4+2+0 = 27 points
-  return { STR: 15, DEX: 14, CON: 13, INT: 12, WIS: 10, CHA: 8 };
+  // 5+5+5+5+5+2 = 27 points (distinct from standard array)
+  return { STR: 13, DEX: 13, CON: 13, INT: 13, WIS: 13, CHA: 10 };
 }
 
 function makeEquipment(): EquipmentItem[] {

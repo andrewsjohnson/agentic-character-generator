@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { ReviewStep } from './ReviewStep';
 import type { CharacterDraft } from '../../types/character';
-import type { CharacterClass, WeaponProficiency } from '../../types/class';
+import type { CharacterClass } from '../../types/class';
 import type { Species } from '../../types/species';
 import type { Background } from '../../types/background';
 import type { Armor, Weapon, Gear } from '../../types/equipment';
@@ -63,7 +63,7 @@ const mockWizard: CharacterClass = {
   primaryAbility: ['INT'],
   savingThrows: ['INT', 'WIS'],
   armorProficiencies: [],
-  weaponProficiencies: ['daggers', 'darts', 'slings', 'quarterstaffs', 'light crossbows'] as WeaponProficiency[],
+  weaponProficiencies: ['daggers', 'darts', 'slings', 'quarterstaffs', 'light crossbows'],
   skillChoices: { options: ['Arcana', 'History', 'Investigation'], count: 2 },
   features: [
     { name: 'Spellcasting', description: 'As a student of arcane magic, you have a spellbook.' },
@@ -99,7 +99,7 @@ const mockMonk: CharacterClass = {
   primaryAbility: ['DEX', 'WIS'],
   savingThrows: ['STR', 'DEX'],
   armorProficiencies: [],
-  weaponProficiencies: ['simple', 'shortswords'] as WeaponProficiency[],
+  weaponProficiencies: ['simple', 'shortswords'],
   skillChoices: { options: ['Acrobatics', 'Athletics', 'Stealth'], count: 2 },
   features: [
     { name: 'Unarmored Defense', description: 'While not wearing armor, your AC equals 10 + DEX modifier + WIS modifier.' },

@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { EquipmentStep } from './EquipmentStep';
 import type { CharacterDraft } from '../../types/character';
-import type { CharacterClass, WeaponProficiency } from '../../types/class';
+import type { CharacterClass } from '../../types/class';
 import type { Background } from '../../types/background';
 
 // -- Test fixtures --
@@ -48,7 +48,7 @@ const mockWizard: CharacterClass = {
   primaryAbility: ['INT'],
   savingThrows: ['INT', 'WIS'],
   armorProficiencies: [],
-  weaponProficiencies: ['daggers', 'darts', 'slings', 'quarterstaffs', 'light crossbows'] as WeaponProficiency[],
+  weaponProficiencies: ['daggers', 'darts', 'slings', 'quarterstaffs', 'light crossbows'],
   skillChoices: {
     options: ['Arcana', 'History'],
     count: 2,

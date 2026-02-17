@@ -1,6 +1,15 @@
 import type { EquipmentItem, EquipmentChoice, Armor, EquipmentRef } from '../types/equipment';
 import equipmentData from '../data/equipment-data';
 
+export type ACOptions = {
+  /** Class name for alternative AC formulas (e.g., 'Monk', 'Barbarian') */
+  characterClassName?: string;
+  /** Wisdom modifier (used for Monk unarmored defense) */
+  wisModifier?: number;
+  /** Constitution modifier (used for Barbarian unarmored defense) */
+  conModifier?: number;
+};
+
 /**
  * Calculates Armor Class based on equipped items, DEX modifier, and optional
  * class-based alternative AC formulas.
@@ -20,17 +29,16 @@ import equipmentData from '../data/equipment-data';
  *
  * @param equipment - The character's equipped items
  * @param dexModifier - The Dexterity ability modifier
- * @param className - Optional class name for alternative AC formulas
- * @param wisModifier - Optional Wisdom modifier (used for Monk unarmored defense)
- * @param conModifier - Optional Constitution modifier (used for Barbarian unarmored defense)
+ * @param options - Optional parameters for class-based AC formulas
  */
 export function calculateAC(
   equipment: EquipmentItem[],
   dexModifier: number,
-  className?: string,
-  wisModifier?: number,
-  conModifier?: number,
+  options?: ACOptions,
 ): number {
+  const characterClassName = options?.characterClassName;
+  const wisModifier = options?.wisModifier;
+  const conModifier = options?.conModifier;
   const armorItems = equipment.filter(
     (item): item is Armor => item.kind === 'armor'
   );
@@ -57,13 +65,13 @@ export function calculateAC(
   }
 
   // Alternative AC: Monk Unarmored Defense (no armor AND no shield)
-  if (className === 'Monk' && !bodyArmor && !hasShield) {
+  if (characterClassName === 'Monk' && !bodyArmor && !hasShield) {
     const monkAC = 10 + dexModifier + (wisModifier ?? 0);
     ac = Math.max(ac, monkAC);
   }
 
   // Alternative AC: Barbarian Unarmored Defense (no armor, shield allowed)
-  if (className === 'Barbarian' && !bodyArmor) {
+  if (characterClassName === 'Barbarian' && !bodyArmor) {
     const barbarianBaseAC = 10 + dexModifier + (conModifier ?? 0);
     const barbarianAC = hasShield ? barbarianBaseAC + 2 : barbarianBaseAC;
     ac = Math.max(ac, barbarianAC);

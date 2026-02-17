@@ -32,7 +32,7 @@ export function ReviewStep({ character }: StepProps) {
   const level = character.level ?? 1;
   const proficiencyBonus = getProficiencyBonus(level);
 
-  // Compute final ability scores (base + species bonuses + background bonuses)
+  // Compute final ability scores (base + species bonuses)
   const baseScores = character.baseAbilityScores;
   const speciesBonuses = character.species
     ? getSpeciesBonuses(character.species, character.subspecies)
@@ -48,18 +48,16 @@ export function ReviewStep({ character }: StepProps) {
     hitDie !== undefined && modifiers
       ? calculateHP(hitDie, modifiers.CON)
       : undefined;
-  const ac =
-    modifiers && character.equipment
-      ? calculateAC(
-          character.equipment,
-          modifiers.DEX,
-          character.class?.name,
-          modifiers.WIS,
-          modifiers.CON,
-        )
-      : modifiers
-        ? calculateAC([], modifiers.DEX, character.class?.name, modifiers.WIS, modifiers.CON)
-        : undefined;
+  const acOptions = character.class
+    ? {
+        characterClassName: character.class.name,
+        wisModifier: modifiers?.WIS,
+        conModifier: modifiers?.CON,
+      }
+    : undefined;
+  const ac = modifiers
+    ? calculateAC(character.equipment ?? [], modifiers.DEX, acOptions)
+    : undefined;
   const initiative = modifiers ? calculateInitiative(modifiers.DEX) : undefined;
   const speed = character.species
     ? getSpeciesSpeed(character.species, character.subspecies)

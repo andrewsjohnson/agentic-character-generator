@@ -66,7 +66,7 @@ export function ReviewStep({ character }: StepProps) {
     : undefined;
 
   // Saving throws
-  const savingThrowProficiencies = character.class?.savingThrows ?? [];
+  const savingThrowProficiencies: readonly AbilityName[] = character.class?.savingThrows ?? [];
 
   // Skills
   const skillModifiers =

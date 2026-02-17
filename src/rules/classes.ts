@@ -5,7 +5,7 @@ import type {
   WeaponProficiency,
 } from '../types/class';
 import type { AbilityName } from '../types/ability';
-import type { EquipmentChoice } from '../types/equipment';
+import type { EquipmentChoice, StartingEquipment, EquipmentRef } from '../types/equipment';
 
 /**
  * Returns the hit die size for a given class.
@@ -35,17 +35,36 @@ export function getClassProficiencies(charClass: CharacterClass): {
 
 /**
  * Returns the equipment choices available at level 1.
- * For v1, this returns an empty array as equipment choices will be
- * implemented in a future phase.
- * @param _charClass - The character class (unused in v1 placeholder)
- * @returns Array of equipment choices
+ * Each choice has a description and structured options with item references.
+ * @param charClass - The character class
+ * @returns Array of equipment choices the player must select from
  */
 export function getStartingEquipmentOptions(
-  _charClass: CharacterClass // eslint-disable-line @typescript-eslint/no-unused-vars
+  charClass: CharacterClass
 ): EquipmentChoice[] {
-  // Placeholder for v1 - equipment choices to be implemented later
-  // This function ensures the interface is ready for future implementation
-  return [];
+  return charClass.startingEquipment?.choices ?? [];
+}
+
+/**
+ * Returns the fixed equipment items every member of a class receives.
+ * @param charClass - The character class
+ * @returns Array of equipment item references
+ */
+export function getFixedEquipment(
+  charClass: CharacterClass
+): EquipmentRef[] {
+  return charClass.startingEquipment?.fixed ?? [];
+}
+
+/**
+ * Returns the full starting equipment configuration for a class.
+ * @param charClass - The character class
+ * @returns Starting equipment with choices and fixed items, or undefined if not configured
+ */
+export function getStartingEquipment(
+  charClass: CharacterClass
+): StartingEquipment | undefined {
+  return charClass.startingEquipment;
 }
 
 /**

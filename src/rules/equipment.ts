@@ -1,4 +1,5 @@
-import type { EquipmentItem, EquipmentChoice, Armor } from '../types/equipment';
+import type { EquipmentItem, EquipmentChoice, Armor, EquipmentRef } from '../types/equipment';
+import equipmentData from '../data/equipment.json';
 
 /**
  * Calculates Armor Class based on equipped items and DEX modifier.
@@ -93,18 +94,73 @@ export function canUseEquipment(
 }
 
 /**
+ * Looks up an equipment item by name from the equipment data.
+ * Returns undefined if the item is not found.
+ */
+export function findEquipmentByName(name: string): EquipmentItem | undefined {
+  return (equipmentData as EquipmentItem[]).find(
+    (item) => item.name === name
+  );
+}
+
+/**
+ * Resolves an array of equipment references into actual EquipmentItem objects.
+ * Items not found in equipment.json are created as generic gear items.
+ * Handles quantity by repeating weapon/armor items or setting gear quantity.
+ */
+export function resolveEquipmentRefs(refs: EquipmentRef[]): EquipmentItem[] {
+  const result: EquipmentItem[] = [];
+
+  for (const ref of refs) {
+    const item = findEquipmentByName(ref.name);
+    const quantity = ref.quantity ?? 1;
+
+    if (item) {
+      if (item.kind === 'gear' && quantity > 1) {
+        result.push({ ...item, quantity });
+      } else if (quantity > 1) {
+        for (let i = 0; i < quantity; i++) {
+          result.push({ ...item });
+        }
+      } else {
+        result.push(item);
+      }
+    } else {
+      // Create a generic gear entry for items not in equipment.json
+      result.push({
+        kind: 'gear',
+        name: ref.name,
+        quantity: quantity > 1 ? quantity : undefined,
+        weight: 0,
+        cost: '0 gp',
+      });
+    }
+  }
+
+  return result;
+}
+
+/**
  * Converts equipment choices and player selections into a flat equipment list.
- *
- * Currently a stub — the EquipmentChoice type uses string descriptions
- * rather than actual EquipmentItem arrays, so full resolution requires
- * either restructuring the choice data or building a parser.
- * Returns an empty array until that data structure is in place.
+ * Each selection index corresponds to the chosen option for each choice.
  */
 export function resolveStartingEquipment(
-  _choices: EquipmentChoice[], // eslint-disable-line @typescript-eslint/no-unused-vars
-  _selections: number[] // eslint-disable-line @typescript-eslint/no-unused-vars
+  choices: EquipmentChoice[],
+  selections: number[]
 ): EquipmentItem[] {
-  return [];
+  const result: EquipmentItem[] = [];
+
+  for (let i = 0; i < choices.length; i++) {
+    const choice = choices[i];
+    const selectionIndex = selections[i] ?? 0;
+    const option = choice.options[selectionIndex];
+
+    if (option) {
+      result.push(...resolveEquipmentRefs(option.items));
+    }
+  }
+
+  return result;
 }
 
 /**

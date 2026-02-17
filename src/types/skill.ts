@@ -44,9 +44,12 @@ export const SKILL_NAMES: readonly SkillName[] = [
   'Survival',
 ] as const;
 
+/** Set used for O(1) lookup in the type guard, avoiding an `as` cast. */
+const SKILL_NAME_SET: Set<string> = new Set(SKILL_NAMES);
+
 /** Runtime type guard that checks whether a string is a valid SkillName. */
 export function isSkillName(value: string): value is SkillName {
-  return (SKILL_NAMES as readonly string[]).includes(value);
+  return SKILL_NAME_SET.has(value);
 }
 
 /** A record mapping every skill name to its computed modifier value. */

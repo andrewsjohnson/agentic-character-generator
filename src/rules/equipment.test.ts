@@ -459,13 +459,12 @@ describe('resolveEquipmentRefs', () => {
     expect(result[1].name).toBe('Handaxe');
   });
 
-  it('handles quantity > 1 for gear by setting quantity field', () => {
+  it('handles quantity > 1 for Dart (weapon) by repeating items', () => {
     const result = resolveEquipmentRefs([{ name: 'Dart', quantity: 10 }]);
-    expect(result).toHaveLength(1);
+    // Dart is a weapon, so each is a separate item
+    expect(result).toHaveLength(10);
     expect(result[0].name).toBe('Dart');
     expect(result[0].kind).toBe('weapon');
-    // Weapons with quantity > 1 are repeated, not bundled
-    // Actually Dart is a weapon, so it gets repeated
   });
 
   it('creates generic gear for unknown items', () => {

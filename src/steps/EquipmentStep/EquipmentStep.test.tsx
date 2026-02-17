@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { EquipmentStep } from './EquipmentStep';
 import type { CharacterDraft } from '../../types/character';
@@ -140,23 +139,20 @@ describe('EquipmentStep', () => {
       expect(screen.getByTestId('incomplete-choices-message')).toBeInTheDocument();
     });
 
-    it('shows equipment summary after all choices are made', async () => {
-      const user = userEvent.setup();
+    it('shows equipment summary after all choices are made', () => {
       renderEquipmentStep({ class: mockFighter });
 
-      // Select first option of each choice
-      await user.click(screen.getByTestId('choice-0-option-0'));
-      await user.click(screen.getByTestId('choice-1-option-0'));
+      fireEvent.click(screen.getByTestId('choice-0-option-0'));
+      fireEvent.click(screen.getByTestId('choice-1-option-0'));
 
       expect(screen.getByTestId('equipment-summary')).toBeInTheDocument();
     });
 
-    it('updates character state when all choices are made', async () => {
-      const user = userEvent.setup();
+    it('updates character state when all choices are made', () => {
       const { mockUpdate } = renderEquipmentStep({ class: mockFighter });
 
-      await user.click(screen.getByTestId('choice-0-option-0'));
-      await user.click(screen.getByTestId('choice-1-option-0'));
+      fireEvent.click(screen.getByTestId('choice-0-option-0'));
+      fireEvent.click(screen.getByTestId('choice-1-option-0'));
 
       expect(mockUpdate).toHaveBeenCalledWith({
         equipment: expect.arrayContaining([
@@ -198,16 +194,15 @@ describe('EquipmentStep', () => {
   });
 
   describe('AC display', () => {
-    it('shows AC when ability scores are set and choices are made', async () => {
-      const user = userEvent.setup();
+    it('shows AC when ability scores are set and choices are made', () => {
       renderEquipmentStep({
         class: mockFighter,
         baseAbilityScores: { STR: 16, DEX: 14, CON: 14, INT: 10, WIS: 10, CHA: 10 },
       });
 
       // Select chain mail and longsword + shield
-      await user.click(screen.getByTestId('choice-0-option-0'));
-      await user.click(screen.getByTestId('choice-1-option-0'));
+      fireEvent.click(screen.getByTestId('choice-0-option-0'));
+      fireEvent.click(screen.getByTestId('choice-1-option-0'));
 
       const acDisplay = screen.getByTestId('ac-display');
       expect(acDisplay).toBeInTheDocument();
@@ -215,16 +210,15 @@ describe('EquipmentStep', () => {
       expect(acDisplay).toHaveTextContent('18');
     });
 
-    it('shows AC with leather armor option', async () => {
-      const user = userEvent.setup();
+    it('shows AC with leather armor option', () => {
       renderEquipmentStep({
         class: mockFighter,
         baseAbilityScores: { STR: 16, DEX: 14, CON: 14, INT: 10, WIS: 10, CHA: 10 },
       });
 
       // Select leather armor + longbow and two longswords
-      await user.click(screen.getByTestId('choice-0-option-1'));
-      await user.click(screen.getByTestId('choice-1-option-1'));
+      fireEvent.click(screen.getByTestId('choice-0-option-1'));
+      fireEvent.click(screen.getByTestId('choice-1-option-1'));
 
       const acDisplay = screen.getByTestId('ac-display');
       expect(acDisplay).toBeInTheDocument();
@@ -232,33 +226,29 @@ describe('EquipmentStep', () => {
       expect(acDisplay).toHaveTextContent('13');
     });
 
-    it('does not show AC when ability scores are not set', async () => {
-      const user = userEvent.setup();
+    it('does not show AC when ability scores are not set', () => {
       renderEquipmentStep({ class: mockFighter });
 
-      await user.click(screen.getByTestId('choice-0-option-0'));
-      await user.click(screen.getByTestId('choice-1-option-0'));
+      fireEvent.click(screen.getByTestId('choice-0-option-0'));
+      fireEvent.click(screen.getByTestId('choice-1-option-0'));
 
       expect(screen.queryByTestId('ac-display')).not.toBeInTheDocument();
     });
   });
 
   describe('proficiency flags', () => {
-    it('does not show proficiency warnings for Fighter with martial weapons', async () => {
-      const user = userEvent.setup();
+    it('does not show proficiency warnings for Fighter with martial weapons', () => {
       renderEquipmentStep({ class: mockFighter });
 
-      await user.click(screen.getByTestId('choice-0-option-0'));
-      await user.click(screen.getByTestId('choice-1-option-0'));
+      fireEvent.click(screen.getByTestId('choice-0-option-0'));
+      fireEvent.click(screen.getByTestId('choice-1-option-0'));
 
       // Fighter is proficient with all armor and weapons
       const warnings = screen.queryAllByText('Not proficient');
       expect(warnings).toHaveLength(0);
     });
 
-    it('shows proficiency warnings for Wizard with non-proficient equipment', async () => {
-      const user = userEvent.setup();
-      // Give wizard a chain mail (not proficient)
+    it('shows proficiency warnings for Wizard with non-proficient equipment', () => {
       const wizardWithChainMail: CharacterClass = {
         ...mockWizard,
         startingEquipment: {
@@ -276,20 +266,19 @@ describe('EquipmentStep', () => {
 
       renderEquipmentStep({ class: wizardWithChainMail });
 
-      await user.click(screen.getByTestId('choice-0-option-0'));
+      fireEvent.click(screen.getByTestId('choice-0-option-0'));
 
       expect(screen.getByText('Not proficient')).toBeInTheDocument();
     });
   });
 
   describe('equipment categorization', () => {
-    it('groups equipment by category in summary', async () => {
-      const user = userEvent.setup();
+    it('groups equipment by category in summary', () => {
       renderEquipmentStep({ class: mockFighter });
 
       // Select chain mail + longsword and shield
-      await user.click(screen.getByTestId('choice-0-option-0'));
-      await user.click(screen.getByTestId('choice-1-option-0'));
+      fireEvent.click(screen.getByTestId('choice-0-option-0'));
+      fireEvent.click(screen.getByTestId('choice-1-option-0'));
 
       expect(screen.getByTestId('category-armor')).toBeInTheDocument();
       expect(screen.getByTestId('category-weapon')).toBeInTheDocument();
@@ -297,16 +286,15 @@ describe('EquipmentStep', () => {
   });
 
   describe('selection interaction', () => {
-    it('allows changing a selection', async () => {
-      const user = userEvent.setup();
+    it('allows changing a selection', () => {
       const { mockUpdate } = renderEquipmentStep({ class: mockFighter });
 
       // Make initial selections
-      await user.click(screen.getByTestId('choice-0-option-0'));
-      await user.click(screen.getByTestId('choice-1-option-0'));
+      fireEvent.click(screen.getByTestId('choice-0-option-0'));
+      fireEvent.click(screen.getByTestId('choice-1-option-0'));
 
       // Change first selection
-      await user.click(screen.getByTestId('choice-0-option-1'));
+      fireEvent.click(screen.getByTestId('choice-0-option-1'));
 
       // Should update with new equipment
       const lastCall = mockUpdate.mock.calls[mockUpdate.mock.calls.length - 1][0];

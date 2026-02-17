@@ -119,8 +119,7 @@ describe('AbilityScoreStep', () => {
       fireEvent.click(strIncrement);
       fireEvent.click(strIncrement);
 
-      // Verify 3 points spent (8→9 = 1pt, 9→10 = 1pt, total = 2pt... wait, let's check)
-      // Actually: 8→9 costs 1, 9→10 costs 1, total = 2 points
+      // 8→9 costs 1pt, 9→10 costs 1pt = 2 total
       expect(screen.getByText(/points: 2 \/ 27/i)).toBeInTheDocument();
 
       // Switch to Standard Array

@@ -50,11 +50,11 @@ jobs:
             exit 0
           fi
 
-          # Extract lines that are follow-up checklist items.
-          # Format: - [ ] <Title> — <rationale>. Paths: <path1>, <path2>
-          ITEMS="$(echo "$FOLLOWUP_BODY" \
-            | sed -n '/^### Follow-up candidates (post-merge)/,/^###\|^##\|^$/p' \
-            | grep -E '^\s*- \[ \]' || true)"
+          # Extract checklist items from the comment body.
+          # The only unchecked (- [ ]) items in a review comment are follow-up candidates;
+          # the review checklist uses - [x]. So grep the whole body directly — this avoids
+          # sed range issues with blank lines between the section header and the items.
+          ITEMS="$(echo "$FOLLOWUP_BODY" | grep -E '^- \[ \]' || true)"
 
           if [ -z "$ITEMS" ]; then
             echo "Follow-up section found but no checklist items. Nothing to do."
@@ -65,15 +65,16 @@ jobs:
           ISSUE_COUNT=0
 
           while IFS= read -r LINE; do
-            # Strip leading whitespace and the "- [ ] " prefix.
-            ITEM="$(echo "$LINE" | sed 's/^\s*- \[ \] //')"
+            # Strip the "- [ ] " prefix.
+            ITEM="$(echo "$LINE" | sed 's/^- \[ \] //')"
 
             if [ -z "$ITEM" ]; then
               continue
             fi
 
             # Split into title and description at the em-dash (—).
-            TITLE="$(echo "$ITEM" | sed 's/ — .*//')"
+            # Strip bold markers (**) from the title for a clean issue title.
+            TITLE="$(echo "$ITEM" | sed 's/ — .*//' | sed 's/\*\*//g')"
             DESCRIPTION="$(echo "$ITEM" | sed -n 's/^[^—]*— //p')"
 
             # Build issue body with context.

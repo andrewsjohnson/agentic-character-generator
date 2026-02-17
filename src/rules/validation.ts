@@ -1,7 +1,7 @@
 import type { CharacterDraft } from '../types/character';
 import { ABILITY_NAMES } from '../types/ability';
 import { isValidPointBuy, isValidStandardArray } from './ability-scores';
-import { hasSkillConflict, getBackgroundSkills } from './backgrounds';
+import { getBackgroundSkills } from './backgrounds';
 import { getStartingEquipmentOptions } from './classes';
 
 export type ValidationResult = {

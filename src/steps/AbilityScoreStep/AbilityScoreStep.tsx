@@ -42,22 +42,34 @@ export function AbilityScoreStep({ character, updateCharacter }: StepProps) {
     character.abilityScoreMethod === 'standard-array' ? 'standard-array' : 'point-buy'
   );
 
-  // Initialize base scores from character or defaults
-  const [baseScores, setBaseScores] = useState<AbilityScores>(() => {
-    if (character.baseAbilityScores) {
+  // Maintain separate state for each method so selections persist across mode switches
+  const [pointBuyScores, setPointBuyScores] = useState<AbilityScores>(() => {
+    if (character.abilityScoreMethod === 'point-buy' && character.baseAbilityScores) {
       return character.baseAbilityScores;
     }
     return getDefaultAbilityScores();
   });
 
+  const [standardArrayScores, setStandardArrayScores] = useState<AbilityScores>(() => {
+    if (character.abilityScoreMethod === 'standard-array' && character.baseAbilityScores) {
+      return character.baseAbilityScores;
+    }
+    return getDefaultAbilityScores();
+  });
+
+  // Derive active scores from the current mode
+  const baseScores = mode === 'point-buy' ? pointBuyScores : standardArrayScores;
+
   // Sync with character state when navigating back to this step
   useEffect(() => {
-    if (character.baseAbilityScores) {
-      setBaseScores(character.baseAbilityScores);
-    }
-    if (character.abilityScoreMethod) {
+    if (character.baseAbilityScores && character.abilityScoreMethod) {
       const newMode = character.abilityScoreMethod === 'standard-array' ? 'standard-array' : 'point-buy';
       setMode(newMode);
+      if (character.abilityScoreMethod === 'point-buy') {
+        setPointBuyScores(character.baseAbilityScores);
+      } else {
+        setStandardArrayScores(character.baseAbilityScores);
+      }
     }
   }, [character.baseAbilityScores, character.abilityScoreMethod]);
 
@@ -70,36 +82,34 @@ export function AbilityScoreStep({ character, updateCharacter }: StepProps) {
   const finalScores = applyAbilityBonuses(baseScores, speciesBonuses);
   const modifiers = calculateAllModifiers(finalScores);
 
-  // Handle mode switching
+  // Handle mode switching — preserve scores for each method independently
   const handleModeChange = (newMode: Mode) => {
     setMode(newMode);
-    // Reset scores to defaults when switching modes
-    setBaseScores(getDefaultAbilityScores());
   };
 
   // Point Buy handlers
   const handleIncrement = (ability: AbilityName) => {
-    const currentScore = baseScores[ability];
+    const currentScore = pointBuyScores[ability];
     if (currentScore >= 15) return; // Max score is 15
 
     const newScore = currentScore + 1;
-    const currentTotal = getTotalPointsSpent(baseScores);
+    const currentTotal = getTotalPointsSpent(pointBuyScores);
     const newCost = getPointBuyCost(newScore) - getPointBuyCost(currentScore);
 
     if (currentTotal + newCost > 27) return; // Over budget
 
-    setBaseScores({ ...baseScores, [ability]: newScore });
+    setPointBuyScores({ ...pointBuyScores, [ability]: newScore });
   };
 
   const handleDecrement = (ability: AbilityName) => {
-    const currentScore = baseScores[ability];
+    const currentScore = pointBuyScores[ability];
     if (currentScore <= 8) return; // Min score is 8
 
-    setBaseScores({ ...baseScores, [ability]: currentScore - 1 });
+    setPointBuyScores({ ...pointBuyScores, [ability]: currentScore - 1 });
   };
 
   const handleReset = () => {
-    setBaseScores(getDefaultAbilityScores());
+    setPointBuyScores(getDefaultAbilityScores());
   };
 
   // Calculate Point Buy stats
@@ -118,7 +128,7 @@ export function AbilityScoreStep({ character, updateCharacter }: StepProps) {
     const numValue = parseInt(value, 10);
     if (isNaN(numValue)) return;
 
-    setBaseScores({ ...baseScores, [ability]: numValue });
+    setStandardArrayScores({ ...standardArrayScores, [ability]: numValue });
   };
 
   // Memoize available values for standard array dropdowns to avoid recalculating on each render

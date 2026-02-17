@@ -110,8 +110,28 @@ jobs:
           else
             TITLE="$(gh issue view "$ISSUE_NUMBER" --repo "$REPO" --json title -q .title)"
 
-            PLAN="$(gh issue view "$ISSUE_NUMBER" --repo "$REPO" --json comments \
-              -q '.comments | map(select(.body | test("^## Plan v[0-9]+"))) | last | .body // ""')"
+            gh api --paginate "/repos/${REPO}/issues/${ISSUE_NUMBER}/comments?per_page=100" --jq '.[]' > comments.jsonl
+
+            PLAN="$(jq -rs '
+              map(select(.body | type == "string"))
+              | map(select(.body | test("(?m)^## Plan v[0-9]+\\b")))
+              | map(
+                  . + {
+                    version: (
+                      .body
+                      | capture("(?m)^## Plan v(?<version>[0-9]+)\\b")
+                      | .version
+                      | tonumber
+                    )
+                  }
+                )
+              | sort_by(.version, .created_at)
+              | last
+              | .body // ""
+            ' comments.jsonl)"
+
+            rm -f comments.jsonl
+
             if [ -z "$PLAN" ]; then
               PLAN="$(gh issue view "$ISSUE_NUMBER" --repo "$REPO" --json body -q .body)"
             fi
@@ -154,4 +174,3 @@ jobs:
           fi
 
           gh issue comment "$ISSUE_NUMBER" --repo "$REPO" --body "$MESSAGE"
-

@@ -68,6 +68,7 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ secrets.CLAUDE_PUSH_TOKEN }}
+          allowed_bots: agentic-automation-app[bot]
           trigger_phrase: "@claude"
           show_full_output: true
 
@@ -97,6 +98,7 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ secrets.CLAUDE_PUSH_TOKEN }}
+          allowed_bots: agentic-automation-app[bot]
           trigger_phrase: "@claude"
           show_full_output: true
 

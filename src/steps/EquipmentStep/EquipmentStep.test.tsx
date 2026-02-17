@@ -5,6 +5,7 @@ import { EquipmentStep } from './EquipmentStep';
 import type { CharacterDraft } from '../../types/character';
 import type { CharacterClass } from '../../types/class';
 import type { Background } from '../../types/background';
+import type { Species } from '../../types/species';
 
 // -- Test fixtures --
 
@@ -90,6 +91,111 @@ const mockAcolyte: Background = {
   ideals: [],
   bonds: [],
   flaws: [],
+};
+
+const mockBarbarian: CharacterClass = {
+  name: 'Barbarian',
+  hitDie: 12,
+  primaryAbility: ['STR'],
+  savingThrows: ['STR', 'CON'],
+  armorProficiencies: ['light', 'medium', 'shields'],
+  weaponProficiencies: ['simple', 'martial'],
+  skillChoices: {
+    options: ['Animal Handling', 'Athletics'],
+    count: 2,
+  },
+  startingEquipment: {
+    choices: [
+      {
+        description: 'Choose a martial weapon',
+        options: [
+          { label: 'Greataxe', items: [{ name: 'Greataxe' }] },
+          { label: 'Two handaxes', items: [{ name: 'Handaxe', quantity: 2 }] },
+        ],
+      },
+      {
+        description: 'Choose a secondary weapon',
+        options: [
+          { label: 'Two handaxes', items: [{ name: 'Handaxe', quantity: 2 }] },
+          { label: 'Javelin', items: [{ name: 'Javelin' }] },
+        ],
+      },
+    ],
+    fixed: [
+      { name: 'Javelin', quantity: 4 },
+    ],
+  },
+  features: [
+    {
+      name: 'Unarmored Defense',
+      description: 'AC equals 10 + DEX modifier + CON modifier when not wearing armor.',
+    },
+  ],
+  subclasses: [],
+};
+
+const mockMonk: CharacterClass = {
+  name: 'Monk',
+  hitDie: 8,
+  primaryAbility: ['DEX', 'WIS'],
+  savingThrows: ['STR', 'DEX'],
+  armorProficiencies: [],
+  weaponProficiencies: ['simple', 'shortswords'],
+  skillChoices: {
+    options: ['Acrobatics', 'Athletics'],
+    count: 2,
+  },
+  startingEquipment: {
+    choices: [
+      {
+        description: 'Choose a starting weapon',
+        options: [
+          { label: 'Shortsword', items: [{ name: 'Shortsword' }] },
+          { label: 'Handaxe', items: [{ name: 'Handaxe' }] },
+        ],
+      },
+    ],
+    fixed: [
+      { name: 'Dart', quantity: 10 },
+    ],
+  },
+  features: [
+    {
+      name: 'Unarmored Defense',
+      description: 'AC equals 10 + DEX modifier + WIS modifier when not wearing armor or shield.',
+    },
+  ],
+  subclasses: [],
+};
+
+const mockSpeciesWithConBonus: Species = {
+  name: 'Dwarf',
+  speed: 25,
+  size: 'Medium',
+  traits: [],
+  languages: ['Common', 'Dwarvish'],
+  subspecies: [],
+  abilityBonuses: { CON: 2 },
+};
+
+const mockSpeciesWithWisBonus: Species = {
+  name: 'WisdomSpecies',
+  speed: 30,
+  size: 'Medium',
+  traits: [],
+  languages: ['Common'],
+  subspecies: [],
+  abilityBonuses: { WIS: 2 },
+};
+
+const mockSpeciesWithDexBonus: Species = {
+  name: 'Elf',
+  speed: 30,
+  size: 'Medium',
+  traits: [],
+  languages: ['Common', 'Elvish'],
+  subspecies: [],
+  abilityBonuses: { DEX: 2 },
 };
 
 function renderEquipmentStep(character: CharacterDraft = {}) {
@@ -303,6 +409,66 @@ describe('EquipmentStep', () => {
           expect.objectContaining({ name: 'Leather Armor' }),
         ])
       );
+    });
+  });
+
+  describe('species bonus AC calculations', () => {
+    it('applies species CON bonus to Barbarian unarmored defense AC', () => {
+      // Base CON 14 (+2 mod), species +2 CON → CON 16 (+3 mod)
+      // Base DEX 14 (+2 mod), no species DEX bonus
+      // Barbarian unarmored defense: 10 + DEX mod + CON mod = 10 + 2 + 3 = 15
+      renderEquipmentStep({
+        class: mockBarbarian,
+        species: mockSpeciesWithConBonus,
+        baseAbilityScores: { STR: 15, DEX: 14, CON: 14, INT: 10, WIS: 12, CHA: 8 },
+      });
+
+      // Select both equipment choices to trigger summary display
+      fireEvent.click(screen.getByTestId('choice-0-option-0'));
+      fireEvent.click(screen.getByTestId('choice-1-option-0'));
+
+      const acDisplay = screen.getByTestId('ac-display');
+      expect(acDisplay).toBeInTheDocument();
+      // AC = 10 + 2 (DEX) + 3 (CON with species bonus) = 15
+      expect(acDisplay).toHaveTextContent('15');
+    });
+
+    it('applies species WIS bonus to Monk unarmored defense AC', () => {
+      // Base WIS 14 (+2 mod), species +2 WIS → WIS 16 (+3 mod)
+      // Base DEX 14 (+2 mod), no species DEX bonus
+      // Monk unarmored defense: 10 + DEX mod + WIS mod = 10 + 2 + 3 = 15
+      renderEquipmentStep({
+        class: mockMonk,
+        species: mockSpeciesWithWisBonus,
+        baseAbilityScores: { STR: 12, DEX: 14, CON: 13, INT: 10, WIS: 14, CHA: 8 },
+      });
+
+      // Select equipment choice to trigger summary display
+      fireEvent.click(screen.getByTestId('choice-0-option-0'));
+
+      const acDisplay = screen.getByTestId('ac-display');
+      expect(acDisplay).toBeInTheDocument();
+      // AC = 10 + 2 (DEX) + 3 (WIS with species bonus) = 15
+      expect(acDisplay).toHaveTextContent('15');
+    });
+
+    it('applies species DEX bonus to armor AC calculation', () => {
+      // Base DEX 14 (+2 mod), species +2 DEX → DEX 16 (+3 mod)
+      // Fighter in leather armor: AC = 11 + DEX mod = 11 + 3 = 14
+      renderEquipmentStep({
+        class: mockFighter,
+        species: mockSpeciesWithDexBonus,
+        baseAbilityScores: { STR: 15, DEX: 14, CON: 13, INT: 8, WIS: 10, CHA: 12 },
+      });
+
+      // Select leather armor + longbow (option 1) and two longswords (option 1)
+      fireEvent.click(screen.getByTestId('choice-0-option-1'));
+      fireEvent.click(screen.getByTestId('choice-1-option-1'));
+
+      const acDisplay = screen.getByTestId('ac-display');
+      expect(acDisplay).toBeInTheDocument();
+      // AC = 11 (leather) + 3 (DEX with species bonus) = 14
+      expect(acDisplay).toHaveTextContent('14');
     });
   });
 });

@@ -1,0 +1,102 @@
+name: Agent - Create Follow-Up Issues on Merge
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  create_followups:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+
+      - name: Export token for gh
+        run: echo "GH_TOKEN=${{ steps.app-token.outputs.token }}" >> "$GITHUB_ENV"
+
+      - name: Ensure follow-up label exists
+        run: |
+          gh label create "follow-up" \
+            --repo "${{ github.repository }}" \
+            --description "Auto-created from PR review follow-up candidates" \
+            --color "0E8A16" \
+            2>/dev/null || true
+
+      - name: Extract follow-up candidates and create issues
+        run: |
+          set -euo pipefail
+
+          PR="${{ github.event.pull_request.number }}"
+          REPO="${{ github.repository }}"
+
+          # Find the last comment containing the follow-up candidates section.
+          FOLLOWUP_BODY="$(gh pr view "$PR" --repo "$REPO" --json comments \
+            -q '.comments
+              | map(select(.body | test("### Follow-up candidates \\(post-merge\\)")))
+              | last
+              | .body // ""')"
+
+          if [ -z "$FOLLOWUP_BODY" ]; then
+            echo "No follow-up candidates found in PR #${PR}. Nothing to do."
+            exit 0
+          fi
+
+          # Extract lines that are follow-up checklist items.
+          # Format: - [ ] <Title> — <rationale>. Paths: <path1>, <path2>
+          ITEMS="$(echo "$FOLLOWUP_BODY" \
+            | sed -n '/^### Follow-up candidates (post-merge)/,/^###\|^##\|^$/p' \
+            | grep -E '^\s*- \[ \]' || true)"
+
+          if [ -z "$ITEMS" ]; then
+            echo "Follow-up section found but no checklist items. Nothing to do."
+            exit 0
+          fi
+
+          CREATED_ISSUES=""
+          ISSUE_COUNT=0
+
+          while IFS= read -r LINE; do
+            # Strip leading whitespace and the "- [ ] " prefix.
+            ITEM="$(echo "$LINE" | sed 's/^\s*- \[ \] //')"
+
+            if [ -z "$ITEM" ]; then
+              continue
+            fi
+
+            # Split into title and description at the em-dash (—).
+            TITLE="$(echo "$ITEM" | sed 's/ — .*//')"
+            DESCRIPTION="$(echo "$ITEM" | sed -n 's/^[^—]*— //p')"
+
+            # Build issue body with context.
+            ISSUE_BODY="$(printf "## Context\n\nIdentified as a follow-up candidate during review of PR #%s.\n\n## Description\n\n%s\n\n---\n*Auto-created from PR #%s review follow-ups.*" "$PR" "$DESCRIPTION" "$PR")"
+
+            ISSUE_URL="$(gh issue create --repo "$REPO" \
+              --title "$TITLE" \
+              --body "$ISSUE_BODY" \
+              --label "follow-up")"
+
+            CREATED_ISSUES="${CREATED_ISSUES}\n- ${ISSUE_URL}"
+            ISSUE_COUNT=$((ISSUE_COUNT + 1))
+
+            echo "Created issue: $ISSUE_URL"
+          done <<< "$ITEMS"
+
+          if [ "$ISSUE_COUNT" -eq 0 ]; then
+            echo "No issues created."
+            exit 0
+          fi
+
+          # Comment on the merged PR linking to the created issues.
+          COMMENT_BODY="$(printf "## Follow-up issues created\n\nCreated %d follow-up issue(s) from review candidates:\n%b" "$ISSUE_COUNT" "$CREATED_ISSUES")"
+          gh pr comment "$PR" --repo "$REPO" --body "$COMMENT_BODY"
+
+          echo "Done. Created $ISSUE_COUNT follow-up issue(s)."

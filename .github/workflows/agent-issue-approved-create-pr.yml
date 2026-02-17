@@ -1,12 +1,14 @@
 name: Agent - Create PR From Approved Issue
 
 on:
-  issues:
-    types: [labeled]
+  issue_comment:
+    types: [created]
 
 jobs:
   create_pr:
-    if: github.event.label.name == 'APPROVED'
+    if: >
+      github.event.issue.pull_request == null &&
+      startsWith(github.event.comment.body, '/agent-approve')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -114,7 +116,7 @@ jobs:
               PLAN="$(gh issue view "$ISSUE_NUMBER" --repo "$REPO" --json body -q .body)"
             fi
 
-            BODY="$(printf "Implements: #%s\n\n%s\n\n---\nLabels/state:\n- IMPLEMENT: agent should implement the plan\n" "$ISSUE_NUMBER" "$PLAN")"
+            BODY="$(printf "Implements: #%s\n\n%s\n" "$ISSUE_NUMBER" "$PLAN")"
 
             PR_URL="$(gh pr create --repo "$REPO" \
               --title "$TITLE" \
@@ -126,12 +128,14 @@ jobs:
             PR_CREATED="yes"
           fi
 
-          # Ensure IMPLEMENT label present
-          gh pr edit "$PR_NUMBER" --repo "$REPO" --add-label "IMPLEMENT" || true
-
           echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
           echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
           echo "pr_created=$PR_CREATED" >> "$GITHUB_OUTPUT"
+
+      - name: Trigger implementation on PR
+        run: |
+          set -euo pipefail
+          gh pr comment "${{ steps.create_pr.outputs.pr_number }}" --repo "${{ github.repository }}" --body "/agent-implement"
 
       - name: Comment on issue with PR link
         run: |
@@ -151,8 +155,3 @@ jobs:
 
           gh issue comment "$ISSUE_NUMBER" --repo "$REPO" --body "$MESSAGE"
 
-      - name: Relabel issue (remove APPROVED)
-        run: |
-          set -euo pipefail
-          gh issue edit ${{ github.event.issue.number }} --repo ${{ github.repository }} \
-            --remove-label "APPROVED" || true

@@ -34,9 +34,16 @@ jobs:
           PR="${{ github.event.pull_request.number }}"
           REPO="${{ github.repository }}"
           LABELS="$(gh pr view "$PR" --repo "$REPO" --json labels -q '.labels[].name')"
-
-          echo "$LABELS" | grep -q '^HALTED$' && { echo "HALTED set; exiting."; exit 0; }
-          echo "$LABELS" | grep -q '^AWAITING-FEEDBACK$' && { echo "Awaiting feedback; exiting."; exit 0; }
+      
+          if echo "$LABELS" | grep -qx 'HALTED'; then
+            echo "HALTED set; exiting."
+            exit 0
+          fi
+      
+          if echo "$LABELS" | grep -qx 'AWAITING-FEEDBACK'; then
+            echo "Awaiting feedback; exiting."
+            exit 0
+          fi
 
       - name: Mark IN-PROGRESS (remove IMPLEMENT)
         run: |

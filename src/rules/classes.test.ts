@@ -3,6 +3,7 @@ import {
   getHitDie,
   getClassProficiencies,
   getStartingEquipmentOptions,
+  getFixedEquipment,
   getClassSkillChoices,
 } from './classes';
 import type { CharacterClass, WeaponProficiency } from '../types/class';
@@ -18,6 +19,32 @@ const mockFighter: CharacterClass = {
   skillChoices: {
     options: ['Acrobatics', 'Animal Handling', 'Athletics', 'History', 'Insight', 'Intimidation', 'Perception', 'Survival'],
     count: 2,
+  },
+  startingEquipment: {
+    choices: [
+      {
+        description: 'Choose armor',
+        options: [
+          { label: 'Chain Mail', items: [{ name: 'Chain Mail' }] },
+          { label: 'Leather Armor and Longbow with 20 arrows', items: [{ name: 'Leather Armor' }, { name: 'Longbow' }, { name: 'Arrows (20)' }] },
+        ],
+      },
+      {
+        description: 'Choose a martial weapon and shield, or two martial weapons',
+        options: [
+          { label: 'Martial weapon and shield', items: [{ name: 'Longsword' }, { name: 'Shield' }] },
+          { label: 'Two martial weapons', items: [{ name: 'Longsword' }, { name: 'Handaxe' }] },
+        ],
+      },
+      {
+        description: 'Choose a ranged weapon',
+        options: [
+          { label: 'Light crossbow and 20 bolts', items: [{ name: 'Crossbow, Light' }, { name: 'Bolts (20)' }] },
+          { label: 'Two handaxes', items: [{ name: 'Handaxe', quantity: 2 }] },
+        ],
+      },
+    ],
+    fixed: [],
   },
   features: [
     {
@@ -42,6 +69,27 @@ const mockWizard: CharacterClass = {
   skillChoices: {
     options: ['Arcana', 'History', 'Insight', 'Investigation', 'Medicine', 'Religion'],
     count: 2,
+  },
+  startingEquipment: {
+    choices: [
+      {
+        description: 'Choose a weapon',
+        options: [
+          { label: 'Quarterstaff', items: [{ name: 'Quarterstaff' }] },
+          { label: 'Dagger', items: [{ name: 'Dagger' }] },
+        ],
+      },
+      {
+        description: 'Choose a focus',
+        options: [
+          { label: 'Component pouch', items: [{ name: 'Component Pouch' }] },
+          { label: 'Arcane focus', items: [{ name: 'Arcane Focus (Crystal)' }] },
+        ],
+      },
+    ],
+    fixed: [
+      { name: 'Spellbook' },
+    ],
   },
   features: [
     {
@@ -258,22 +306,58 @@ describe('getClassProficiencies', () => {
 });
 
 describe('getStartingEquipmentOptions', () => {
-  it('Fighter returns equipment choices array', () => {
+  it('Fighter has 3 equipment choices', () => {
     const result = getStartingEquipmentOptions(mockFighter);
-    expect(Array.isArray(result)).toBe(true);
+    expect(result).toHaveLength(3);
   });
 
-  it('Wizard returns equipment choices array', () => {
+  it('Fighter first choice is armor with 2 options', () => {
+    const result = getStartingEquipmentOptions(mockFighter);
+    expect(result[0].description).toBe('Choose armor');
+    expect(result[0].options).toHaveLength(2);
+    expect(result[0].options[0].label).toBe('Chain Mail');
+  });
+
+  it('Wizard has 2 equipment choices', () => {
     const result = getStartingEquipmentOptions(mockWizard);
-    expect(Array.isArray(result)).toBe(true);
+    expect(result).toHaveLength(2);
   });
 
-  it('All classes return an array (placeholder for v1)', () => {
+  it('Wizard first choice options include Quarterstaff and Dagger', () => {
+    const result = getStartingEquipmentOptions(mockWizard);
+    expect(result[0].options[0].label).toBe('Quarterstaff');
+    expect(result[0].options[1].label).toBe('Dagger');
+  });
+
+  it('returns empty array for class without startingEquipment', () => {
+    const result = getStartingEquipmentOptions(mockRogue);
+    expect(result).toEqual([]);
+  });
+
+  it('All classes return an array', () => {
     const classes = [mockFighter, mockWizard, mockRogue, mockCleric, mockBarbarian, mockSorcerer];
     classes.forEach((charClass) => {
       const result = getStartingEquipmentOptions(charClass);
       expect(Array.isArray(result)).toBe(true);
     });
+  });
+});
+
+describe('getFixedEquipment', () => {
+  it('Fighter has no fixed equipment', () => {
+    const result = getFixedEquipment(mockFighter);
+    expect(result).toEqual([]);
+  });
+
+  it('Wizard has Spellbook as fixed equipment', () => {
+    const result = getFixedEquipment(mockWizard);
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe('Spellbook');
+  });
+
+  it('returns empty array for class without startingEquipment', () => {
+    const result = getFixedEquipment(mockRogue);
+    expect(result).toEqual([]);
   });
 });
 

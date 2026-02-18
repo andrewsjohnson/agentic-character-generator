@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
 import type { CharacterDraft } from './types/character';
 import type { Species } from './types/species';
@@ -8,7 +8,7 @@ import { BottomNavigation } from './components/BottomNavigation';
 import { ExpansionPackToggle } from './components/ExpansionPackToggle';
 import { STEPS } from './steps';
 import { EXPANSION_PACKS } from './data/expansion-packs';
-import { computeAvailableContent } from './rules/expansion-packs';
+import { computeAvailableContent, findStaleSelections } from './rules/expansion-packs';
 import speciesData from './data/races.json';
 import classesData from './data/classes.json';
 import backgroundsData from './data/backgrounds.json';
@@ -61,7 +61,20 @@ function WizardContent({ enabledPackIds }: { enabledPackIds: string[] }) {
     setCharacter(prev => ({ ...prev, ...updates }));
   };
 
-  const availableContent = computeAvailableContent(enabledPackIds, EXPANSION_PACKS, BASE_CONTENT);
+  const availableContent = useMemo(
+    () => computeAvailableContent(enabledPackIds, EXPANSION_PACKS, BASE_CONTENT),
+    [enabledPackIds]
+  );
+
+  // Clear character selections that are no longer in available content
+  // (e.g. when an expansion pack is toggled off).
+  useEffect(() => {
+    setCharacter(prev => {
+      const stale = findStaleSelections(prev, availableContent);
+      if (Object.keys(stale).length === 0) return prev;
+      return { ...prev, ...stale };
+    });
+  }, [availableContent]);
 
   return (
     <>

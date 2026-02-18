@@ -1,8 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { computeAvailableContent } from './expansion-packs';
+import { computeAvailableContent, findStaleSelections } from './expansion-packs';
 import type { Species } from '../types/species';
 import type { CharacterClass } from '../types/class';
 import type { Background } from '../types/background';
+import type { CharacterDraft } from '../types/character';
+import type { AvailableContent } from '../types/expansion-pack';
 import type { ExpansionPack } from '../types/expansion-pack';
 
 const baseHuman: Species = {
@@ -184,5 +186,118 @@ describe('computeAvailableContent', () => {
     expect(result.species[0].items).toEqual([]);
     expect(result.classes[0].items).toEqual([]);
     expect(result.backgrounds[0].items).toEqual([]);
+  });
+});
+
+describe('findStaleSelections', () => {
+  const baseOnly: AvailableContent = {
+    species: [{ source: 'Base Content', items: [baseHuman] }],
+    classes: [{ source: 'Base Content', items: [baseFighter] }],
+    backgrounds: [{ source: 'Base Content', items: [baseAcolyte] }],
+  };
+
+  const withExpansion: AvailableContent = {
+    species: [
+      { source: 'Base Content', items: [baseHuman] },
+      { source: 'Mythic Realms', items: [aasimar] },
+    ],
+    classes: [
+      { source: 'Base Content', items: [baseFighter] },
+      { source: 'Mythic Realms', items: [artificer] },
+    ],
+    backgrounds: [
+      { source: 'Base Content', items: [baseAcolyte] },
+      { source: 'Mythic Realms', items: [farTraveler] },
+    ],
+  };
+
+  it('returns empty object when no selections exist', () => {
+    const character: CharacterDraft = {};
+    const stale = findStaleSelections(character, baseOnly);
+    expect(Object.keys(stale)).toHaveLength(0);
+  });
+
+  it('returns empty object when all selections are still available', () => {
+    const character: CharacterDraft = {
+      species: baseHuman,
+      class: baseFighter,
+      background: baseAcolyte,
+    };
+    const stale = findStaleSelections(character, baseOnly);
+    expect(Object.keys(stale)).toHaveLength(0);
+  });
+
+  it('returns empty object when expansion pack selections are available', () => {
+    const character: CharacterDraft = {
+      species: aasimar,
+      class: artificer,
+      background: farTraveler,
+    };
+    const stale = findStaleSelections(character, withExpansion);
+    expect(Object.keys(stale)).toHaveLength(0);
+  });
+
+  it('clears species and subspecies when species is no longer available', () => {
+    const character: CharacterDraft = {
+      species: aasimar,
+      subspecies: { name: 'Protector Aasimar', traits: [] },
+    };
+    const stale = findStaleSelections(character, baseOnly);
+    expect(stale.species).toBeUndefined();
+    expect(stale.subspecies).toBeUndefined();
+    expect('species' in stale).toBe(true);
+    expect('subspecies' in stale).toBe(true);
+  });
+
+  it('clears class and related fields when class is no longer available', () => {
+    const character: CharacterDraft = {
+      class: artificer,
+      skillProficiencies: ['Arcana', 'History'],
+      cantripsKnown: ['Mending'],
+      spellsKnown: ['Cure Wounds'],
+    };
+    const stale = findStaleSelections(character, baseOnly);
+    expect('class' in stale).toBe(true);
+    expect('subclass' in stale).toBe(true);
+    expect('skillProficiencies' in stale).toBe(true);
+    expect('cantripsKnown' in stale).toBe(true);
+    expect('spellsKnown' in stale).toBe(true);
+  });
+
+  it('clears background and related fields when background is no longer available', () => {
+    const character: CharacterDraft = {
+      background: farTraveler,
+      originFeat: 'Lucky',
+      backgroundSkillReplacements: { Insight: 'Stealth' },
+    };
+    const stale = findStaleSelections(character, baseOnly);
+    expect('background' in stale).toBe(true);
+    expect('backgroundSkillReplacements' in stale).toBe(true);
+    expect('originFeat' in stale).toBe(true);
+    expect('skillProficiencies' in stale).toBe(true);
+  });
+
+  it('only clears the stale selection, not other valid selections', () => {
+    const character: CharacterDraft = {
+      species: aasimar,
+      class: baseFighter,
+      background: baseAcolyte,
+    };
+    const stale = findStaleSelections(character, baseOnly);
+    expect('species' in stale).toBe(true);
+    expect('class' in stale).toBe(false);
+    expect('background' in stale).toBe(false);
+  });
+
+  it('clears all three when all selections are from a disabled pack', () => {
+    const character: CharacterDraft = {
+      species: aasimar,
+      class: artificer,
+      background: farTraveler,
+    };
+    const stale = findStaleSelections(character, baseOnly);
+    expect('species' in stale).toBe(true);
+    expect('class' in stale).toBe(true);
+    expect('background' in stale).toBe(true);
   });
 });

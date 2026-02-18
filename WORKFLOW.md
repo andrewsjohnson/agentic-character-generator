@@ -281,6 +281,7 @@ This ensures minor improvements identified during review are not forgotten.
 | `HALTED` | Stops all automation. No agent workflows will proceed. Human must remove to resume. |
 | `AWAITING-FEEDBACK` | Pauses automation until a human responds. Feedback handler resumes on `/agent*` comment. |
 | `CI-FAILED` | Signals CI failure. Implementation agent is re-triggered to fix. Cleared on CI success. |
+| `IN-PROGRESS` | Signals active agent work. CI failure handler skips re-triggering when present. |
 | `RETRY-ONE` | First implementation failure retry. |
 | `RETRY-TWO` | Second implementation failure retry. Third failure triggers `HALTED`. |
 | `REVIEW-ROUND-1/2/3` | Tracks review-implement cycles. Three rounds max before `HALTED`. |

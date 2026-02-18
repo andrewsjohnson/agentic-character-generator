@@ -4,7 +4,6 @@ import type { Background } from '../../types/background';
 import type { SkillName } from '../../types/skill';
 import { isSkillName } from '../../types/skill';
 import { getBackgroundSkills, getBackgroundEquipment, hasSkillConflict } from '../../rules/backgrounds';
-import backgroundsData from '../../data/backgrounds.json';
 import classesData from '../../data/classes.json';
 import type { CharacterClass } from '../../types/class';
 
@@ -222,7 +221,7 @@ function BackgroundDetail({ background, conflictingSkills, onResolveConflicts, c
   );
 }
 
-export function BackgroundStep({ character, updateCharacter }: StepProps) {
+export function BackgroundStep({ character, updateCharacter, availableContent }: StepProps) {
   const [selectedBackground, setSelectedBackground] = useState<Background | undefined>(
     character.background
   );
@@ -320,6 +319,8 @@ export function BackgroundStep({ character, updateCharacter }: StepProps) {
     return hasSkillConflict(backgroundSkills, allSkills);
   })();
 
+  const hasMultipleGroups = availableContent.backgrounds.length > 1;
+
   return (
     <div className="p-8">
       <h2 className="text-3xl font-bold mb-2">Choose Your Background</h2>
@@ -327,17 +328,39 @@ export function BackgroundStep({ character, updateCharacter }: StepProps) {
         Select your character's background to determine their past and additional skills.
       </p>
 
-      {/* Background Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {(backgroundsData as unknown as Background[]).map((background) => (
-          <BackgroundCard
-            key={background.name}
-            background={background}
-            selected={selectedBackground?.name === background.name}
-            onClick={() => handleBackgroundClick(background)}
-          />
-        ))}
-      </div>
+      {/* Background Grid — grouped by source when expansion packs are active */}
+      {hasMultipleGroups ? (
+        <div className="mb-8 space-y-8">
+          {availableContent.backgrounds.map(group => (
+            <div key={group.source}>
+              <h3 className="text-lg font-semibold text-gray-700 border-b border-gray-200 pb-2 mb-4">
+                {group.source}
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {group.items.map(background => (
+                  <BackgroundCard
+                    key={background.name}
+                    background={background}
+                    selected={selectedBackground?.name === background.name}
+                    onClick={() => handleBackgroundClick(background)}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {availableContent.backgrounds[0]?.items.map(background => (
+            <BackgroundCard
+              key={background.name}
+              background={background}
+              selected={selectedBackground?.name === background.name}
+              onClick={() => handleBackgroundClick(background)}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Detail Panel */}
       {selectedBackground && (

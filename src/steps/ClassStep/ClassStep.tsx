@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import type { StepProps } from '../types';
 import type { CharacterClass } from '../../types/class';
 import { getClassSkillChoices } from '../../rules/classes';
-import classesData from '../../data/classes.json';
 
 type ClassCardProps = {
   charClass: CharacterClass;
@@ -125,7 +124,7 @@ function ClassDetail({ charClass }: ClassDetailProps) {
   );
 }
 
-export function ClassStep({ character, updateCharacter }: StepProps) {
+export function ClassStep({ character, updateCharacter, availableContent }: StepProps) {
   const [selectedClass, setSelectedClass] = useState<CharacterClass | undefined>(
     character.class
   );
@@ -140,6 +139,8 @@ export function ClassStep({ character, updateCharacter }: StepProps) {
     updateCharacter({ class: charClass });
   };
 
+  const hasMultipleGroups = availableContent.classes.length > 1;
+
   return (
     <div className="p-8">
       <h2 className="text-3xl font-bold mb-2">Choose Your Class</h2>
@@ -147,17 +148,39 @@ export function ClassStep({ character, updateCharacter }: StepProps) {
         Select your character's class to determine their abilities and role in adventuring.
       </p>
 
-      {/* Class Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        {(classesData as unknown as CharacterClass[]).map((charClass) => (
-          <ClassCard
-            key={charClass.name}
-            charClass={charClass}
-            selected={selectedClass?.name === charClass.name}
-            onClick={() => handleClassClick(charClass)}
-          />
-        ))}
-      </div>
+      {/* Class Grid — grouped by source when expansion packs are active */}
+      {hasMultipleGroups ? (
+        <div className="mb-8 space-y-8">
+          {availableContent.classes.map(group => (
+            <div key={group.source}>
+              <h3 className="text-lg font-semibold text-gray-700 border-b border-gray-200 pb-2 mb-4">
+                {group.source}
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {group.items.map(charClass => (
+                  <ClassCard
+                    key={charClass.name}
+                    charClass={charClass}
+                    selected={selectedClass?.name === charClass.name}
+                    onClick={() => handleClassClick(charClass)}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+          {availableContent.classes[0]?.items.map(charClass => (
+            <ClassCard
+              key={charClass.name}
+              charClass={charClass}
+              selected={selectedClass?.name === charClass.name}
+              onClick={() => handleClassClick(charClass)}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Detail Panel */}
       {selectedClass && (

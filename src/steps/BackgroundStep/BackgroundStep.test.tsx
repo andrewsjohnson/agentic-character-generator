@@ -5,8 +5,16 @@ import { BackgroundStep } from './BackgroundStep';
 import type { CharacterDraft } from '../../types/character';
 import backgroundsData from '../../data/backgrounds.json';
 import type { Background } from '../../types/background';
+import type { AvailableContent } from '../../types/expansion-pack';
 
 const backgrounds = backgroundsData as unknown as Background[];
+
+// Base available content (no expansion packs enabled)
+const baseAvailableContent: AvailableContent = {
+  species: [{ source: 'Base Content', items: [] }],
+  classes: [{ source: 'Base Content', items: [] }],
+  backgrounds: [{ source: 'Base Content', items: backgrounds }],
+};
 
 describe('BackgroundStep', () => {
   it('renders without crashing', () => {
@@ -15,7 +23,7 @@ describe('BackgroundStep', () => {
 
     render(
       <MemoryRouter>
-        <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+        <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
       </MemoryRouter>
     );
 
@@ -29,7 +37,7 @@ describe('BackgroundStep', () => {
 
       render(
         <MemoryRouter>
-          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
         </MemoryRouter>
       );
 
@@ -46,7 +54,7 @@ describe('BackgroundStep', () => {
 
       render(
         <MemoryRouter>
-          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
         </MemoryRouter>
       );
 
@@ -63,7 +71,7 @@ describe('BackgroundStep', () => {
 
       render(
         <MemoryRouter>
-          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
         </MemoryRouter>
       );
 
@@ -87,7 +95,7 @@ describe('BackgroundStep', () => {
 
       render(
         <MemoryRouter>
-          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
         </MemoryRouter>
       );
 
@@ -110,7 +118,7 @@ describe('BackgroundStep', () => {
 
       render(
         <MemoryRouter>
-          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
         </MemoryRouter>
       );
 
@@ -133,7 +141,7 @@ describe('BackgroundStep', () => {
 
       render(
         <MemoryRouter>
-          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
         </MemoryRouter>
       );
 
@@ -161,7 +169,7 @@ describe('BackgroundStep', () => {
 
       render(
         <MemoryRouter>
-          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
         </MemoryRouter>
       );
 
@@ -189,7 +197,7 @@ describe('BackgroundStep', () => {
 
       render(
         <MemoryRouter>
-          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
         </MemoryRouter>
       );
 
@@ -213,7 +221,7 @@ describe('BackgroundStep', () => {
 
       render(
         <MemoryRouter>
-          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
         </MemoryRouter>
       );
 
@@ -235,7 +243,7 @@ describe('BackgroundStep', () => {
 
       render(
         <MemoryRouter>
-          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
         </MemoryRouter>
       );
 
@@ -257,7 +265,7 @@ describe('BackgroundStep', () => {
 
       render(
         <MemoryRouter>
-          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
         </MemoryRouter>
       );
 
@@ -289,7 +297,7 @@ describe('BackgroundStep', () => {
 
       render(
         <MemoryRouter>
-          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
         </MemoryRouter>
       );
 
@@ -324,7 +332,7 @@ describe('BackgroundStep', () => {
 
       render(
         <MemoryRouter>
-          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
         </MemoryRouter>
       );
 
@@ -370,7 +378,7 @@ describe('BackgroundStep', () => {
 
       render(
         <MemoryRouter>
-          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
         </MemoryRouter>
       );
 
@@ -397,7 +405,7 @@ describe('BackgroundStep', () => {
 
       render(
         <MemoryRouter>
-          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
         </MemoryRouter>
       );
 
@@ -424,7 +432,7 @@ describe('BackgroundStep', () => {
 
       render(
         <MemoryRouter>
-          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
         </MemoryRouter>
       );
 
@@ -467,7 +475,7 @@ describe('BackgroundStep', () => {
 
       render(
         <MemoryRouter>
-          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
         </MemoryRouter>
       );
 
@@ -485,7 +493,7 @@ describe('BackgroundStep', () => {
 
       render(
         <MemoryRouter>
-          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
         </MemoryRouter>
       );
 
@@ -512,7 +520,7 @@ describe('BackgroundStep', () => {
 
       render(
         <MemoryRouter>
-          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
         </MemoryRouter>
       );
 
@@ -543,7 +551,7 @@ describe('BackgroundStep', () => {
 
       render(
         <MemoryRouter>
-          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
         </MemoryRouter>
       );
 
@@ -579,7 +587,7 @@ describe('BackgroundStep', () => {
 
       render(
         <MemoryRouter>
-          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
         </MemoryRouter>
       );
 
@@ -601,7 +609,7 @@ describe('BackgroundStep', () => {
 
       render(
         <MemoryRouter>
-          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
         </MemoryRouter>
       );
 
@@ -630,6 +638,63 @@ describe('BackgroundStep', () => {
       // Check equipment section exists
       expect(detailPanel).toHaveTextContent('Starting Equipment');
       expect(detailPanel).toHaveTextContent('Parchment (x10)');
+    });
+  });
+
+  describe('Expansion Pack Grouping', () => {
+    it('renders section headers when multiple content groups are present', () => {
+      const mockCharacter: CharacterDraft = {};
+      const mockUpdate = vi.fn();
+
+      const expansionBackground: Background = {
+        name: 'Far Traveler',
+        abilityOptions: ['STR', 'DEX', 'INT'],
+        skillProficiencies: ['Insight', 'Perception'],
+        toolProficiency: 'Any musical instrument',
+        equipment: [],
+        feature: { name: 'All Eyes on You', description: 'Locals notice you.' },
+        originFeat: 'Lucky',
+        personalityTraits: [],
+        ideals: [],
+        bonds: [],
+        flaws: [],
+      };
+
+      const contentWithExpansion: AvailableContent = {
+        species: [{ source: 'Base Content', items: [] }],
+        classes: [{ source: 'Base Content', items: [] }],
+        backgrounds: [
+          { source: 'Base Content', items: backgrounds },
+          { source: 'Mythic Realms', items: [expansionBackground] },
+        ],
+      };
+
+      render(
+        <MemoryRouter>
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={contentWithExpansion} />
+        </MemoryRouter>
+      );
+
+      // Section headers should appear
+      expect(screen.getByText('Base Content')).toBeInTheDocument();
+      expect(screen.getByText('Mythic Realms')).toBeInTheDocument();
+
+      // Expansion background card should be present
+      expect(screen.getByTestId('background-card-far traveler')).toBeInTheDocument();
+    });
+
+    it('does not render section headers with only base content', () => {
+      const mockCharacter: CharacterDraft = {};
+      const mockUpdate = vi.fn();
+
+      render(
+        <MemoryRouter>
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
+        </MemoryRouter>
+      );
+
+      // No section headers with a single group
+      expect(screen.queryByText('Base Content')).not.toBeInTheDocument();
     });
   });
 });

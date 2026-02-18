@@ -9,11 +9,14 @@ import {
   validateBackgroundStep,
   validateEquipmentStep,
 } from '../rules/validation';
+import { exportCharacterJSON } from '../rules/json-export';
+import { exportCharacterPDF } from '../rules/pdf-export';
 import { STEPS } from '../steps';
 
 type StepPath = (typeof STEPS)[number]['path'];
 
 const STEP_VALIDATION: Record<StepPath, ((character: CharacterDraft) => ValidationResult) | null> = {
+  '/start': null,
   '/name': null,
   '/species': validateSpeciesStep,
   '/class': validateClassStep,
@@ -25,9 +28,10 @@ const STEP_VALIDATION: Record<StepPath, ((character: CharacterDraft) => Validati
 
 type BottomNavigationProps = {
   character: CharacterDraft;
+  enabledPackIds?: string[];
 };
 
-export function BottomNavigation({ character }: BottomNavigationProps) {
+export function BottomNavigation({ character, enabledPackIds }: BottomNavigationProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const [errors, setErrors] = useState<string[]>([]);
@@ -46,11 +50,13 @@ export function BottomNavigation({ character }: BottomNavigationProps) {
     return validateFn(character);
   }, [validateFn, character]);
 
-  // Don't render if we're not on a known step
+  // Don't render if we're not on a known step or on the start page
   if (currentIndex === -1) return null;
+  if (location.pathname === '/start') return null;
 
   const isFirstStep = currentIndex === 0;
   const isLastStep = currentIndex === STEPS.length - 1;
+  const isReviewStep = location.pathname === '/review';
 
   const previousPath = isFirstStep ? null : STEPS[currentIndex - 1].path;
   const nextPath = isLastStep ? null : STEPS[currentIndex + 1].path;
@@ -76,6 +82,14 @@ export function BottomNavigation({ character }: BottomNavigationProps) {
     if (nextPath) {
       navigate(nextPath);
     }
+  };
+
+  const handleExportPDF = () => {
+    exportCharacterPDF(character);
+  };
+
+  const handleExportJSON = () => {
+    exportCharacterJSON(character, enabledPackIds);
   };
 
   return (
@@ -110,22 +124,44 @@ export function BottomNavigation({ character }: BottomNavigationProps) {
         >
           Back
         </button>
-        <button
-          type="button"
-          onClick={handleNext}
-          disabled={isLastStep}
-          aria-disabled={isNextDisabled}
-          aria-label="Go to next step"
-          className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${
-            isLastStep
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              : isNextDisabled
-              ? 'bg-blue-300 text-white'
-              : 'bg-blue-600 text-white hover:bg-blue-700'
-          }`}
-        >
-          Next
-        </button>
+        <div className="flex gap-2">
+          {isReviewStep && (
+            <>
+              <button
+                type="button"
+                onClick={handleExportPDF}
+                aria-label="Download character as PDF"
+                className="px-4 py-2 rounded-md text-sm font-medium transition-colors bg-green-600 text-white hover:bg-green-700"
+              >
+                Download PDF
+              </button>
+              <button
+                type="button"
+                onClick={handleExportJSON}
+                aria-label="Download character as JSON"
+                className="px-4 py-2 rounded-md text-sm font-medium transition-colors bg-indigo-600 text-white hover:bg-indigo-700"
+              >
+                Download JSON
+              </button>
+            </>
+          )}
+          <button
+            type="button"
+            onClick={handleNext}
+            disabled={isLastStep}
+            aria-disabled={isNextDisabled}
+            aria-label="Go to next step"
+            className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${
+              isLastStep
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : isNextDisabled
+                ? 'bg-blue-300 text-white'
+                : 'bg-blue-600 text-white hover:bg-blue-700'
+            }`}
+          >
+            Next
+          </button>
+        </div>
       </div>
     </nav>
   );

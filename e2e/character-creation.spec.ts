@@ -17,6 +17,12 @@ import { percySnapshot } from '@percy/playwright';
 test('full character creation wizard', async ({ page }) => {
   await page.goto('/');
 
+  // ─── Start page ───────────────────────────────────────────────────────────
+  await expect(
+    page.getByRole('heading', { name: 'Welcome to D&D 5e Character Creator' })
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Create New Character' }).click();
+
   // ─── Step 1: Name ─────────────────────────────────────────────────────────
   await expect(
     page.getByRole('heading', { name: 'Name Your Character' })
@@ -127,6 +133,9 @@ test('expansion pack character creation with grouped content', async ({ page }) 
   // Close the dropdown
   await page.getByTestId('expansion-pack-toggle-button').click();
   await expect(page.getByTestId('expansion-pack-panel')).not.toBeVisible();
+
+  // ─── Start page ───────────────────────────────────────────────────────────
+  await page.getByRole('button', { name: 'Create New Character' }).click();
 
   // ─── Step 1: Name ─────────────────────────────────────────────────────────
   await page.getByLabel('Character Name').fill('Celestia Brightforge');
@@ -245,6 +254,9 @@ test('stale selections cleared when expansion pack is disabled', async ({ page }
   await page.getByTestId('expansion-pack-toggle-button').click();
   await page.getByTestId('expansion-pack-checkbox-mythic-realms').check();
   await page.getByTestId('expansion-pack-toggle-button').click();
+
+  // ─── Start page ───────────────────────────────────────────────────────────
+  await page.getByRole('button', { name: 'Create New Character' }).click();
 
   // Select Aasimar species
   await page.getByRole('link', { name: 'Species' }).click();

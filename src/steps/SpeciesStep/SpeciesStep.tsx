@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { StepProps } from '../types';
 import type { Species, Subspecies } from '../../types/species';
-import { getSubspecies } from '../../rules/species';
 import { formatAbilityBonuses } from '../../rules/format-ability-bonuses';
-import speciesData from '../../data/races.json';
 
 type SpeciesCardProps = {
   species: Species;
@@ -63,7 +61,7 @@ function SubspeciesCard({ subspecies, selected, onClick }: SubspeciesCardProps) 
   );
 }
 
-export function SpeciesStep({ character, updateCharacter }: StepProps) {
+export function SpeciesStep({ character, updateCharacter, availableContent }: StepProps) {
   const [selectedSpecies, setSelectedSpecies] = useState<Species | undefined>(
     character.species
   );
@@ -99,9 +97,8 @@ export function SpeciesStep({ character, updateCharacter }: StepProps) {
     }
   };
 
-  const availableSubspecies = selectedSpecies
-    ? getSubspecies(selectedSpecies.name, speciesData as Species[])
-    : [];
+  const availableSubspecies = selectedSpecies ? selectedSpecies.subspecies : [];
+  const hasMultipleGroups = availableContent.species.length > 1;
 
   return (
     <div className="p-8">
@@ -110,17 +107,39 @@ export function SpeciesStep({ character, updateCharacter }: StepProps) {
         Select your character's species to determine their traits and abilities.
       </p>
 
-      {/* Species Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        {(speciesData as Species[]).map((species) => (
-          <SpeciesCard
-            key={species.name}
-            species={species}
-            selected={selectedSpecies?.name === species.name}
-            onClick={() => handleSpeciesClick(species)}
-          />
-        ))}
-      </div>
+      {/* Species Grid — grouped by source when expansion packs are active */}
+      {hasMultipleGroups ? (
+        <div className="mb-8 space-y-8">
+          {availableContent.species.map(group => (
+            <div key={group.source}>
+              <h3 className="text-lg font-semibold text-gray-700 border-b border-gray-200 pb-2 mb-4">
+                {group.source}
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {group.items.map(species => (
+                  <SpeciesCard
+                    key={species.name}
+                    species={species}
+                    selected={selectedSpecies?.name === species.name}
+                    onClick={() => handleSpeciesClick(species)}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+          {availableContent.species[0]?.items.map(species => (
+            <SpeciesCard
+              key={species.name}
+              species={species}
+              selected={selectedSpecies?.name === species.name}
+              onClick={() => handleSpeciesClick(species)}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Subspecies Section */}
       {selectedSpecies && availableSubspecies.length > 0 && (

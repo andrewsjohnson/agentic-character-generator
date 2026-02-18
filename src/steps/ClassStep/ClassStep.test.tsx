@@ -4,13 +4,21 @@ import { ClassStep } from './ClassStep';
 import classesData from '../../data/classes.json';
 import type { CharacterClass } from '../../types/class';
 import type { SkillName } from '../../types/skill';
+import type { AvailableContent } from '../../types/expansion-pack';
+
+// Base available content (no expansion packs enabled)
+const baseAvailableContent: AvailableContent = {
+  species: [{ source: 'Base Content', items: [] }],
+  classes: [{ source: 'Base Content', items: classesData as unknown as CharacterClass[] }],
+  backgrounds: [{ source: 'Base Content', items: [] }],
+};
 
 describe('ClassStep', () => {
   it('renders all classes from data file', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     // Check header
     expect(screen.getByText('Choose Your Class')).toBeInTheDocument();
@@ -26,7 +34,7 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     // Check Fighter card details
     const fighterCard = screen.getByTestId('class-card-fighter');
@@ -45,7 +53,7 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     // Click Fighter card using test ID
     const fighterCard = screen.getByTestId('class-card-fighter');
@@ -61,7 +69,7 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     const fighterCard = screen.getByTestId('class-card-fighter');
     const wizardCard = screen.getByTestId('class-card-wizard');
@@ -82,7 +90,7 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     // Detail panel should not be visible initially
     expect(screen.queryByTestId('class-detail-panel')).not.toBeInTheDocument();
@@ -100,7 +108,7 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     // Click Fighter
     const fighterCard = screen.getByTestId('class-card-fighter');
@@ -118,7 +126,7 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     // Click Monk (has no armor proficiencies)
     const monkCard = screen.getByTestId('class-card-monk');
@@ -133,7 +141,7 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     // Click Fighter (2 skill choices)
     const fighterCard = screen.getByTestId('class-card-fighter');
@@ -150,7 +158,7 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     // Click Fighter
     const fighterCard = screen.getByTestId('class-card-fighter');
@@ -167,7 +175,7 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     // Click Wizard (has spellcasting)
     const wizardCard = screen.getByTestId('class-card-wizard');
@@ -187,7 +195,7 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     // Click Fighter (no spellcasting)
     const fighterCard = screen.getByTestId('class-card-fighter');
@@ -201,7 +209,7 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     // Click Warlock
     const warlockCard = screen.getByTestId('class-card-warlock');
@@ -216,7 +224,7 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     // Click Wizard (prepares spells)
     const wizardCard = screen.getByTestId('class-card-wizard');
@@ -243,7 +251,7 @@ describe('ClassStep', () => {
     };
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     // Rogue card should be highlighted
     const rogueCard = screen.getByTestId('class-card-rogue');
@@ -258,7 +266,7 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     // Fighter has STR, DEX as primary abilities
     const fighterCard = screen.getByTestId('class-card-fighter');
@@ -273,7 +281,7 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     const fighterCard = screen.getByTestId('class-card-fighter');
     const wizardCard = screen.getByTestId('class-card-wizard');
@@ -298,7 +306,7 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     // Bard has 3 skill choices
     const bardCard = screen.getByTestId('class-card-bard');
@@ -319,7 +327,7 @@ describe('ClassStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     // Click Barbarian (has Rage and Unarmored Defense)
     const barbarianCard = screen.getByTestId('class-card-barbarian');
@@ -336,5 +344,50 @@ describe('ClassStep', () => {
     // Check feature names
     expect(screen.getByText('Rage')).toBeInTheDocument();
     expect(screen.getByText('Unarmored Defense')).toBeInTheDocument();
+  });
+
+  it('renders section headers when multiple content groups are present', () => {
+    const mockCharacter = {};
+    const mockUpdate = vi.fn();
+
+    const expansionClass: CharacterClass = {
+      name: 'Artificer',
+      hitDie: 8,
+      primaryAbility: ['INT'],
+      savingThrows: ['CON', 'INT'],
+      armorProficiencies: ['light', 'medium', 'shields'],
+      weaponProficiencies: ['simple'],
+      skillChoices: { options: ['Arcana', 'History'], count: 2 },
+      features: [],
+      subclasses: [],
+    };
+
+    const contentWithExpansion: AvailableContent = {
+      species: [{ source: 'Base Content', items: [] }],
+      classes: [
+        { source: 'Base Content', items: classesData as unknown as CharacterClass[] },
+        { source: 'Mythic Realms', items: [expansionClass] },
+      ],
+      backgrounds: [{ source: 'Base Content', items: [] }],
+    };
+
+    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={contentWithExpansion} />);
+
+    // Section headers should appear
+    expect(screen.getByText('Base Content')).toBeInTheDocument();
+    expect(screen.getByText('Mythic Realms')).toBeInTheDocument();
+
+    // Expansion class card should be present
+    expect(screen.getByTestId('class-card-artificer')).toBeInTheDocument();
+  });
+
+  it('does not render section headers with only base content', () => {
+    const mockCharacter = {};
+    const mockUpdate = vi.fn();
+
+    render(<ClassStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
+
+    // No section headers with a single group
+    expect(screen.queryByText('Base Content')).not.toBeInTheDocument();
   });
 });

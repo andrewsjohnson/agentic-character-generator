@@ -4,6 +4,13 @@ import { MemoryRouter } from 'react-router-dom';
 import { AbilityScoreStep } from './AbilityScoreStep';
 import type { CharacterDraft } from '../../types/character';
 import type { Species } from '../../types/species';
+import type { AvailableContent } from '../../types/expansion-pack';
+
+const stubContent: AvailableContent = {
+  species: [{ source: 'Base Content', items: [] }],
+  classes: [{ source: 'Base Content', items: [] }],
+  backgrounds: [{ source: 'Base Content', items: [] }],
+};
 
 describe('AbilityScoreStep', () => {
   // Basic rendering tests
@@ -14,7 +21,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -27,7 +34,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -41,7 +48,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -55,7 +62,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -71,7 +78,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -88,7 +95,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -110,7 +117,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -150,7 +157,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -178,7 +185,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -210,7 +217,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -231,7 +238,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -245,7 +252,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -262,7 +269,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -284,7 +291,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -311,7 +318,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -325,7 +332,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -358,7 +365,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -371,7 +378,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -394,7 +401,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -421,7 +428,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -447,7 +454,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -466,7 +473,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -506,7 +513,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -542,7 +549,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -567,7 +574,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -592,7 +599,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -620,7 +627,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -636,7 +643,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 
@@ -652,7 +659,7 @@ describe('AbilityScoreStep', () => {
 
       render(
         <MemoryRouter>
-          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={stubContent} />
         </MemoryRouter>
       );
 

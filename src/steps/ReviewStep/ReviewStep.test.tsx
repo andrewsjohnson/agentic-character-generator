@@ -7,6 +7,13 @@ import type { CharacterClass } from '../../types/class';
 import type { Species } from '../../types/species';
 import type { Background } from '../../types/background';
 import type { Armor, Weapon, Gear } from '../../types/equipment';
+import type { AvailableContent } from '../../types/expansion-pack';
+
+const stubContent: AvailableContent = {
+  species: [{ source: 'Base Content', items: [] }],
+  classes: [{ source: 'Base Content', items: [] }],
+  backgrounds: [{ source: 'Base Content', items: [] }],
+};
 
 // -- Test fixtures using SRD values --
 
@@ -182,7 +189,7 @@ const backpack: Gear = {
 function renderReview(character: CharacterDraft) {
   return render(
     <MemoryRouter>
-      <ReviewStep character={character} updateCharacter={vi.fn()} />
+      <ReviewStep character={character} updateCharacter={vi.fn()} availableContent={stubContent} />
     </MemoryRouter>
   );
 }

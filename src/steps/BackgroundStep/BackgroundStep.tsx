@@ -56,7 +56,7 @@ function BackgroundDetail({ background, conflictingSkills, onResolveConflicts, c
   const hasConflicts = conflictingSkills.length > 0;
 
   // Get skills the character already has (from class)
-  const existingSkills = new Set(character.skillProficiencies || []);
+  const existingSkills = new Set<SkillName>(character.skillProficiencies || []);
 
   // Get non-conflicting background skills
   const backgroundSkills = getBackgroundSkills(background);
@@ -65,16 +65,18 @@ function BackgroundDetail({ background, conflictingSkills, onResolveConflicts, c
   );
 
   // Previously resolved replacement skills should remain selectable
-  const resolvedReplacements = new Set(
+  const resolvedReplacements = new Set<SkillName>(
     character.backgroundSkillReplacements
-      ? Object.values(character.backgroundSkillReplacements)
+      ? Object.values(character.backgroundSkillReplacements).filter(
+          (v): v is SkillName => v !== undefined
+        )
       : []
   );
 
   // Skills unavailable for replacement: existing skills + non-conflicting background skills,
   // but exclude already-selected replacements so they remain available in the dropdowns
-  const unavailableSkills = new Set([
-    ...Array.from(existingSkills).filter(skill => !resolvedReplacements.has(skill as SkillName)),
+  const unavailableSkills = new Set<SkillName>([
+    ...Array.from(existingSkills).filter(skill => !resolvedReplacements.has(skill)),
     ...nonConflictingBackgroundSkills
   ]);
 
@@ -309,9 +311,9 @@ export function BackgroundStep({ character, updateCharacter }: StepProps) {
 
     if (character.backgroundSkillReplacements) {
       // Conflicts were resolved — return the original conflicting skills
-      // (the keys of backgroundSkillReplacements)
-      return Object.keys(character.backgroundSkillReplacements).filter(
-        (skill): skill is SkillName => backgroundSkills.includes(skill as SkillName)
+      // by checking which background skills have entries in the replacements map
+      return backgroundSkills.filter(
+        (skill) => character.backgroundSkillReplacements![skill] !== undefined
       );
     }
 

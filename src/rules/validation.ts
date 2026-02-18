@@ -97,27 +97,25 @@ export function validateBackgroundStep(character: CharacterDraft): ValidationRes
 
   // Check for unresolved skill conflicts.
   // When a background with conflicting skills is selected, the user must resolve
-  // the conflicts before proceeding. We detect unresolved conflicts by checking
-  // whether the background's skills are present in skillProficiencies.
+  // the conflicts before proceeding.
+  //
+  // After the background step completes properly, skillProficiencies should contain
+  // classSkillCount + 2 skills (2 from background, either original or replacements).
+  // If skillProficiencies has fewer than expected, background skills haven't been
+  // merged yet — indicating unresolved conflicts.
   if (character.class && character.skillProficiencies) {
     const backgroundSkills = getBackgroundSkills(character.background);
+    const expectedCount = character.class.skillChoices.count + backgroundSkills.length;
 
-    // After a no-conflict merge, all background skills appear in skillProficiencies.
-    // After conflict resolution, the non-conflicting background skills and
-    // replacement skills appear instead. Missing background skills indicate
-    // unresolved conflicts.
-    const missingBgSkills = backgroundSkills.filter(
-      (skill) => !character.skillProficiencies!.includes(skill)
-    );
-
-    if (missingBgSkills.length > 0) {
-      // Some background skills are missing — verify conflicts were fully resolved.
-      // The replacement count must match the number of missing background skills.
+    if (character.skillProficiencies.length < expectedCount) {
+      // Background skills haven't been merged — conflicts are unresolved.
+      // Verify that backgroundSkillReplacements accounts for all missing skills.
+      const missingCount = expectedCount - character.skillProficiencies.length;
       const resolvedCount = character.backgroundSkillReplacements
         ? Object.keys(character.backgroundSkillReplacements).length
         : 0;
 
-      if (resolvedCount !== missingBgSkills.length) {
+      if (resolvedCount !== missingCount) {
         errors.push('You must resolve all skill conflicts before proceeding.');
       }
     }

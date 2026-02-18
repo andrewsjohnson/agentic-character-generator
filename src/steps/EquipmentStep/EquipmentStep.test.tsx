@@ -6,6 +6,13 @@ import type { CharacterDraft } from '../../types/character';
 import type { CharacterClass } from '../../types/class';
 import type { Background } from '../../types/background';
 import type { Species, Subspecies } from '../../types/species';
+import type { AvailableContent } from '../../types/expansion-pack';
+
+const stubContent: AvailableContent = {
+  species: [{ source: 'Base Content', items: [] }],
+  classes: [{ source: 'Base Content', items: [] }],
+  backgrounds: [{ source: 'Base Content', items: [] }],
+};
 
 // -- Test fixtures --
 
@@ -220,7 +227,7 @@ function renderEquipmentStep(character: CharacterDraft = {}) {
   const mockUpdate = vi.fn();
   const result = render(
     <MemoryRouter>
-      <EquipmentStep character={character} updateCharacter={mockUpdate} />
+      <EquipmentStep character={character} updateCharacter={mockUpdate} availableContent={stubContent} />
     </MemoryRouter>
   );
   return { ...result, mockUpdate };

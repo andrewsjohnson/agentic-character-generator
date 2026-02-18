@@ -3,13 +3,21 @@ import { render, screen, fireEvent, within } from '@testing-library/react';
 import { SpeciesStep } from './SpeciesStep';
 import speciesData from '../../data/races.json';
 import type { Species } from '../../types/species';
+import type { AvailableContent } from '../../types/expansion-pack';
+
+// Base available content (no expansion packs enabled)
+const baseAvailableContent: AvailableContent = {
+  species: [{ source: 'Base Content', items: speciesData as Species[] }],
+  classes: [{ source: 'Base Content', items: [] }],
+  backgrounds: [{ source: 'Base Content', items: [] }],
+};
 
 describe('SpeciesStep', () => {
   it('renders all species from data file', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     // Check header
     expect(screen.getByText('Choose Your Species')).toBeInTheDocument();
@@ -25,7 +33,7 @@ describe('SpeciesStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     // Get the species grid
     const speciesGrid = container.querySelector('.grid') as HTMLElement;
@@ -48,7 +56,7 @@ describe('SpeciesStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     // Get species grid and find Human card
     const speciesGrid = container.querySelector('.grid') as HTMLElement;
@@ -66,7 +74,7 @@ describe('SpeciesStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     // Subspecies section should not be visible initially
     expect(screen.queryByText('Choose Your Subspecies')).not.toBeInTheDocument();
@@ -85,7 +93,7 @@ describe('SpeciesStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     // Click Dwarf (has subspecies)
     const speciesGrid = container.querySelector('.grid') as HTMLElement;
@@ -104,7 +112,7 @@ describe('SpeciesStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     const speciesGrid = container.querySelector('.grid') as HTMLElement;
     const humanCard = within(speciesGrid).getByText('Human').closest('button');
@@ -126,7 +134,7 @@ describe('SpeciesStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     // Click Elf (has High Elf subspecies)
     const speciesGrid = container.querySelector('.grid') as HTMLElement;
@@ -150,7 +158,7 @@ describe('SpeciesStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     const speciesGrid = container.querySelector('.grid') as HTMLElement;
 
@@ -184,7 +192,7 @@ describe('SpeciesStep', () => {
     };
     const mockUpdate = vi.fn();
 
-    const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     // Tiefling card should be highlighted
     const speciesGrid = container.querySelector('.grid') as HTMLElement;
@@ -220,7 +228,7 @@ describe('SpeciesStep', () => {
     };
     const mockUpdate = vi.fn();
 
-    const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     // Halfling card should be highlighted
     const speciesGrid = container.querySelector('.grid') as HTMLElement;
@@ -240,7 +248,7 @@ describe('SpeciesStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     const speciesGrid = container.querySelector('.grid') as HTMLElement;
     const humanCard = within(speciesGrid).getByText('Human').closest('button');
@@ -251,7 +259,7 @@ describe('SpeciesStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     const speciesGrid = container.querySelector('.grid') as HTMLElement;
 
@@ -277,7 +285,7 @@ describe('SpeciesStep', () => {
     const mockCharacter = {};
     const mockUpdate = vi.fn();
 
-    const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} />);
+    const { container } = render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
 
     const speciesGrid = container.querySelector('.grid') as HTMLElement;
 
@@ -288,5 +296,48 @@ describe('SpeciesStep', () => {
     // Check that Dwarf card does not have "Bonuses:" text
     const dwarfCard = within(speciesGrid).getByText('Dwarf').closest('button');
     expect(dwarfCard).not.toHaveTextContent('Bonuses:');
+  });
+
+  it('renders section headers when multiple content groups are present', () => {
+    const mockCharacter = {};
+    const mockUpdate = vi.fn();
+
+    const expansionSpecies: Species = {
+      name: 'Aasimar',
+      speed: 30,
+      size: 'Medium',
+      traits: [{ name: 'Darkvision', description: 'See in the dark.' }],
+      languages: ['Common', 'Celestial'],
+      subspecies: [],
+    };
+
+    const contentWithExpansion: AvailableContent = {
+      species: [
+        { source: 'Base Content', items: speciesData as Species[] },
+        { source: 'Mythic Realms', items: [expansionSpecies] },
+      ],
+      classes: [{ source: 'Base Content', items: [] }],
+      backgrounds: [{ source: 'Base Content', items: [] }],
+    };
+
+    render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={contentWithExpansion} />);
+
+    // Section headers should appear
+    expect(screen.getByText('Base Content')).toBeInTheDocument();
+    expect(screen.getByText('Mythic Realms')).toBeInTheDocument();
+
+    // Both base and expansion species should be visible
+    expect(screen.getByText('Human')).toBeInTheDocument();
+    expect(screen.getByText('Aasimar')).toBeInTheDocument();
+  });
+
+  it('does not render section headers with only base content', () => {
+    const mockCharacter = {};
+    const mockUpdate = vi.fn();
+
+    render(<SpeciesStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />);
+
+    // No section headers with a single group
+    expect(screen.queryByText('Base Content')).not.toBeInTheDocument();
   });
 });

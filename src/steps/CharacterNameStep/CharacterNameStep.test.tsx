@@ -2,12 +2,19 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { CharacterNameStep } from './CharacterNameStep';
+import type { AvailableContent } from '../../types/expansion-pack';
+
+const stubContent: AvailableContent = {
+  species: [{ source: 'Base Content', items: [] }],
+  classes: [{ source: 'Base Content', items: [] }],
+  backgrounds: [{ source: 'Base Content', items: [] }],
+};
 
 describe('CharacterNameStep', () => {
   it('renders the character name input', () => {
     render(
       <MemoryRouter>
-        <CharacterNameStep character={{}} updateCharacter={vi.fn()} />
+        <CharacterNameStep character={{}} updateCharacter={vi.fn()} availableContent={stubContent} />
       </MemoryRouter>
     );
 
@@ -21,6 +28,7 @@ describe('CharacterNameStep', () => {
         <CharacterNameStep
           character={{ name: 'Gandalf' }}
           updateCharacter={vi.fn()}
+          availableContent={stubContent}
         />
       </MemoryRouter>
     );
@@ -33,7 +41,7 @@ describe('CharacterNameStep', () => {
 
     render(
       <MemoryRouter>
-        <CharacterNameStep character={{}} updateCharacter={mockUpdate} />
+        <CharacterNameStep character={{}} updateCharacter={mockUpdate} availableContent={stubContent} />
       </MemoryRouter>
     );
 
@@ -46,7 +54,7 @@ describe('CharacterNameStep', () => {
   it('shows empty input when character has no name', () => {
     render(
       <MemoryRouter>
-        <CharacterNameStep character={{}} updateCharacter={vi.fn()} />
+        <CharacterNameStep character={{}} updateCharacter={vi.fn()} availableContent={stubContent} />
       </MemoryRouter>
     );
 

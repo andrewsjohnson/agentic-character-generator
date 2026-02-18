@@ -78,12 +78,10 @@ export function findStaleSelections(
     updates.background = undefined;
     updates.backgroundSkillReplacements = undefined;
     updates.originFeat = undefined;
-    // Recalculate skill proficiencies: if class was kept, class skills remain;
-    // but background skills need to be removed. Since skills are a merged list
+    // Background skills need to be removed. Since skills are a merged list
     // and we can't easily separate them, clear and let the user re-select.
-    if (!updates.skillProficiencies) {
-      updates.skillProficiencies = undefined;
-    }
+    // If class was also stale, skillProficiencies is already cleared above.
+    updates.skillProficiencies = undefined;
   }
 
   return updates;

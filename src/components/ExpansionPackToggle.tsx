@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { ExpansionPack } from '../types/expansion-pack';
 
 type ExpansionPackToggleProps = {
@@ -9,6 +9,30 @@ type ExpansionPackToggleProps = {
 
 export function ExpansionPackToggle({ packs, enabledPackIds, onChange }: ExpansionPackToggleProps) {
   const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscapeKey);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [open]);
 
   const enabledCount = enabledPackIds.length;
 
@@ -21,7 +45,7 @@ export function ExpansionPackToggle({ packs, enabledPackIds, onChange }: Expansi
   };
 
   return (
-    <div className="relative">
+    <div className="relative" ref={containerRef}>
       <button
         onClick={() => setOpen(prev => !prev)}
         aria-expanded={open}

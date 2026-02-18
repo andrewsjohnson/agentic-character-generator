@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { ExpansionPackToggle } from './ExpansionPackToggle';
 import type { ExpansionPack } from '../types/expansion-pack';
 
@@ -157,5 +157,60 @@ describe('ExpansionPackToggle', () => {
 
     fireEvent.click(button);
     expect(button).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('closes the dropdown when clicking outside', () => {
+    render(
+      <div>
+        <div data-testid="outside-element">Outside</div>
+        <ExpansionPackToggle packs={packs} enabledPackIds={[]} onChange={() => {}} />
+      </div>
+    );
+    fireEvent.click(screen.getByTestId('expansion-pack-toggle-button'));
+    expect(screen.getByTestId('expansion-pack-panel')).toBeInTheDocument();
+
+    act(() => {
+      fireEvent.mouseDown(screen.getByTestId('outside-element'));
+    });
+    expect(screen.queryByTestId('expansion-pack-panel')).not.toBeInTheDocument();
+  });
+
+  it('does not close the dropdown when clicking inside the panel', () => {
+    render(
+      <ExpansionPackToggle packs={packs} enabledPackIds={[]} onChange={() => {}} />
+    );
+    fireEvent.click(screen.getByTestId('expansion-pack-toggle-button'));
+    expect(screen.getByTestId('expansion-pack-panel')).toBeInTheDocument();
+
+    act(() => {
+      fireEvent.mouseDown(screen.getByTestId('expansion-pack-panel'));
+    });
+    expect(screen.getByTestId('expansion-pack-panel')).toBeInTheDocument();
+  });
+
+  it('closes the dropdown when Escape key is pressed', () => {
+    render(
+      <ExpansionPackToggle packs={packs} enabledPackIds={[]} onChange={() => {}} />
+    );
+    fireEvent.click(screen.getByTestId('expansion-pack-toggle-button'));
+    expect(screen.getByTestId('expansion-pack-panel')).toBeInTheDocument();
+
+    act(() => {
+      fireEvent.keyDown(document, { key: 'Escape' });
+    });
+    expect(screen.queryByTestId('expansion-pack-panel')).not.toBeInTheDocument();
+  });
+
+  it('does not close the dropdown for non-Escape keys', () => {
+    render(
+      <ExpansionPackToggle packs={packs} enabledPackIds={[]} onChange={() => {}} />
+    );
+    fireEvent.click(screen.getByTestId('expansion-pack-toggle-button'));
+    expect(screen.getByTestId('expansion-pack-panel')).toBeInTheDocument();
+
+    act(() => {
+      fireEvent.keyDown(document, { key: 'Enter' });
+    });
+    expect(screen.getByTestId('expansion-pack-panel')).toBeInTheDocument();
   });
 });

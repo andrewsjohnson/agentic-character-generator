@@ -104,7 +104,7 @@ describe('AbilityScoreStep', () => {
       expect(screen.getByText(/you have 27 points to spend/i)).toBeInTheDocument();
     });
 
-    it('resets scores when switching modes', () => {
+    it('preserves point buy scores when switching to standard array and back', () => {
       const mockCharacter: CharacterDraft = {};
       const mockUpdate = vi.fn();
 
@@ -114,9 +114,13 @@ describe('AbilityScoreStep', () => {
         </MemoryRouter>
       );
 
-      // In Point Buy, increment STR
+      // In Point Buy, increment STR twice (8→10, costs 2 points)
       const strIncrement = screen.getAllByLabelText(/increase str/i)[0];
       fireEvent.click(strIncrement);
+      fireEvent.click(strIncrement);
+
+      // 8→9 costs 1pt, 9→10 costs 1pt = 2 total
+      expect(screen.getByText(/points: 2 \/ 27/i)).toBeInTheDocument();
 
       // Switch to Standard Array
       const standardArrayButton = screen.getByRole('button', { name: /standard array/i });
@@ -126,8 +130,75 @@ describe('AbilityScoreStep', () => {
       const pointBuyButton = screen.getByRole('button', { name: /point buy/i });
       fireEvent.click(pointBuyButton);
 
-      // Scores should be reset (all 8s, total 0 points)
+      // Point buy scores should be preserved (STR=10, 2 points spent)
+      expect(screen.getByText(/points: 2 \/ 27/i)).toBeInTheDocument();
+    });
+
+    it('preserves standard array scores when switching to point buy and back', () => {
+      const mockCharacter: CharacterDraft = {
+        baseAbilityScores: {
+          STR: 15,
+          DEX: 14,
+          CON: 13,
+          INT: 12,
+          WIS: 10,
+          CHA: 8,
+        },
+        abilityScoreMethod: 'standard-array',
+      };
+      const mockUpdate = vi.fn();
+
+      render(
+        <MemoryRouter>
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+        </MemoryRouter>
+      );
+
+      // Verify we're in standard array mode with valid assignment
+      expect(screen.getByText(/all values assigned/i)).toBeInTheDocument();
+
+      // Switch to Point Buy
+      const pointBuyButton = screen.getByRole('button', { name: /point buy/i });
+      fireEvent.click(pointBuyButton);
+
+      // Point buy should show default 0 points (separate state)
       expect(screen.getByText(/points: 0 \/ 27/i)).toBeInTheDocument();
+
+      // Switch back to Standard Array
+      const standardArrayButton = screen.getByRole('button', { name: /standard array/i });
+      fireEvent.click(standardArrayButton);
+
+      // Standard array scores should still be valid
+      expect(screen.getByText(/all values assigned/i)).toBeInTheDocument();
+    });
+
+    it('only writes active method scores to character state', () => {
+      const mockCharacter: CharacterDraft = {};
+      const mockUpdate = vi.fn();
+
+      render(
+        <MemoryRouter>
+          <AbilityScoreStep character={mockCharacter} updateCharacter={mockUpdate} />
+        </MemoryRouter>
+      );
+
+      // Initial render calls updateCharacter with point-buy (all 8s is valid for point buy)
+      expect(mockUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          abilityScoreMethod: 'point-buy',
+        })
+      );
+
+      // Switch to standard array
+      const standardArrayButton = screen.getByRole('button', { name: /standard array/i });
+      fireEvent.click(standardArrayButton);
+
+      // Standard array with all 8s is NOT valid, so updateCharacter should NOT
+      // have been called with standard-array method yet
+      const standardArrayCalls = mockUpdate.mock.calls.filter(
+        (call: [Record<string, unknown>]) => call[0].abilityScoreMethod === 'standard-array'
+      );
+      expect(standardArrayCalls).toHaveLength(0);
     });
   });
 

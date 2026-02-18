@@ -7,7 +7,10 @@ import type { Background } from './types/background';
 import { BottomNavigation } from './components/BottomNavigation';
 import { ExpansionPackToggle } from './components/ExpansionPackToggle';
 import { STEPS } from './steps';
-import { EXPANSION_PACKS } from './data/expansion-packs';
+import { MYTHIC_REALMS_PACK } from './data/expansion-packs/mythic-realms';
+import type { ExpansionPack } from './types/expansion-pack';
+
+const EXPANSION_PACKS: ExpansionPack[] = [MYTHIC_REALMS_PACK];
 import { computeAvailableContent, findStaleSelections } from './rules/expansion-packs';
 import speciesData from './data/races.json';
 import classesData from './data/classes.json';

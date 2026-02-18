@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import type { StepProps } from '../types';
 import { deserializeCharacter } from '../../rules/serialization';
 
-export function StartStep({ updateCharacter }: StepProps) {
+export function StartStep({ updateCharacter, onEnablePackIds }: StepProps) {
   const navigate = useNavigate();
   const [importError, setImportError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -42,6 +42,9 @@ export function StartStep({ updateCharacter }: StepProps) {
       }
 
       setImportError(null);
+      if (result.enabledPackIds.length > 0 && onEnablePackIds) {
+        onEnablePackIds(result.enabledPackIds);
+      }
       updateCharacter(result.character);
       navigate('/review');
     };

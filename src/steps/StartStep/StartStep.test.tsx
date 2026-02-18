@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { StartStep } from './StartStep';
 import type { CharacterDraft } from '../../types/character';
+import type { AvailableContent } from '../../types/expansion-pack';
 import { EXPORT_VERSION } from '../../rules/serialization';
 
 const mockNavigate = vi.fn();
@@ -15,13 +16,28 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-function renderStartStep(updateCharacter = vi.fn()) {
+const emptyContent: AvailableContent = {
+  species: [{ source: 'Base Content', items: [] }],
+  classes: [{ source: 'Base Content', items: [] }],
+  backgrounds: [{ source: 'Base Content', items: [] }],
+};
+
+function renderStartStep(
+  updateCharacter = vi.fn(),
+  onEnablePackIds = vi.fn(),
+) {
   const character: CharacterDraft = {};
   return {
     updateCharacter,
+    onEnablePackIds,
     ...render(
       <MemoryRouter initialEntries={['/start']}>
-        <StartStep character={character} updateCharacter={updateCharacter} />
+        <StartStep
+          character={character}
+          updateCharacter={updateCharacter}
+          availableContent={emptyContent}
+          onEnablePackIds={onEnablePackIds}
+        />
       </MemoryRouter>
     ),
   };
@@ -71,6 +87,48 @@ describe('StartStep', () => {
     await waitFor(() => {
       expect(updateCharacter).toHaveBeenCalledWith({ name: 'Imported Hero' });
       expect(mockNavigate).toHaveBeenCalledWith('/review');
+    });
+  });
+
+  it('calls onEnablePackIds with imported pack IDs', async () => {
+    const updateCharacter = vi.fn();
+    const onEnablePackIds = vi.fn();
+    renderStartStep(updateCharacter, onEnablePackIds);
+
+    const validJson = JSON.stringify({
+      version: EXPORT_VERSION,
+      character: { name: 'Pack Hero' },
+      enabledPackIds: ['mythic-realms'],
+    });
+
+    const file = createFile(validJson);
+    const fileInput = screen.getByLabelText('Choose character file');
+    fireEvent.change(fileInput, { target: { files: [file] } });
+
+    await waitFor(() => {
+      expect(onEnablePackIds).toHaveBeenCalledWith(['mythic-realms']);
+      expect(updateCharacter).toHaveBeenCalledWith({ name: 'Pack Hero' });
+      expect(mockNavigate).toHaveBeenCalledWith('/review');
+    });
+  });
+
+  it('does not call onEnablePackIds when no pack IDs in import', async () => {
+    const updateCharacter = vi.fn();
+    const onEnablePackIds = vi.fn();
+    renderStartStep(updateCharacter, onEnablePackIds);
+
+    const validJson = JSON.stringify({
+      version: EXPORT_VERSION,
+      character: { name: 'No Packs' },
+    });
+
+    const file = createFile(validJson);
+    const fileInput = screen.getByLabelText('Choose character file');
+    fireEvent.change(fileInput, { target: { files: [file] } });
+
+    await waitFor(() => {
+      expect(onEnablePackIds).not.toHaveBeenCalled();
+      expect(updateCharacter).toHaveBeenCalledWith({ name: 'No Packs' });
     });
   });
 

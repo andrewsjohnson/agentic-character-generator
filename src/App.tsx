@@ -64,7 +64,12 @@ function Navigation() {
   );
 }
 
-function WizardContent({ enabledPackIds }: { enabledPackIds: string[] }) {
+type WizardContentProps = {
+  enabledPackIds: string[];
+  onEnablePackIds: (ids: string[]) => void;
+};
+
+function WizardContent({ enabledPackIds, onEnablePackIds }: WizardContentProps) {
   const [character, setCharacter] = useState<CharacterDraft>({});
 
   const updateCharacter = (updates: Partial<CharacterDraft>) => {
@@ -101,13 +106,15 @@ function WizardContent({ enabledPackIds }: { enabledPackIds: string[] }) {
                   character={character}
                   updateCharacter={updateCharacter}
                   availableContent={availableContent}
+                  enabledPackIds={enabledPackIds}
+                  onEnablePackIds={onEnablePackIds}
                 />
               }
             />
           ))}
         </Routes>
       </main>
-      <BottomNavigation character={character} />
+      <BottomNavigation character={character} enabledPackIds={enabledPackIds} />
     </>
   );
 }
@@ -128,7 +135,7 @@ function App() {
             />
           </div>
         </header>
-        <WizardContent enabledPackIds={enabledPackIds} />
+        <WizardContent enabledPackIds={enabledPackIds} onEnablePackIds={setEnabledPackIds} />
       </div>
     </BrowserRouter>
   );

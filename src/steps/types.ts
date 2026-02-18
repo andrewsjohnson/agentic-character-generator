@@ -5,4 +5,6 @@ export type StepProps = {
   character: CharacterDraft;
   updateCharacter: (updates: Partial<CharacterDraft>) => void;
   availableContent: AvailableContent;
+  enabledPackIds?: string[];
+  onEnablePackIds?: (ids: string[]) => void;
 };

@@ -37,10 +37,10 @@ vi.mock('../rules/pdf-export', () => ({
   exportCharacterPDF: vi.fn(),
 }));
 
-function renderOnStep(path: string, character: CharacterDraft = {}) {
+function renderOnStep(path: string, character: CharacterDraft = {}, enabledPackIds?: string[]) {
   return render(
     <MemoryRouter initialEntries={[path]}>
-      <BottomNavigation character={character} />
+      <BottomNavigation character={character} enabledPackIds={enabledPackIds} />
     </MemoryRouter>
   );
 }
@@ -331,6 +331,14 @@ describe('BottomNavigation', () => {
       renderOnStep('/review');
       fireEvent.click(screen.getByRole('button', { name: /download character as json/i }));
       expect(exportCharacterJSON).toHaveBeenCalled();
+    });
+
+    it('passes enabledPackIds to exportCharacterJSON', async () => {
+      const { exportCharacterJSON } = await import('../rules/json-export');
+      const character: CharacterDraft = { name: 'Test' };
+      renderOnStep('/review', character, ['mythic-realms']);
+      fireEvent.click(screen.getByRole('button', { name: /download character as json/i }));
+      expect(exportCharacterJSON).toHaveBeenCalledWith(character, ['mythic-realms']);
     });
   });
 

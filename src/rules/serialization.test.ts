@@ -43,6 +43,27 @@ describe('serialization', () => {
       expect(parsed.version).toBe(EXPORT_VERSION);
       expect(parsed.character).toEqual({});
     });
+
+    it('includes enabledPackIds when provided', () => {
+      const character: CharacterDraft = { name: 'Thorin' };
+      const json = serializeCharacter(character, ['mythic-realms']);
+      const parsed = JSON.parse(json);
+      expect(parsed.enabledPackIds).toEqual(['mythic-realms']);
+    });
+
+    it('omits enabledPackIds when empty array is provided', () => {
+      const character: CharacterDraft = { name: 'Thorin' };
+      const json = serializeCharacter(character, []);
+      const parsed = JSON.parse(json);
+      expect(parsed.enabledPackIds).toBeUndefined();
+    });
+
+    it('omits enabledPackIds when not provided', () => {
+      const character: CharacterDraft = { name: 'Thorin' };
+      const json = serializeCharacter(character);
+      const parsed = JSON.parse(json);
+      expect(parsed.enabledPackIds).toBeUndefined();
+    });
   });
 
   describe('deserializeCharacter', () => {
@@ -87,6 +108,50 @@ describe('serialization', () => {
         expect(result.character.class?.name).toBe('Fighter');
         expect(result.character.background?.name).toBe('Acolyte');
         expect(result.character.baseAbilityScores).toEqual({ STR: 15, DEX: 14, CON: 13, INT: 12, WIS: 10, CHA: 8 });
+      }
+    });
+
+    it('round-trips enabledPackIds', () => {
+      const original: CharacterDraft = { name: 'Thorin' };
+      const packIds = ['mythic-realms', 'dark-sun'];
+      const json = serializeCharacter(original, packIds);
+      const result = deserializeCharacter(json);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.enabledPackIds).toEqual(['mythic-realms', 'dark-sun']);
+      }
+    });
+
+    it('returns empty enabledPackIds for v1 imports without pack data', () => {
+      const result = deserializeCharacter('{"version":1,"character":{"name":"OldChar"}}');
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.enabledPackIds).toEqual([]);
+        expect(result.character.name).toBe('OldChar');
+      }
+    });
+
+    it('returns empty enabledPackIds when field is not present', () => {
+      const result = deserializeCharacter(`{"version":${EXPORT_VERSION},"character":{"name":"Test"}}`);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.enabledPackIds).toEqual([]);
+      }
+    });
+
+    it('rejects non-array enabledPackIds', () => {
+      const result = deserializeCharacter(`{"version":${EXPORT_VERSION},"character":{},"enabledPackIds":"not-array"}`);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBe('enabledPackIds must be an array.');
+      }
+    });
+
+    it('rejects enabledPackIds with non-string elements', () => {
+      const result = deserializeCharacter(`{"version":${EXPORT_VERSION},"character":{},"enabledPackIds":[1,2]}`);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBe('enabledPackIds must contain only strings.');
       }
     });
 
@@ -141,6 +206,15 @@ describe('serialization', () => {
     it('accepts current version', () => {
       const result = deserializeCharacter(`{"version":${EXPORT_VERSION},"character":{"name":"Test"}}`);
       expect(result.success).toBe(true);
+    });
+
+    it('accepts v1 format (backward compatibility)', () => {
+      const result = deserializeCharacter('{"version":1,"character":{"name":"Legacy"}}');
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.character.name).toBe('Legacy');
+        expect(result.enabledPackIds).toEqual([]);
+      }
     });
 
     it('rejects missing character field', () => {

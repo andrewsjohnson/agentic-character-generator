@@ -33,9 +33,13 @@ export function generateFilename(character: CharacterDraft): string {
  * Triggers a browser download of the character data as a JSON file.
  * Creates a Blob from the serialized character, generates a download URL,
  * and programmatically clicks a temporary anchor element.
+ * Optionally includes enabled expansion pack IDs in the export.
  */
-export function exportCharacterJSON(character: CharacterDraft): void {
-  const json = serializeCharacter(character);
+export function exportCharacterJSON(
+  character: CharacterDraft,
+  enabledPackIds?: string[],
+): void {
+  const json = serializeCharacter(character, enabledPackIds);
   const blob = new Blob([json], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const filename = generateFilename(character);

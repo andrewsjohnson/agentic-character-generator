@@ -28,9 +28,10 @@ const STEP_VALIDATION: Record<StepPath, ((character: CharacterDraft) => Validati
 
 type BottomNavigationProps = {
   character: CharacterDraft;
+  enabledPackIds?: string[];
 };
 
-export function BottomNavigation({ character }: BottomNavigationProps) {
+export function BottomNavigation({ character, enabledPackIds }: BottomNavigationProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const [errors, setErrors] = useState<string[]>([]);
@@ -88,7 +89,7 @@ export function BottomNavigation({ character }: BottomNavigationProps) {
   };
 
   const handleExportJSON = () => {
-    exportCharacterJSON(character);
+    exportCharacterJSON(character, enabledPackIds);
   };
 
   return (

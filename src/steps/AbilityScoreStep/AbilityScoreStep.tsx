@@ -98,14 +98,14 @@ export function AbilityScoreStep({ character, updateCharacter }: StepProps) {
 
     if (currentTotal + newCost > 27) return; // Over budget
 
-    setPointBuyScores({ ...pointBuyScores, [ability]: newScore });
+    setPointBuyScores(prev => ({ ...prev, [ability]: newScore }));
   };
 
   const handleDecrement = (ability: AbilityName) => {
     const currentScore = pointBuyScores[ability];
     if (currentScore <= 8) return; // Min score is 8
 
-    setPointBuyScores({ ...pointBuyScores, [ability]: currentScore - 1 });
+    setPointBuyScores(prev => ({ ...prev, [ability]: currentScore - 1 }));
   };
 
   const handleReset = () => {
@@ -128,7 +128,7 @@ export function AbilityScoreStep({ character, updateCharacter }: StepProps) {
     const numValue = parseInt(value, 10);
     if (isNaN(numValue)) return;
 
-    setStandardArrayScores({ ...standardArrayScores, [ability]: numValue });
+    setStandardArrayScores(prev => ({ ...prev, [ability]: numValue }));
   };
 
   // Memoize available values for standard array dropdowns to avoid recalculating on each render

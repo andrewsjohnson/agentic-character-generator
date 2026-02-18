@@ -1,7 +1,7 @@
 import type { CharacterDraft } from '../types/character';
 import { ABILITY_NAMES } from '../types/ability';
 import { isValidPointBuy, isValidStandardArray } from './ability-scores';
-import { hasSkillConflict, getBackgroundSkills } from './backgrounds';
+import { getBackgroundSkills } from './backgrounds';
 import { getStartingEquipmentOptions } from './classes';
 
 export type ValidationResult = {
@@ -95,27 +95,28 @@ export function validateBackgroundStep(character: CharacterDraft): ValidationRes
     return { valid: false, errors };
   }
 
-  // Check for unresolved skill conflicts
+  // Check for unresolved skill conflicts.
+  // When a background with conflicting skills is selected, the user must resolve
+  // the conflicts before proceeding.
+  //
+  // After the background step completes properly, skillProficiencies should contain
+  // classSkillCount + 2 skills (2 from background, either original or replacements).
+  // If skillProficiencies has fewer than expected, background skills haven't been
+  // merged yet — indicating unresolved conflicts.
   if (character.class && character.skillProficiencies) {
     const backgroundSkills = getBackgroundSkills(character.background);
-    const classSkills = character.skillProficiencies.filter(
-      (skill) => !backgroundSkills.includes(skill)
-    );
-    const conflicts = hasSkillConflict(backgroundSkills, classSkills);
+    const expectedCount = character.class.skillChoices.count + backgroundSkills.length;
 
-    // If there are conflicts, check whether the character's skillProficiencies
-    // includes *both* background skills (possibly as replacements).
-    // When conflicts are resolved, the background step replaces conflicting
-    // skills with alternatives, so all background skills should be present
-    // in the final list (either original or replacement).
-    if (conflicts.length > 0) {
-      // The character has conflicts. The total skill count should reflect
-      // that replacements were made. If skillProficiencies doesn't contain
-      // at least (classSkills.length + backgroundSkills.length) entries,
-      // the conflicts haven't been resolved.
-      const expectedCount = classSkills.length + backgroundSkills.length;
-      if (character.skillProficiencies.length < expectedCount) {
-        errors.push('Skill conflicts between class and background must be resolved.');
+    if (character.skillProficiencies.length < expectedCount) {
+      // Background skills haven't been merged — conflicts are unresolved.
+      // Verify that backgroundSkillReplacements accounts for all missing skills.
+      const missingCount = expectedCount - character.skillProficiencies.length;
+      const resolvedCount = character.backgroundSkillReplacements
+        ? Object.keys(character.backgroundSkillReplacements).length
+        : 0;
+
+      if (resolvedCount !== missingCount) {
+        errors.push('You must resolve all skill conflicts before proceeding.');
       }
     }
   } else if (character.class && !character.skillProficiencies) {

@@ -350,6 +350,94 @@ describe('validateBackgroundStep', () => {
       // Class chose Athletics + Perception; background has Athletics (conflict) + Intimidation
       // Conflict resolved: replaced Athletics with Survival
       skillProficiencies: ['Athletics', 'Perception', 'Survival', 'Intimidation'],
+      backgroundSkillReplacements: { 'Athletics': 'Survival' },
+    };
+
+    const result = validateBackgroundStep(character);
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toEqual([]);
+  });
+
+  it('returns invalid when conflicts exist but not resolved', () => {
+    // Soldier background (Athletics, Intimidation) + Fighter choosing Athletics, Perception
+    // Conflict on Athletics - NOT resolved (no backgroundSkillReplacements)
+    const character: CharacterDraft = {
+      class: makeClass(),
+      background: makeBackground(), // Soldier: Athletics, Intimidation
+      skillProficiencies: ['Athletics', 'Perception'],
+      // backgroundSkillReplacements not set
+    };
+
+    const result = validateBackgroundStep(character);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain('You must resolve all skill conflicts before proceeding.');
+  });
+
+  it('returns invalid when replacements do not cover all conflicting background skills', () => {
+    // Soldier background (Athletics, Intimidation) + Fighter choosing both
+    // Both background skills conflict with class skills,
+    // but only one replacement was recorded — validation should catch this mismatch
+    const character: CharacterDraft = {
+      class: makeClass(),
+      background: makeBackground(), // Soldier: Athletics, Intimidation
+      // Class chose Athletics + Intimidation; both background skills conflict
+      skillProficiencies: ['Athletics', 'Intimidation'],
+      // Only 1 replacement recorded for 2 conflicting background skills
+      backgroundSkillReplacements: { 'Athletics': 'Acrobatics' },
+    };
+
+    const result = validateBackgroundStep(character);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain('You must resolve all skill conflicts before proceeding.');
+  });
+
+  it('returns invalid when all background skills overlap with class skills and conflicts not resolved', () => {
+    // Soldier background (Athletics, Intimidation) + Fighter choosing Athletics + Intimidation
+    // All background skills are already in skillProficiencies from class
+    // Without direct conflict detection, this would incorrectly pass validation
+    const character: CharacterDraft = {
+      class: makeClass(),
+      background: makeBackground(), // Soldier: Athletics, Intimidation
+      skillProficiencies: ['Athletics', 'Intimidation'],
+      // backgroundSkillReplacements not set — conflicts not resolved
+    };
+
+    const result = validateBackgroundStep(character);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain('You must resolve all skill conflicts before proceeding.');
+  });
+
+  it('returns valid when all background skills overlap and conflicts are fully resolved', () => {
+    // Soldier background (Athletics, Intimidation) + Fighter choosing Athletics + Intimidation
+    // Both conflicts resolved with replacement skills
+    const character: CharacterDraft = {
+      class: makeClass(),
+      background: makeBackground(), // Soldier: Athletics, Intimidation
+      skillProficiencies: ['Athletics', 'Intimidation', 'Perception', 'Survival'],
+      backgroundSkillReplacements: { 'Athletics': 'Perception', 'Intimidation': 'Survival' },
+    };
+
+    const result = validateBackgroundStep(character);
+
+    expect(result.valid).toBe(true);
+    expect(result.errors).toEqual([]);
+  });
+
+  it('returns valid when no conflicts exist (no replacements needed)', () => {
+    // Sage background (Arcana, History) - no overlap with Fighter's class skills
+    const sage = makeBackground({
+      name: 'Sage',
+      skillProficiencies: ['Arcana', 'History'],
+    });
+    const character: CharacterDraft = {
+      class: makeClass(),
+      background: sage,
+      skillProficiencies: ['Perception', 'Survival', 'Arcana', 'History'],
+      // No backgroundSkillReplacements needed
     };
 
     const result = validateBackgroundStep(character);

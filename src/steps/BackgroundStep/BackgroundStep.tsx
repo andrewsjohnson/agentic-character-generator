@@ -56,7 +56,7 @@ function BackgroundDetail({ background, conflictingSkills, onResolveConflicts, c
   const hasConflicts = conflictingSkills.length > 0;
 
   // Get skills the character already has (from class)
-  const existingSkills = new Set(character.skillProficiencies || []);
+  const existingSkills = new Set<SkillName>(character.skillProficiencies || []);
 
   // Get non-conflicting background skills
   const backgroundSkills = getBackgroundSkills(background);
@@ -64,22 +64,53 @@ function BackgroundDetail({ background, conflictingSkills, onResolveConflicts, c
     skill => !conflictingSkills.includes(skill)
   );
 
-  // Skills unavailable for replacement: existing class skills + non-conflicting background skills
-  const unavailableSkills = new Set([
-    ...existingSkills,
+  // Previously resolved replacement skills should remain selectable
+  const resolvedReplacements = new Set<SkillName>(
+    character.backgroundSkillReplacements
+      ? Object.values(character.backgroundSkillReplacements).filter(
+          (v): v is SkillName => v !== undefined
+        )
+      : []
+  );
+
+  // Skills unavailable for replacement: existing skills + non-conflicting background skills,
+  // but exclude already-selected replacements so they remain available in the dropdowns
+  const unavailableSkills = new Set<SkillName>([
+    ...Array.from(existingSkills).filter(skill => !resolvedReplacements.has(skill)),
     ...nonConflictingBackgroundSkills
   ]);
 
   // Available skills for replacement (excluding those already possessed)
   const availableSkills = ALL_SKILLS.filter(skill => !unavailableSkills.has(skill));
 
-  // Track selected replacement skills
-  const [replacements, setReplacements] = useState<SkillName[]>([]);
+  // Track selected replacement skills — initialize from character state if available
+  const [replacements, setReplacements] = useState<SkillName[]>(() => {
+    if (character.backgroundSkillReplacements && conflictingSkills.length > 0) {
+      return conflictingSkills.map(
+        (skill) => character.backgroundSkillReplacements![skill]
+      ).filter((s): s is SkillName => s !== undefined);
+    }
+    return [];
+  });
 
-  // Reset replacements when background changes (conflicts will change accordingly)
+  // Sync replacements when the background changes.
+  // We key on background.name because conflictingSkills and
+  // backgroundSkillReplacements are both derived from the current background.
+  // When the user switches backgrounds, we either restore previously
+  // resolved replacements or reset to empty.
+  const backgroundName = background.name;
   useEffect(() => {
-    setReplacements([]);
-  }, [background.name]);
+    if (character.backgroundSkillReplacements && conflictingSkills.length > 0) {
+      const restored = conflictingSkills.map(
+        (skill) => character.backgroundSkillReplacements![skill]
+      ).filter((s): s is SkillName => s !== undefined);
+      setReplacements(restored);
+    } else {
+      setReplacements([]);
+    }
+    // conflictingSkills is derived from backgroundName + character skills, so
+    // backgroundName is sufficient to capture when conflicts change.
+  }, [backgroundName]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleReplacementChange = (index: number, skill: SkillName) => {
     const newReplacements = [...replacements];
@@ -213,16 +244,25 @@ export function BackgroundStep({ character, updateCharacter }: StepProps) {
     // Check for conflicts
     const conflicts = hasSkillConflict(backgroundSkills, classSkills);
 
-    // If no conflicts, update character immediately
     if (conflicts.length === 0) {
-      // Merge skills: class skills + background skills
+      // No conflicts: merge skills and clear any stale replacements
       const mergedSkills = [...classSkills, ...backgroundSkills];
       updateCharacter({
         background,
-        skillProficiencies: mergedSkills
+        skillProficiencies: mergedSkills,
+        backgroundSkillReplacements: undefined
+      });
+    } else {
+      // Conflicts exist: set the background but clear stale replacements.
+      // skillProficiencies is intentionally NOT updated here — the existing
+      // class skills remain in state, and the background skills will be
+      // merged in only after the user resolves conflicts via handleResolveConflicts.
+      // Validation enforces that conflicts must be resolved before proceeding.
+      updateCharacter({
+        background,
+        backgroundSkillReplacements: undefined
       });
     }
-    // If conflicts exist, wait for user to resolve them (handled in BackgroundDetail)
   };
 
   const handleResolveConflicts = (replacements: SkillName[]) => {
@@ -237,6 +277,12 @@ export function BackgroundStep({ character, updateCharacter }: StepProps) {
     // Find conflicts
     const conflicts = hasSkillConflict(backgroundSkills, classSkills);
 
+    // Build the backgroundSkillReplacements mapping
+    const replacementMap: Partial<Record<SkillName, SkillName>> = {};
+    conflicts.forEach((conflictSkill, index) => {
+      replacementMap[conflictSkill] = replacements[index];
+    });
+
     // Build final skill list: class skills + non-conflicting background skills + replacements
     const nonConflictingBackgroundSkills = backgroundSkills.filter(
       skill => !conflicts.includes(skill)
@@ -250,17 +296,29 @@ export function BackgroundStep({ character, updateCharacter }: StepProps) {
 
     updateCharacter({
       background: selectedBackground,
-      skillProficiencies: finalSkills
+      skillProficiencies: finalSkills,
+      backgroundSkillReplacements: replacementMap
     });
   };
 
-  // Calculate current conflicts for the detail panel
-  const currentConflicts = selectedBackground
-    ? hasSkillConflict(
-        getBackgroundSkills(selectedBackground),
-        character.skillProficiencies || []
-      )
-    : [];
+  // Calculate current conflicts for the detail panel.
+  // If conflicts have already been resolved (backgroundSkillReplacements is populated),
+  // show the original conflicts so the UI can display the resolved state.
+  const currentConflicts = (() => {
+    if (!selectedBackground) return [];
+    const backgroundSkills = getBackgroundSkills(selectedBackground);
+    const allSkills = character.skillProficiencies || [];
+
+    if (character.backgroundSkillReplacements) {
+      // Conflicts were resolved — return the original conflicting skills
+      // by checking which background skills have entries in the replacements map
+      return backgroundSkills.filter(
+        (skill) => character.backgroundSkillReplacements![skill] !== undefined
+      );
+    }
+
+    return hasSkillConflict(backgroundSkills, allSkills);
+  })();
 
   return (
     <div className="p-8">

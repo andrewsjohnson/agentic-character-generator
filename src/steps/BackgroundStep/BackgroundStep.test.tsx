@@ -122,7 +122,8 @@ describe('BackgroundStep', () => {
           name: 'Acolyte',
           skillProficiencies: ['Insight', 'Religion']
         }),
-        skillProficiencies: ['Insight', 'Religion']
+        skillProficiencies: ['Insight', 'Religion'],
+        backgroundSkillReplacements: undefined
       });
     });
 
@@ -172,8 +173,11 @@ describe('BackgroundStep', () => {
       expect(screen.getByTestId('skill-conflict-notice')).toBeInTheDocument();
       expect(screen.getByText(/skill conflicts detected/i)).toBeInTheDocument();
 
-      // Should NOT call updateCharacter yet
-      expect(mockUpdate).not.toHaveBeenCalled();
+      // Should call updateCharacter with background but without resolved replacements
+      expect(mockUpdate).toHaveBeenCalledWith({
+        background: expect.objectContaining({ name: 'Criminal' }),
+        backgroundSkillReplacements: undefined
+      });
     });
 
     it('detects multiple skill conflicts', () => {
@@ -312,7 +316,7 @@ describe('BackgroundStep', () => {
       expect(confirmButton).not.toBeDisabled();
     });
 
-    it('updateCharacter called with background and merged skill proficiencies after resolution', () => {
+    it('updateCharacter called with background, merged skills, and replacements after resolution', () => {
       const mockCharacter: CharacterDraft = {
         skillProficiencies: ['Stealth']
       };
@@ -328,6 +332,12 @@ describe('BackgroundStep', () => {
       const criminalCard = screen.getByTestId('background-card-criminal');
       fireEvent.click(criminalCard);
 
+      // First call sets background with unresolved conflicts
+      expect(mockUpdate).toHaveBeenCalledWith({
+        background: expect.objectContaining({ name: 'Criminal' }),
+        backgroundSkillReplacements: undefined
+      });
+
       // Select replacement skill
       const select = screen.getByTestId('replacement-select-0') as HTMLSelectElement;
       fireEvent.change(select, { target: { value: 'Athletics' } });
@@ -336,15 +346,17 @@ describe('BackgroundStep', () => {
       const confirmButton = screen.getByTestId('confirm-replacements-button');
       fireEvent.click(confirmButton);
 
-      // Should call updateCharacter with:
+      // Second call resolves conflicts with:
       // - class skills: ['Stealth']
       // - non-conflicting background skills: ['Sleight of Hand']
       // - replacement skills: ['Athletics']
-      expect(mockUpdate).toHaveBeenCalledWith({
+      // - backgroundSkillReplacements mapping
+      expect(mockUpdate).toHaveBeenLastCalledWith({
         background: expect.objectContaining({
           name: 'Criminal'
         }),
-        skillProficiencies: ['Stealth', 'Sleight of Hand', 'Athletics']
+        skillProficiencies: ['Stealth', 'Sleight of Hand', 'Athletics'],
+        backgroundSkillReplacements: { 'Stealth': 'Athletics' }
       });
     });
   });
@@ -372,7 +384,8 @@ describe('BackgroundStep', () => {
       // Should call updateCharacter
       expect(mockUpdate).toHaveBeenCalledWith({
         background: expect.objectContaining({ name: 'Acolyte' }),
-        skillProficiencies: ['Insight', 'Religion']
+        skillProficiencies: ['Insight', 'Religion'],
+        backgroundSkillReplacements: undefined
       });
     });
 
@@ -398,7 +411,8 @@ describe('BackgroundStep', () => {
       // Should call updateCharacter
       expect(mockUpdate).toHaveBeenCalledWith({
         background: expect.objectContaining({ name: 'Criminal' }),
-        skillProficiencies: ['Sleight of Hand', 'Stealth']
+        skillProficiencies: ['Sleight of Hand', 'Stealth'],
+        backgroundSkillReplacements: undefined
       });
     });
 
@@ -486,6 +500,97 @@ describe('BackgroundStep', () => {
       // Check single quantity items don't show (x1)
       expect(screen.getByText('Holy Symbol')).toBeInTheDocument();
       expect(screen.queryByText('Holy Symbol (x1)')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Skill Conflict Persistence', () => {
+    it('conflict resolution persists after clicking Confirm Selection', () => {
+      const mockCharacter: CharacterDraft = {
+        skillProficiencies: ['Stealth']
+      };
+      const mockUpdate = vi.fn();
+
+      render(
+        <MemoryRouter>
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+        </MemoryRouter>
+      );
+
+      // Click Criminal (has Stealth conflict)
+      fireEvent.click(screen.getByTestId('background-card-criminal'));
+
+      // Select replacement
+      const select = screen.getByTestId('replacement-select-0') as HTMLSelectElement;
+      fireEvent.change(select, { target: { value: 'Athletics' } });
+
+      // Confirm
+      fireEvent.click(screen.getByTestId('confirm-replacements-button'));
+
+      // Should persist backgroundSkillReplacements in the updateCharacter call
+      expect(mockUpdate).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          backgroundSkillReplacements: { 'Stealth': 'Athletics' },
+          skillProficiencies: ['Stealth', 'Sleight of Hand', 'Athletics']
+        })
+      );
+    });
+
+    it('switching backgrounds clears previous conflict resolutions', () => {
+      const mockCharacter: CharacterDraft = {
+        skillProficiencies: ['Stealth']
+      };
+      const mockUpdate = vi.fn();
+
+      render(
+        <MemoryRouter>
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+        </MemoryRouter>
+      );
+
+      // Click Criminal (has Stealth conflict)
+      fireEvent.click(screen.getByTestId('background-card-criminal'));
+
+      // Resolve the conflict
+      const select = screen.getByTestId('replacement-select-0') as HTMLSelectElement;
+      fireEvent.change(select, { target: { value: 'Athletics' } });
+      fireEvent.click(screen.getByTestId('confirm-replacements-button'));
+
+      // Switch to Acolyte (no conflicts)
+      fireEvent.click(screen.getByTestId('background-card-acolyte'));
+
+      // Should clear backgroundSkillReplacements
+      expect(mockUpdate).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          background: expect.objectContaining({ name: 'Acolyte' }),
+          backgroundSkillReplacements: undefined
+        })
+      );
+    });
+
+    it('conflict resolution restored when component re-mounts with character state', () => {
+      // Simulate returning to the BackgroundStep with previously resolved conflicts
+      const criminal = backgrounds.find(b => b.name === 'Criminal')!;
+      const mockCharacter: CharacterDraft = {
+        background: criminal,
+        skillProficiencies: ['Stealth', 'Sleight of Hand', 'Athletics'],
+        backgroundSkillReplacements: { 'Stealth': 'Athletics' }
+      };
+      const mockUpdate = vi.fn();
+
+      render(
+        <MemoryRouter>
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} />
+        </MemoryRouter>
+      );
+
+      // Criminal should be selected
+      expect(screen.getByTestId('background-card-criminal')).toHaveClass('border-blue-600');
+
+      // Conflict notice should show since Stealth is in both class and background skills
+      // The replacement select should show the previously selected replacement
+      expect(screen.getByTestId('skill-conflict-notice')).toBeInTheDocument();
+      const select = screen.getByTestId('replacement-select-0') as HTMLSelectElement;
+      expect(select.value).toBe('Athletics');
     });
   });
 

@@ -52,8 +52,9 @@ export type CharacterDraft = {
   /**
    * Resolved skill conflicts from background selection.
    * Maps conflicting background skills to their chosen replacements.
+   * Only conflicting skills appear as keys; non-conflicting skills are omitted.
    */
-  backgroundSkillReplacements?: Record<SkillName, SkillName>;
+  backgroundSkillReplacements?: Partial<Record<SkillName, SkillName>>;
 
   /** Equipment selected during character creation. */
   equipment?: EquipmentItem[];

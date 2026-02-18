@@ -86,22 +86,29 @@ function BackgroundDetail({ background, conflictingSkills, onResolveConflicts, c
     if (character.backgroundSkillReplacements && conflictingSkills.length > 0) {
       return conflictingSkills.map(
         (skill) => character.backgroundSkillReplacements![skill]
-      ).filter(Boolean);
+      ).filter((s): s is SkillName => s !== undefined);
     }
     return [];
   });
 
-  // Reset replacements when background changes (conflicts will change accordingly)
+  // Sync replacements when the background changes.
+  // We key on background.name because conflictingSkills and
+  // backgroundSkillReplacements are both derived from the current background.
+  // When the user switches backgrounds, we either restore previously
+  // resolved replacements or reset to empty.
+  const backgroundName = background.name;
   useEffect(() => {
     if (character.backgroundSkillReplacements && conflictingSkills.length > 0) {
       const restored = conflictingSkills.map(
         (skill) => character.backgroundSkillReplacements![skill]
-      ).filter(Boolean);
+      ).filter((s): s is SkillName => s !== undefined);
       setReplacements(restored);
     } else {
       setReplacements([]);
     }
-  }, [background.name]); // eslint-disable-line react-hooks/exhaustive-deps
+    // conflictingSkills is derived from backgroundName + character skills, so
+    // backgroundName is sufficient to capture when conflicts change.
+  }, [backgroundName]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleReplacementChange = (index: number, skill: SkillName) => {
     const newReplacements = [...replacements];
@@ -245,7 +252,10 @@ export function BackgroundStep({ character, updateCharacter }: StepProps) {
       });
     } else {
       // Conflicts exist: set the background but clear stale replacements.
-      // User must resolve conflicts before proceeding (enforced by validation).
+      // skillProficiencies is intentionally NOT updated here — the existing
+      // class skills remain in state, and the background skills will be
+      // merged in only after the user resolves conflicts via handleResolveConflicts.
+      // Validation enforces that conflicts must be resolved before proceeding.
       updateCharacter({
         background,
         backgroundSkillReplacements: undefined
@@ -266,7 +276,7 @@ export function BackgroundStep({ character, updateCharacter }: StepProps) {
     const conflicts = hasSkillConflict(backgroundSkills, classSkills);
 
     // Build the backgroundSkillReplacements mapping
-    const replacementMap: Record<string, SkillName> = {};
+    const replacementMap: Partial<Record<SkillName, SkillName>> = {};
     conflicts.forEach((conflictSkill, index) => {
       replacementMap[conflictSkill] = replacements[index];
     });
@@ -285,7 +295,7 @@ export function BackgroundStep({ character, updateCharacter }: StepProps) {
     updateCharacter({
       background: selectedBackground,
       skillProficiencies: finalSkills,
-      backgroundSkillReplacements: replacementMap as Record<SkillName, SkillName>
+      backgroundSkillReplacements: replacementMap
     });
   };
 

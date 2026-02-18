@@ -573,7 +573,7 @@ describe('BackgroundStep', () => {
       const mockCharacter: CharacterDraft = {
         background: criminal,
         skillProficiencies: ['Stealth', 'Sleight of Hand', 'Athletics'],
-        backgroundSkillReplacements: { 'Stealth': 'Athletics' } as Record<import('../../types/skill').SkillName, import('../../types/skill').SkillName>
+        backgroundSkillReplacements: { 'Stealth': 'Athletics' }
       };
       const mockUpdate = vi.fn();
 

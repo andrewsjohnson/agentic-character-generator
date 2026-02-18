@@ -98,25 +98,26 @@ export function validateBackgroundStep(character: CharacterDraft): ValidationRes
   // Check for unresolved skill conflicts.
   // When a background with conflicting skills is selected, the user must resolve
   // the conflicts before proceeding. We detect unresolved conflicts by checking
-  // whether the background's skills (or their replacements) are present in
-  // skillProficiencies.
+  // whether the background's skills are present in skillProficiencies.
   if (character.class && character.skillProficiencies) {
     const backgroundSkills = getBackgroundSkills(character.background);
 
-    // Check if all background skills are accounted for in the proficiency list.
-    // After a successful no-conflict merge, all background skills are in the list.
+    // After a no-conflict merge, all background skills appear in skillProficiencies.
     // After conflict resolution, the non-conflicting background skills and
-    // replacement skills are in the list instead.
-    const allBgSkillsPresent = backgroundSkills.every(
-      (skill) => character.skillProficiencies!.includes(skill)
+    // replacement skills appear instead. Missing background skills indicate
+    // unresolved conflicts.
+    const missingBgSkills = backgroundSkills.filter(
+      (skill) => !character.skillProficiencies!.includes(skill)
     );
 
-    if (!allBgSkillsPresent) {
-      // Some background skills are missing — check if conflicts were resolved
-      if (
-        !character.backgroundSkillReplacements ||
-        Object.keys(character.backgroundSkillReplacements).length === 0
-      ) {
+    if (missingBgSkills.length > 0) {
+      // Some background skills are missing — verify conflicts were fully resolved.
+      // The replacement count must match the number of missing background skills.
+      const resolvedCount = character.backgroundSkillReplacements
+        ? Object.keys(character.backgroundSkillReplacements).length
+        : 0;
+
+      if (resolvedCount !== missingBgSkills.length) {
         errors.push('You must resolve all skill conflicts before proceeding.');
       }
     }

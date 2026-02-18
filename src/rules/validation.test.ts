@@ -350,7 +350,7 @@ describe('validateBackgroundStep', () => {
       // Class chose Athletics + Perception; background has Athletics (conflict) + Intimidation
       // Conflict resolved: replaced Athletics with Survival
       skillProficiencies: ['Athletics', 'Perception', 'Survival', 'Intimidation'],
-      backgroundSkillReplacements: { 'Athletics': 'Survival' } as Record<import('../types/skill').SkillName, import('../types/skill').SkillName>,
+      backgroundSkillReplacements: { 'Athletics': 'Survival' },
     };
 
     const result = validateBackgroundStep(character);
@@ -367,6 +367,25 @@ describe('validateBackgroundStep', () => {
       background: makeBackground(), // Soldier: Athletics, Intimidation
       skillProficiencies: ['Athletics', 'Perception'],
       // backgroundSkillReplacements not set
+    };
+
+    const result = validateBackgroundStep(character);
+
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain('You must resolve all skill conflicts before proceeding.');
+  });
+
+  it('returns invalid when replacements do not cover all missing background skills', () => {
+    // Soldier background (Athletics, Intimidation) + Fighter choosing both
+    // Both background skills are missing from skillProficiencies (unmerged),
+    // but only one replacement was recorded — validation should catch this mismatch
+    const character: CharacterDraft = {
+      class: makeClass(),
+      background: makeBackground(), // Soldier: Athletics, Intimidation
+      // Class chose Perception + Survival; both background skills are missing
+      skillProficiencies: ['Perception', 'Survival'],
+      // Only 1 replacement recorded for 2 missing background skills
+      backgroundSkillReplacements: { 'Athletics': 'Acrobatics' },
     };
 
     const result = validateBackgroundStep(character);

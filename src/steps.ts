@@ -1,3 +1,4 @@
+import { StartStep } from './steps/StartStep/StartStep';
 import { CharacterNameStep } from './steps/CharacterNameStep/CharacterNameStep';
 import { SpeciesStep } from './steps/SpeciesStep/SpeciesStep';
 import { ClassStep } from './steps/ClassStep/ClassStep';
@@ -7,6 +8,7 @@ import { EquipmentStep } from './steps/EquipmentStep/EquipmentStep';
 import { ReviewStep } from './steps/ReviewStep/ReviewStep';
 
 export const STEPS = [
+  { path: '/start', label: 'Start', component: StartStep },
   { path: '/name', label: 'Name', component: CharacterNameStep },
   { path: '/species', label: 'Species', component: SpeciesStep },
   { path: '/class', label: 'Class', component: ClassStep },

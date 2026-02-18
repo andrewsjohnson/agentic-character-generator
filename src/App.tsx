@@ -4,15 +4,22 @@ import type { CharacterDraft } from './types/character';
 import { BottomNavigation } from './components/BottomNavigation';
 import { STEPS } from './steps';
 
+/** Steps shown in the breadcrumb navigation (excludes Start page). */
+const WIZARD_STEPS = STEPS.filter(step => step.path !== '/start');
+
 function Navigation() {
   const location = useLocation();
-  const currentIndex = STEPS.findIndex(step => step.path === location.pathname);
+
+  // Don't show breadcrumb on the start page
+  if (location.pathname === '/start') return null;
+
+  const currentIndex = WIZARD_STEPS.findIndex(step => step.path === location.pathname);
 
   return (
     <nav className="bg-gray-100 border-b border-gray-200">
       <div className="max-w-4xl mx-auto px-4 py-4">
         <ol className="flex items-center justify-between">
-          {STEPS.map((step, index) => {
+          {WIZARD_STEPS.map((step, index) => {
             const isActive = location.pathname === step.path;
             const isCompleted = index < currentIndex;
 
@@ -51,7 +58,7 @@ function WizardContent() {
       <Navigation />
       <main className="max-w-4xl mx-auto pb-24">
         <Routes>
-          <Route path="/" element={<Navigate to="/name" replace />} />
+          <Route path="/" element={<Navigate to="/start" replace />} />
           {STEPS.map(({ path, component: Component }) => (
             <Route
               key={path}

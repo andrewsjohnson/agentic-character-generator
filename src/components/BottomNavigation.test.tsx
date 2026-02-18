@@ -29,6 +29,14 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
+vi.mock('../rules/json-export', () => ({
+  exportCharacterJSON: vi.fn(),
+}));
+
+vi.mock('../rules/pdf-export', () => ({
+  exportCharacterPDF: vi.fn(),
+}));
+
 function renderOnStep(path: string, character: CharacterDraft = {}) {
   return render(
     <MemoryRouter initialEntries={[path]}>
@@ -42,11 +50,18 @@ describe('BottomNavigation', () => {
     mockNavigate.mockClear();
   });
 
+  describe('start page', () => {
+    it('does not render on the /start page', () => {
+      const { container } = renderOnStep('/start');
+      expect(container.querySelector('nav')).not.toBeInTheDocument();
+    });
+  });
+
   describe('button states', () => {
-    it('disables Back button on the first step (/name)', () => {
+    it('enables Back button on /name (navigates back to /start)', () => {
       renderOnStep('/name');
       const backButton = screen.getByRole('button', { name: /previous step/i });
-      expect(backButton).toBeDisabled();
+      expect(backButton).not.toBeDisabled();
     });
 
     it('enables Back button on steps after the first', () => {
@@ -74,6 +89,13 @@ describe('BottomNavigation', () => {
       const backButton = screen.getByRole('button', { name: /previous step/i });
       fireEvent.click(backButton);
       expect(mockNavigate).toHaveBeenCalledWith('/name');
+    });
+
+    it('navigates from /name back to /start when Back is clicked', () => {
+      renderOnStep('/name');
+      const backButton = screen.getByRole('button', { name: /previous step/i });
+      fireEvent.click(backButton);
+      expect(mockNavigate).toHaveBeenCalledWith('/start');
     });
 
     it('navigates to the next step when Next is clicked and validation passes', () => {
@@ -284,6 +306,34 @@ describe('BottomNavigation', () => {
     });
   });
 
+  describe('export buttons', () => {
+    it('shows export buttons on /review step', () => {
+      renderOnStep('/review');
+      expect(screen.getByRole('button', { name: /download character as pdf/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /download character as json/i })).toBeInTheDocument();
+    });
+
+    it('does not show export buttons on non-review steps', () => {
+      renderOnStep('/name');
+      expect(screen.queryByRole('button', { name: /download character as pdf/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /download character as json/i })).not.toBeInTheDocument();
+    });
+
+    it('calls exportCharacterPDF when Download PDF is clicked', async () => {
+      const { exportCharacterPDF } = await import('../rules/pdf-export');
+      renderOnStep('/review');
+      fireEvent.click(screen.getByRole('button', { name: /download character as pdf/i }));
+      expect(exportCharacterPDF).toHaveBeenCalled();
+    });
+
+    it('calls exportCharacterJSON when Download JSON is clicked', async () => {
+      const { exportCharacterJSON } = await import('../rules/json-export');
+      renderOnStep('/review');
+      fireEvent.click(screen.getByRole('button', { name: /download character as json/i }));
+      expect(exportCharacterJSON).toHaveBeenCalled();
+    });
+  });
+
   describe('accessibility', () => {
     it('has proper aria-label on navigation', () => {
       renderOnStep('/name');
@@ -313,6 +363,12 @@ describe('BottomNavigation', () => {
       renderOnStep('/species', { species: human });
       const nextButton = screen.getByRole('button', { name: /next step/i });
       expect(nextButton).toHaveAttribute('aria-disabled', 'false');
+    });
+
+    it('export buttons have accessible aria-labels', () => {
+      renderOnStep('/review');
+      expect(screen.getByRole('button', { name: /download character as pdf/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /download character as json/i })).toBeInTheDocument();
     });
   });
 

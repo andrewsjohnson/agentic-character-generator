@@ -161,7 +161,7 @@ A single API key works across all workflows. Monitor usage on the [Anthropic Con
 The agent workflows specify which Claude model to use via `claude_args`:
 - The Implementation Agent uses `--model opus`
 - The Review Agent uses `--model opus`
-- The Planning Agent uses the default model from its settings file
+- The Planning Agent uses the action's default model (no explicit model specified)
 
 ## 6. Verification
 

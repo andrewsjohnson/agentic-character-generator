@@ -75,6 +75,12 @@ jobs:
             - A single issue comment starting with:
               "## Plan v1"
             - Do not create a PR.
+            - Before the approve/revise footer, include a model recommendation for the implementation agent:
+              <!-- next-model: X -->
+              where X is haiku, sonnet, or opus, based on the complexity of the work planned:
+              - haiku: trivial change (docs, minor copy, single-line fix, config tweak)
+              - sonnet: moderate change (typical feature, a few files, standard patterns)
+              - opus: complex change (multi-system, high-risk logic, intricate interactions)
             - End the comment with:
               To approve, comment with "/agent-approve".
               To revise, comment with "/plan-revise" followed by the requested revisions.

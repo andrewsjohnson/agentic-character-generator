@@ -70,6 +70,12 @@ jobs:
 
             Output:
             - One issue comment only (the new plan).
+            - Before the approve/revise footer, include a model recommendation for the implementation agent:
+              <!-- next-model: X -->
+              where X is haiku, sonnet, or opus, based on the complexity of the work planned:
+              - haiku: trivial change (docs, minor copy, single-line fix, config tweak)
+              - sonnet: moderate change (typical feature, a few files, standard patterns)
+              - opus: complex change (multi-system, high-risk logic, intricate interactions)
 
             If requirements are ambiguous and you need a decision before revising:
             - Post an issue comment starting with "## Questions for human" and include numbered options.

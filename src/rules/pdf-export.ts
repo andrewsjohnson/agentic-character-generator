@@ -197,23 +197,24 @@ export function generateCharacterPDF(character: CharacterDraft): jsPDF {
     const leftSkills = sortedSkills.slice(0, halfLen);
     const rightSkills = sortedSkills.slice(halfLen);
 
-    const skillStartY = y;
-    for (const skill of leftSkills) {
-      const isProficient = (character.skillProficiencies ?? []).includes(skill);
-      const marker = isProficient ? '*' : ' ';
-      doc.text(`${marker} ${formatModifier(skillModifiers[skill])} ${skill} (${SKILL_TO_ABILITY[skill]})`, margin, y);
+    for (let i = 0; i < halfLen; i++) {
+      const leftSkill = leftSkills[i];
+      const isProficientLeft = (character.skillProficiencies ?? []).includes(leftSkill);
+      const markerLeft = isProficientLeft ? '*' : ' ';
+      doc.text(`${markerLeft} ${formatModifier(skillModifiers[leftSkill])} ${leftSkill} (${SKILL_TO_ABILITY[leftSkill]})`, margin, y);
+
+      if (i < rightSkills.length) {
+        const rightSkill = rightSkills[i];
+        const isProficientRight = (character.skillProficiencies ?? []).includes(rightSkill);
+        const markerRight = isProficientRight ? '*' : ' ';
+        doc.text(`${markerRight} ${formatModifier(skillModifiers[rightSkill])} ${rightSkill} (${SKILL_TO_ABILITY[rightSkill]})`, margin + contentWidth / 2, y);
+      }
+
       y += 4;
+      checkPage();
     }
 
-    let rightY = skillStartY;
-    for (const skill of rightSkills) {
-      const isProficient = (character.skillProficiencies ?? []).includes(skill);
-      const marker = isProficient ? '*' : ' ';
-      doc.text(`${marker} ${formatModifier(skillModifiers[skill])} ${skill} (${SKILL_TO_ABILITY[skill]})`, margin + contentWidth / 2, rightY);
-      rightY += 4;
-    }
-
-    y = Math.max(y, rightY) + 4;
+    y += 4;
   }
 
   checkPage();
@@ -232,14 +233,17 @@ export function generateCharacterPDF(character: CharacterDraft): jsPDF {
     if (classProficiencies.armor.length > 0) {
       doc.text(`Armor: ${classProficiencies.armor.join(', ')}`, margin, y);
       y += 5;
+      checkPage();
     }
     if (classProficiencies.weapons.length > 0) {
       doc.text(`Weapons: ${classProficiencies.weapons.join(', ')}`, margin, y);
       y += 5;
+      checkPage();
     }
     if (character.background?.toolProficiency && character.background.toolProficiency !== 'None') {
       doc.text(`Tools: ${character.background.toolProficiency}`, margin, y);
       y += 5;
+      checkPage();
     }
 
     const speciesLanguages = character.species?.languages ?? [];
@@ -248,6 +252,7 @@ export function generateCharacterPDF(character: CharacterDraft): jsPDF {
     if (allLanguages.length > 0) {
       doc.text(`Languages: ${allLanguages.join(', ')}`, margin, y);
       y += 5;
+      checkPage();
     }
     y += 3;
   }

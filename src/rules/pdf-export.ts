@@ -42,6 +42,13 @@ export function generateCharacterPDF(character: CharacterDraft): jsPDF {
   const contentWidth = pageWidth - margin * 2;
   let y = margin;
 
+  const checkPage = () => {
+    if (y > doc.internal.pageSize.getHeight() - 20) {
+      doc.addPage();
+      y = margin;
+    }
+  };
+
   const level = character.level ?? 1;
   const proficiencyBonus = getProficiencyBonus(level);
 
@@ -120,6 +127,7 @@ export function generateCharacterPDF(character: CharacterDraft): jsPDF {
       doc.text(`${finalScores[ability]} (${formatModifier(modifiers[ability])})`, x, y + 5);
     }
     y += 14;
+    checkPage();
   }
 
   // ---- Combat Stats ----
@@ -145,6 +153,7 @@ export function generateCharacterPDF(character: CharacterDraft): jsPDF {
   doc.setDrawColor(180);
   doc.line(margin, y, pageWidth - margin, y);
   y += 6;
+  checkPage();
 
   // ---- Saving Throws ----
   if (modifiers) {
@@ -165,6 +174,7 @@ export function generateCharacterPDF(character: CharacterDraft): jsPDF {
     }
     doc.text(saveLines.join('   '), margin, y);
     y += 8;
+    checkPage();
   }
 
   // ---- Skills ----
@@ -205,14 +215,6 @@ export function generateCharacterPDF(character: CharacterDraft): jsPDF {
 
     y = Math.max(y, rightY) + 4;
   }
-
-  // ---- Check for page overflow ----
-  const checkPage = () => {
-    if (y > doc.internal.pageSize.getHeight() - 20) {
-      doc.addPage();
-      y = margin;
-    }
-  };
 
   checkPage();
 

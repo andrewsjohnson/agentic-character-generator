@@ -28,6 +28,17 @@ jobs:
       - name: Export token for gh
         run: echo "GH_TOKEN=${{ steps.app-token.outputs.token }}" >> "$GITHUB_ENV"
 
+      - name: Parse model from trigger comment
+        id: model
+        run: |
+          set -euo pipefail
+          WORD2=$(echo "${{ github.event.comment.body }}" | awk 'NR==1{print $2}')
+          if echo "$WORD2" | grep -qE '^(opus|sonnet|haiku)$'; then
+            echo "value=$WORD2" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=sonnet" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -36,6 +47,7 @@ jobs:
           track_progress: true
           show_full_output: true
           claude_args: |
+            --model ${{ steps.model.outputs.value }}
             --max-turns 60
             --settings ./claude/agents/planner.json
           prompt: |

@@ -74,6 +74,17 @@ jobs:
           git config user.name "agentic-automation[bot]"
           git config user.email "agentic-automation[bot]@users.noreply.github.com"
 
+      - name: Parse model from trigger comment
+        id: model
+        run: |
+          set -euo pipefail
+          WORD2=$(echo "${{ github.event.comment.body }}" | awk 'NR==1{print $2}')
+          if echo "$WORD2" | grep -qE '^(opus|sonnet|haiku)$'; then
+            echo "value=$WORD2" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=opus" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -82,7 +93,7 @@ jobs:
           track_progress: true
           show_full_output: true
           claude_args: |
-            --model opus
+            --model ${{ steps.model.outputs.value }}
             --max-turns 120
             --settings ./claude/agents/implementer.json
           prompt: |
@@ -155,9 +166,16 @@ jobs:
             When complete:
             - Ensure everything is committed and pushed.
             - Post "## Implementation summary" with what changed + how verified.
+            - End your final comment with a model recommendation for the review agent:
+              <!-- next-model: X -->
+              where X is haiku, sonnet, or opus. Base the choice on the complexity of what was implemented:
+              - haiku: trivial change (docs, minor copy, single-line fix, config tweak)
+              - sonnet: moderate change (typical feature, a few files, standard patterns)
+              - opus: complex change (multi-system, high-risk logic, intricate interactions)
 
             If stopping early:
             - Commit+push (WIP ok), then post "## Handoff" with what's done / next / blockers.
+            - Include <!-- next-model: X --> at the end of the handoff comment using the same criteria above.
 
             8) Shell safety rules
             - Avoid shell pipelines/redirection (no &&, ||, |, >, 2>&1).
@@ -201,7 +219,14 @@ jobs:
           PR="$PR_NUMBER"
           REPO="${{ github.repository }}"
 
-          gh pr comment "$PR" --repo "$REPO" --body "/agent-review"
+          NEXT_MODEL="$(gh pr view "$PR" --repo "$REPO" --json comments \
+            -q '[.comments[].body | select(contains("<!-- next-model:"))] | last // ""' \
+            | grep -oP '(?<=<!-- next-model: )\w+' || true)"
+          if ! echo "$NEXT_MODEL" | grep -qE '^(opus|sonnet|haiku)$'; then
+            NEXT_MODEL="opus"
+          fi
+
+          gh pr comment "$PR" --repo "$REPO" --body "/agent-review $NEXT_MODEL"
 
       - name: On failure -> retry ladder / halt
         if: failure()

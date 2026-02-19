@@ -86,16 +86,38 @@ export function deserializeCharacter(json: string): DeserializeResult {
     return { success: false, error: 'Missing or invalid character field.' };
   }
 
-  const character = obj.character as CharacterDraft;
+  // Work with character as a raw record for runtime validation before casting
+  const charRaw = obj.character as Record<string, unknown>;
 
-  // Validate key fields have correct types when present
-  if (character.name !== undefined && typeof character.name !== 'string') {
+  if (charRaw.name !== undefined && typeof charRaw.name !== 'string') {
     return { success: false, error: 'Character name must be a string.' };
   }
 
-  if (character.level !== undefined && typeof character.level !== 'number') {
+  if (charRaw.level !== undefined && typeof charRaw.level !== 'number') {
     return { success: false, error: 'Character level must be a number.' };
   }
+
+  // species, class, background must be non-null objects (not arrays) if present
+  for (const field of ['species', 'class', 'background'] as const) {
+    const val = charRaw[field];
+    if (val !== undefined && (typeof val !== 'object' || val === null || Array.isArray(val))) {
+      return { success: false, error: `Character ${field} must be an object.` };
+    }
+  }
+
+  // baseAbilityScores must be a non-null object with all numeric values if present
+  if (charRaw.baseAbilityScores !== undefined) {
+    const bas = charRaw.baseAbilityScores;
+    if (typeof bas !== 'object' || bas === null || Array.isArray(bas)) {
+      return { success: false, error: 'Character baseAbilityScores must be an object with numeric values.' };
+    }
+    const hasNonNumericValue = Object.values(bas as Record<string, unknown>).some(v => typeof v !== 'number');
+    if (hasNonNumericValue) {
+      return { success: false, error: 'Character baseAbilityScores must be an object with numeric values.' };
+    }
+  }
+
+  const character = charRaw as unknown as CharacterDraft;
 
   // Parse enabledPackIds (added in v2, defaults to [] for v1 imports)
   let enabledPackIds: string[] = [];

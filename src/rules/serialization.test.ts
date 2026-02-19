@@ -259,5 +259,114 @@ describe('serialization', () => {
         expect(result.character.background).toBeUndefined();
       }
     });
+
+    it('rejects species that is a string', () => {
+      const result = deserializeCharacter(`{"version":${EXPORT_VERSION},"character":{"species":"Human"}}`);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBe('Character species must be an object.');
+      }
+    });
+
+    it('rejects species that is an array', () => {
+      const result = deserializeCharacter(`{"version":${EXPORT_VERSION},"character":{"species":[]}}`);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBe('Character species must be an object.');
+      }
+    });
+
+    it('rejects class that is a number', () => {
+      const result = deserializeCharacter(`{"version":${EXPORT_VERSION},"character":{"class":1}}`);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBe('Character class must be an object.');
+      }
+    });
+
+    it('rejects class that is an array', () => {
+      const result = deserializeCharacter(`{"version":${EXPORT_VERSION},"character":{"class":[]}}`);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBe('Character class must be an object.');
+      }
+    });
+
+    it('rejects background that is a string', () => {
+      const result = deserializeCharacter(`{"version":${EXPORT_VERSION},"character":{"background":"Acolyte"}}`);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBe('Character background must be an object.');
+      }
+    });
+
+    it('rejects background that is an array', () => {
+      const result = deserializeCharacter(`{"version":${EXPORT_VERSION},"character":{"background":[]}}`);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBe('Character background must be an object.');
+      }
+    });
+
+    it('rejects species that is null', () => {
+      const result = deserializeCharacter(`{"version":${EXPORT_VERSION},"character":{"species":null}}`);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBe('Character species must be an object.');
+      }
+    });
+
+    it('rejects class that is null', () => {
+      const result = deserializeCharacter(`{"version":${EXPORT_VERSION},"character":{"class":null}}`);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBe('Character class must be an object.');
+      }
+    });
+
+    it('rejects background that is null', () => {
+      const result = deserializeCharacter(`{"version":${EXPORT_VERSION},"character":{"background":null}}`);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBe('Character background must be an object.');
+      }
+    });
+
+    it('rejects baseAbilityScores that is null', () => {
+      const result = deserializeCharacter(`{"version":${EXPORT_VERSION},"character":{"baseAbilityScores":null}}`);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBe('Character baseAbilityScores must be an object with numeric values.');
+      }
+    });
+
+    it('rejects baseAbilityScores that is a string', () => {
+      const result = deserializeCharacter(`{"version":${EXPORT_VERSION},"character":{"baseAbilityScores":"high"}}`);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBe('Character baseAbilityScores must be an object with numeric values.');
+      }
+    });
+
+    it('rejects baseAbilityScores that is an array', () => {
+      const result = deserializeCharacter(`{"version":${EXPORT_VERSION},"character":{"baseAbilityScores":[10,10,10,10,10,10]}}`);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBe('Character baseAbilityScores must be an object with numeric values.');
+      }
+    });
+
+    it('rejects baseAbilityScores with non-numeric values', () => {
+      const result = deserializeCharacter(`{"version":${EXPORT_VERSION},"character":{"baseAbilityScores":{"STR":"high"}}}`);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBe('Character baseAbilityScores must be an object with numeric values.');
+      }
+    });
+
+    it('accepts baseAbilityScores with all numeric values', () => {
+      const result = deserializeCharacter(`{"version":${EXPORT_VERSION},"character":{"baseAbilityScores":{"STR":15,"DEX":14,"CON":13,"INT":12,"WIS":10,"CHA":8}}}`);
+      expect(result.success).toBe(true);
+    });
   });
 });

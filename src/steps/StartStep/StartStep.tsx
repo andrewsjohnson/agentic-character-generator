@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import type { StepProps } from '../types';
 import { deserializeCharacter } from '../../rules/serialization';
 
-export function StartStep({ updateCharacter, onEnablePackIds }: StepProps) {
+export function StartStep({ replaceCharacter, onEnablePackIds }: StepProps) {
   const navigate = useNavigate();
   const [importError, setImportError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleCreateNew = () => {
+    replaceCharacter?.({});
     navigate('/name');
   };
 
@@ -45,7 +46,7 @@ export function StartStep({ updateCharacter, onEnablePackIds }: StepProps) {
       if (result.enabledPackIds.length > 0 && onEnablePackIds) {
         onEnablePackIds(result.enabledPackIds);
       }
-      updateCharacter(result.character);
+      replaceCharacter?.(result.character);
       navigate('/review');
     };
 

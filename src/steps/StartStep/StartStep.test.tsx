@@ -23,11 +23,13 @@ const emptyContent: AvailableContent = {
 };
 
 function renderStartStep(
-  updateCharacter = vi.fn(),
+  replaceCharacter = vi.fn(),
   onEnablePackIds = vi.fn(),
 ) {
   const character: CharacterDraft = {};
+  const updateCharacter = vi.fn();
   return {
+    replaceCharacter,
     updateCharacter,
     onEnablePackIds,
     ...render(
@@ -35,6 +37,7 @@ function renderStartStep(
         <StartStep
           character={character}
           updateCharacter={updateCharacter}
+          replaceCharacter={replaceCharacter}
           availableContent={emptyContent}
           onEnablePackIds={onEnablePackIds}
         />
@@ -65,15 +68,23 @@ describe('StartStep', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/name');
   });
 
+  it('calls replaceCharacter with empty draft when Create New Character is clicked', () => {
+    const replaceCharacter = vi.fn();
+    renderStartStep(replaceCharacter);
+    fireEvent.click(screen.getByText('Create New Character'));
+    expect(replaceCharacter).toHaveBeenCalledWith({});
+    expect(mockNavigate).toHaveBeenCalledWith('/name');
+  });
+
   it('has a file input that accepts .json files', () => {
     renderStartStep();
     const fileInput = screen.getByLabelText('Choose character file');
     expect(fileInput).toHaveAttribute('accept', '.json');
   });
 
-  it('calls updateCharacter and navigates to /review on valid import', async () => {
-    const updateCharacter = vi.fn();
-    renderStartStep(updateCharacter);
+  it('calls replaceCharacter and navigates to /review on valid import', async () => {
+    const replaceCharacter = vi.fn();
+    const { updateCharacter } = renderStartStep(replaceCharacter);
 
     const validJson = JSON.stringify({
       version: EXPORT_VERSION,
@@ -85,15 +96,16 @@ describe('StartStep', () => {
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
-      expect(updateCharacter).toHaveBeenCalledWith({ name: 'Imported Hero' });
+      expect(replaceCharacter).toHaveBeenCalledWith({ name: 'Imported Hero' });
+      expect(updateCharacter).not.toHaveBeenCalled();
       expect(mockNavigate).toHaveBeenCalledWith('/review');
     });
   });
 
   it('calls onEnablePackIds with imported pack IDs', async () => {
-    const updateCharacter = vi.fn();
+    const replaceCharacter = vi.fn();
     const onEnablePackIds = vi.fn();
-    renderStartStep(updateCharacter, onEnablePackIds);
+    renderStartStep(replaceCharacter, onEnablePackIds);
 
     const validJson = JSON.stringify({
       version: EXPORT_VERSION,
@@ -107,15 +119,15 @@ describe('StartStep', () => {
 
     await waitFor(() => {
       expect(onEnablePackIds).toHaveBeenCalledWith(['mythic-realms']);
-      expect(updateCharacter).toHaveBeenCalledWith({ name: 'Pack Hero' });
+      expect(replaceCharacter).toHaveBeenCalledWith({ name: 'Pack Hero' });
       expect(mockNavigate).toHaveBeenCalledWith('/review');
     });
   });
 
   it('does not call onEnablePackIds when no pack IDs in import', async () => {
-    const updateCharacter = vi.fn();
+    const replaceCharacter = vi.fn();
     const onEnablePackIds = vi.fn();
-    renderStartStep(updateCharacter, onEnablePackIds);
+    renderStartStep(replaceCharacter, onEnablePackIds);
 
     const validJson = JSON.stringify({
       version: EXPORT_VERSION,
@@ -128,7 +140,7 @@ describe('StartStep', () => {
 
     await waitFor(() => {
       expect(onEnablePackIds).not.toHaveBeenCalled();
-      expect(updateCharacter).toHaveBeenCalledWith({ name: 'No Packs' });
+      expect(replaceCharacter).toHaveBeenCalledWith({ name: 'No Packs' });
     });
   });
 

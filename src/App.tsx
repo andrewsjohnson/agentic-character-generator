@@ -76,6 +76,10 @@ function WizardContent({ enabledPackIds, onEnablePackIds }: WizardContentProps) 
     setCharacter(prev => ({ ...prev, ...updates }));
   };
 
+  const replaceCharacter = (draft: CharacterDraft) => {
+    setCharacter(draft);
+  };
+
   const availableContent = useMemo(
     () => computeAvailableContent(enabledPackIds, EXPANSION_PACKS, BASE_CONTENT),
     [enabledPackIds]
@@ -105,6 +109,7 @@ function WizardContent({ enabledPackIds, onEnablePackIds }: WizardContentProps) 
                 <Component
                   character={character}
                   updateCharacter={updateCharacter}
+                  replaceCharacter={replaceCharacter}
                   availableContent={availableContent}
                   enabledPackIds={enabledPackIds}
                   onEnablePackIds={onEnablePackIds}

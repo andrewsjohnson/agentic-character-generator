@@ -42,7 +42,6 @@ If you need to create your own app:
    - **Contents:** Read & Write (for pushing commits)
    - **Issues:** Read & Write (for creating/editing issues, labels, comments)
    - **Pull Requests:** Read & Write (for creating/editing PRs, labels, comments)
-   - **Workflows:** Read (for accessing workflow run data)
 3. Generate a private key and download it
 4. Install the app on your repository
 5. Note the **App ID** from the app's general settings page

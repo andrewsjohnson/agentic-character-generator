@@ -266,7 +266,7 @@ Uses a custom Node.js script (`.github/scripts/percy-review.mjs`) that:
 After a PR is merged:
 
 1. Finds the last review comment containing `### Follow-up candidates (post-merge)`
-2. Extracts checklist items (`- [ ] Title -- Description`)
+2. Extracts checklist items (`- [ ] Title — Description`)
 3. Creates individual GitHub issues for each follow-up, labeled `follow-up`
 4. Posts a summary comment on the merged PR listing the created issues
 

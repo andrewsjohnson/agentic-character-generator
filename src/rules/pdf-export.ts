@@ -42,6 +42,13 @@ export function generateCharacterPDF(character: CharacterDraft): jsPDF {
   const contentWidth = pageWidth - margin * 2;
   let y = margin;
 
+  const checkPage = () => {
+    if (y > doc.internal.pageSize.getHeight() - 20) {
+      doc.addPage();
+      y = margin;
+    }
+  };
+
   const level = character.level ?? 1;
   const proficiencyBonus = getProficiencyBonus(level);
 
@@ -120,6 +127,7 @@ export function generateCharacterPDF(character: CharacterDraft): jsPDF {
       doc.text(`${finalScores[ability]} (${formatModifier(modifiers[ability])})`, x, y + 5);
     }
     y += 14;
+    checkPage();
   }
 
   // ---- Combat Stats ----
@@ -145,6 +153,7 @@ export function generateCharacterPDF(character: CharacterDraft): jsPDF {
   doc.setDrawColor(180);
   doc.line(margin, y, pageWidth - margin, y);
   y += 6;
+  checkPage();
 
   // ---- Saving Throws ----
   if (modifiers) {
@@ -165,6 +174,7 @@ export function generateCharacterPDF(character: CharacterDraft): jsPDF {
     }
     doc.text(saveLines.join('   '), margin, y);
     y += 8;
+    checkPage();
   }
 
   // ---- Skills ----
@@ -187,32 +197,25 @@ export function generateCharacterPDF(character: CharacterDraft): jsPDF {
     const leftSkills = sortedSkills.slice(0, halfLen);
     const rightSkills = sortedSkills.slice(halfLen);
 
-    const skillStartY = y;
-    for (const skill of leftSkills) {
-      const isProficient = (character.skillProficiencies ?? []).includes(skill);
-      const marker = isProficient ? '*' : ' ';
-      doc.text(`${marker} ${formatModifier(skillModifiers[skill])} ${skill} (${SKILL_TO_ABILITY[skill]})`, margin, y);
+    for (let i = 0; i < halfLen; i++) {
+      const leftSkill = leftSkills[i];
+      const isProficientLeft = (character.skillProficiencies ?? []).includes(leftSkill);
+      const markerLeft = isProficientLeft ? '*' : ' ';
+      doc.text(`${markerLeft} ${formatModifier(skillModifiers[leftSkill])} ${leftSkill} (${SKILL_TO_ABILITY[leftSkill]})`, margin, y);
+
+      if (i < rightSkills.length) {
+        const rightSkill = rightSkills[i];
+        const isProficientRight = (character.skillProficiencies ?? []).includes(rightSkill);
+        const markerRight = isProficientRight ? '*' : ' ';
+        doc.text(`${markerRight} ${formatModifier(skillModifiers[rightSkill])} ${rightSkill} (${SKILL_TO_ABILITY[rightSkill]})`, margin + contentWidth / 2, y);
+      }
+
       y += 4;
+      checkPage();
     }
 
-    let rightY = skillStartY;
-    for (const skill of rightSkills) {
-      const isProficient = (character.skillProficiencies ?? []).includes(skill);
-      const marker = isProficient ? '*' : ' ';
-      doc.text(`${marker} ${formatModifier(skillModifiers[skill])} ${skill} (${SKILL_TO_ABILITY[skill]})`, margin + contentWidth / 2, rightY);
-      rightY += 4;
-    }
-
-    y = Math.max(y, rightY) + 4;
+    y += 4;
   }
-
-  // ---- Check for page overflow ----
-  const checkPage = () => {
-    if (y > doc.internal.pageSize.getHeight() - 20) {
-      doc.addPage();
-      y = margin;
-    }
-  };
 
   checkPage();
 
@@ -230,14 +233,17 @@ export function generateCharacterPDF(character: CharacterDraft): jsPDF {
     if (classProficiencies.armor.length > 0) {
       doc.text(`Armor: ${classProficiencies.armor.join(', ')}`, margin, y);
       y += 5;
+      checkPage();
     }
     if (classProficiencies.weapons.length > 0) {
       doc.text(`Weapons: ${classProficiencies.weapons.join(', ')}`, margin, y);
       y += 5;
+      checkPage();
     }
     if (character.background?.toolProficiency && character.background.toolProficiency !== 'None') {
       doc.text(`Tools: ${character.background.toolProficiency}`, margin, y);
       y += 5;
+      checkPage();
     }
 
     const speciesLanguages = character.species?.languages ?? [];
@@ -246,6 +252,7 @@ export function generateCharacterPDF(character: CharacterDraft): jsPDF {
     if (allLanguages.length > 0) {
       doc.text(`Languages: ${allLanguages.join(', ')}`, margin, y);
       y += 5;
+      checkPage();
     }
     y += 3;
   }
@@ -355,6 +362,7 @@ export function generateCharacterPDF(character: CharacterDraft): jsPDF {
       doc.setFont('helvetica', 'normal');
       doc.text(`  ${backgroundFeature.name}`, margin, y);
       y += 4;
+      checkPage();
     }
     y += 3;
   }
@@ -380,16 +388,20 @@ export function generateCharacterPDF(character: CharacterDraft): jsPDF {
     );
     y += 5;
 
+    checkPage();
+
     const cantrips = character.cantripsKnown ?? [];
     if (cantrips.length > 0) {
       doc.text(`Cantrips: ${cantrips.join(', ')}`, margin, y);
       y += 5;
+      checkPage();
     }
 
     const spells = character.spellsKnown ?? [];
     if (spells.length > 0) {
       doc.text(`Spells: ${spells.join(', ')}`, margin, y);
       y += 5;
+      checkPage();
     }
   }
 

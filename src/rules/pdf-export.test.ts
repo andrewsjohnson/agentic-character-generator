@@ -59,6 +59,48 @@ describe('pdf-export', () => {
       expect(output.byteLength).toBeGreaterThan(0);
     });
 
+    it('adds a second page when content overflows', () => {
+      const manyGear: Array<{ kind: 'gear'; name: string; weight: number; cost: string }> =
+        Array.from({ length: 40 }, (_, i) => ({
+          kind: 'gear' as const,
+          name: `Adventuring Item ${i + 1}`,
+          weight: 1,
+          cost: '1 gp',
+        }));
+
+      const manyFeatures = Array.from({ length: 20 }, (_, i) => ({
+        name: `Feature ${i + 1}`,
+        description: `Description for feature ${i + 1}`,
+      }));
+
+      const overflowCharacter: CharacterDraft = {
+        name: 'Overflow Test',
+        species: {
+          ...human,
+          traits: Array.from({ length: 15 }, (_, i) => ({
+            name: `Trait ${i + 1}`,
+            description: `Description for trait ${i + 1}`,
+          })),
+        },
+        class: {
+          ...fighter,
+          features: manyFeatures,
+        },
+        background: acolyte,
+        level: 1,
+        abilityScoreMethod: 'standard-array',
+        baseAbilityScores: { STR: 15, DEX: 14, CON: 13, INT: 12, WIS: 10, CHA: 8 },
+        skillProficiencies: ['Athletics', 'Insight'],
+        equipment: manyGear,
+        cantripsKnown: [],
+        spellsKnown: [],
+        selectedLanguages: ['Common'],
+      };
+
+      const doc = generateCharacterPDF(overflowCharacter);
+      expect(doc.getNumberOfPages()).toBeGreaterThanOrEqual(2);
+    });
+
     it('handles spellcasting characters', () => {
       const character: CharacterDraft = {
         name: 'Elara',

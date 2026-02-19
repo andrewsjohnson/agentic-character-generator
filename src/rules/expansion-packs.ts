@@ -80,7 +80,6 @@ export function findStaleSelections(
     updates.originFeat = undefined;
     // Background skills need to be removed. Since skills are a merged list
     // and we can't easily separate them, clear and let the user re-select.
-    // If class was also stale, skillProficiencies is already cleared above.
     updates.skillProficiencies = undefined;
   }
 

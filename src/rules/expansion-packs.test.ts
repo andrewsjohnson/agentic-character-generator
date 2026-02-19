@@ -300,4 +300,15 @@ describe('findStaleSelections', () => {
     expect('class' in stale).toBe(true);
     expect('background' in stale).toBe(true);
   });
+
+  it('clears skillProficiencies once when both class and background are stale', () => {
+    const character: CharacterDraft = {
+      class: artificer,
+      background: farTraveler,
+      skillProficiencies: ['Arcana', 'Insight'],
+    };
+    const stale = findStaleSelections(character, baseOnly);
+    expect('skillProficiencies' in stale).toBe(true);
+    expect(stale.skillProficiencies).toBeUndefined();
+  });
 });

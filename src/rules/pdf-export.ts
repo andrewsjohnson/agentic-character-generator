@@ -362,6 +362,7 @@ export function generateCharacterPDF(character: CharacterDraft): jsPDF {
       doc.setFont('helvetica', 'normal');
       doc.text(`  ${backgroundFeature.name}`, margin, y);
       y += 4;
+      checkPage();
     }
     y += 3;
   }
@@ -387,16 +388,20 @@ export function generateCharacterPDF(character: CharacterDraft): jsPDF {
     );
     y += 5;
 
+    checkPage();
+
     const cantrips = character.cantripsKnown ?? [];
     if (cantrips.length > 0) {
       doc.text(`Cantrips: ${cantrips.join(', ')}`, margin, y);
       y += 5;
+      checkPage();
     }
 
     const spells = character.spellsKnown ?? [];
     if (spells.length > 0) {
       doc.text(`Spells: ${spells.join(', ')}`, margin, y);
       y += 5;
+      checkPage();
     }
   }
 

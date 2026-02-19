@@ -8,9 +8,10 @@ import { BottomNavigation } from './components/BottomNavigation';
 import { ExpansionPackToggle } from './components/ExpansionPackToggle';
 import { STEPS } from './steps';
 import { MYTHIC_REALMS_PACK } from './data/expansion-packs/mythic-realms';
+import { RAGNAROK_ONLINE_PACK } from './data/expansion-packs/ragnarok-online';
 import type { ExpansionPack } from './types/expansion-pack';
 
-const EXPANSION_PACKS: ExpansionPack[] = [MYTHIC_REALMS_PACK];
+const EXPANSION_PACKS: ExpansionPack[] = [MYTHIC_REALMS_PACK, RAGNAROK_ONLINE_PACK];
 import { computeAvailableContent, findStaleSelections } from './rules/expansion-packs';
 import speciesData from './data/races.json';
 import classesData from './data/classes.json';

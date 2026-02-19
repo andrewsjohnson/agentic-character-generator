@@ -308,6 +308,38 @@ describe('serialization', () => {
       }
     });
 
+    it('rejects species that is null', () => {
+      const result = deserializeCharacter(`{"version":${EXPORT_VERSION},"character":{"species":null}}`);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBe('Character species must be an object.');
+      }
+    });
+
+    it('rejects class that is null', () => {
+      const result = deserializeCharacter(`{"version":${EXPORT_VERSION},"character":{"class":null}}`);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBe('Character class must be an object.');
+      }
+    });
+
+    it('rejects background that is null', () => {
+      const result = deserializeCharacter(`{"version":${EXPORT_VERSION},"character":{"background":null}}`);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBe('Character background must be an object.');
+      }
+    });
+
+    it('rejects baseAbilityScores that is null', () => {
+      const result = deserializeCharacter(`{"version":${EXPORT_VERSION},"character":{"baseAbilityScores":null}}`);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBe('Character baseAbilityScores must be an object with numeric values.');
+      }
+    });
+
     it('rejects baseAbilityScores that is a string', () => {
       const result = deserializeCharacter(`{"version":${EXPORT_VERSION},"character":{"baseAbilityScores":"high"}}`);
       expect(result.success).toBe(false);

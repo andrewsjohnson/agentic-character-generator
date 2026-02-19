@@ -70,15 +70,6 @@ These secrets are used by the `agent-*` prefixed workflows (the current active s
 |--------|-------------|-----------------|
 | `PERCY_TOKEN` | Percy project token | Percy project settings > Project token |
 
-### Legacy Secrets (claude-* Workflows)
-
-These secrets are used by the older `claude-*` prefixed workflows. They may not be needed if you only use the `agent-*` workflows:
-
-| Secret | Description | Where to Get It |
-|--------|-------------|-----------------|
-| `CLAUDE_PUSH_TOKEN` | GitHub PAT with repo write access | GitHub Settings > Developer settings > Personal access tokens |
-| `CLAUDE_PR_TOKEN` | GitHub PAT for PR creation | GitHub Settings > Developer settings > Personal access tokens |
-
 ### Adding a Secret
 
 1. Go to **Repository Settings > Secrets and variables > Actions**

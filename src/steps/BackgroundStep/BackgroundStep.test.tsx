@@ -6,6 +6,7 @@ import type { CharacterDraft } from '../../types/character';
 import backgroundsData from '../../data/backgrounds.json';
 import type { Background } from '../../types/background';
 import type { AvailableContent } from '../../types/expansion-pack';
+import { getSelectByTestId } from '../../test/helpers';
 
 const backgrounds = backgroundsData as unknown as Background[];
 
@@ -274,7 +275,7 @@ describe('BackgroundStep', () => {
       fireEvent.click(criminalCard);
 
       // Get the replacement select
-      const select = screen.getByTestId('replacement-select-0') as HTMLSelectElement;
+      const select = getSelectByTestId('replacement-select-0');
 
       // Should have options (need to check that unavailable skills are excluded)
       const options = Array.from(select.options).map(opt => opt.value).filter(v => v !== '');
@@ -310,14 +311,14 @@ describe('BackgroundStep', () => {
       expect(confirmButton).toBeDisabled();
 
       // Select first replacement
-      const select0 = screen.getByTestId('replacement-select-0') as HTMLSelectElement;
+      const select0 = getSelectByTestId('replacement-select-0');
       fireEvent.change(select0, { target: { value: 'Perception' } });
 
       // Still disabled (need to select second replacement)
       expect(confirmButton).toBeDisabled();
 
       // Select second replacement
-      const select1 = screen.getByTestId('replacement-select-1') as HTMLSelectElement;
+      const select1 = getSelectByTestId('replacement-select-1');
       fireEvent.change(select1, { target: { value: 'Survival' } });
 
       // Now should be enabled
@@ -347,7 +348,7 @@ describe('BackgroundStep', () => {
       });
 
       // Select replacement skill
-      const select = screen.getByTestId('replacement-select-0') as HTMLSelectElement;
+      const select = getSelectByTestId('replacement-select-0');
       fireEvent.change(select, { target: { value: 'Athletics' } });
 
       // Click confirm
@@ -444,7 +445,7 @@ describe('BackgroundStep', () => {
       expect(screen.getByTestId('skill-conflict-notice')).toBeInTheDocument();
 
       // Select a replacement
-      const select = screen.getByTestId('replacement-select-0') as HTMLSelectElement;
+      const select = getSelectByTestId('replacement-select-0');
       fireEvent.change(select, { target: { value: 'Athletics' } });
 
       // Now click Acolyte (no conflicts)
@@ -461,7 +462,7 @@ describe('BackgroundStep', () => {
 
       // Conflict UI should be back, but replacement should be reset (empty)
       expect(screen.getByTestId('skill-conflict-notice')).toBeInTheDocument();
-      const newSelect = screen.getByTestId('replacement-select-0') as HTMLSelectElement;
+      const newSelect = getSelectByTestId('replacement-select-0');
       expect(newSelect.value).toBe('');
     });
   });
@@ -528,7 +529,7 @@ describe('BackgroundStep', () => {
       fireEvent.click(screen.getByTestId('background-card-criminal'));
 
       // Select replacement
-      const select = screen.getByTestId('replacement-select-0') as HTMLSelectElement;
+      const select = getSelectByTestId('replacement-select-0');
       fireEvent.change(select, { target: { value: 'Athletics' } });
 
       // Confirm
@@ -559,7 +560,7 @@ describe('BackgroundStep', () => {
       fireEvent.click(screen.getByTestId('background-card-criminal'));
 
       // Resolve the conflict
-      const select = screen.getByTestId('replacement-select-0') as HTMLSelectElement;
+      const select = getSelectByTestId('replacement-select-0');
       fireEvent.change(select, { target: { value: 'Athletics' } });
       fireEvent.click(screen.getByTestId('confirm-replacements-button'));
 
@@ -597,7 +598,7 @@ describe('BackgroundStep', () => {
       // Conflict notice should show since Stealth is in both class and background skills
       // The replacement select should show the previously selected replacement
       expect(screen.getByTestId('skill-conflict-notice')).toBeInTheDocument();
-      const select = screen.getByTestId('replacement-select-0') as HTMLSelectElement;
+      const select = getSelectByTestId('replacement-select-0');
       expect(select.value).toBe('Athletics');
     });
   });

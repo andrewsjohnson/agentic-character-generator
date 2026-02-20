@@ -129,7 +129,7 @@ function App() {
   const [enabledPackIds, setEnabledPackIds] = useState<string[]>([]);
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <div className="min-h-screen bg-white">
         <header className="bg-gray-900 text-white">
           <div className="max-w-4xl mx-auto px-4 py-6 flex items-center justify-between">

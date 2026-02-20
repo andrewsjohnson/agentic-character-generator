@@ -265,6 +265,13 @@ describe('EquipmentStep', () => {
       expect(screen.getByText('Two longswords')).toBeInTheDocument();
     });
 
+    it('shows quantity in choice card inline detail for items with quantity > 1', () => {
+      renderEquipmentStep({ class: mockFighter });
+      // The second option "Leather Armor and Longbow" has items including Arrows with quantity 20
+      // The inline detail should show "Arrows x20"
+      expect(screen.getByText(/Arrows x20/)).toBeInTheDocument();
+    });
+
     it('shows incomplete choices message before all selections are made', () => {
       renderEquipmentStep({ class: mockFighter });
       expect(screen.getByTestId('incomplete-choices-message')).toBeInTheDocument();
@@ -277,6 +284,19 @@ describe('EquipmentStep', () => {
       fireEvent.click(screen.getByTestId('choice-1-option-0'));
 
       expect(screen.getByTestId('equipment-summary')).toBeInTheDocument();
+    });
+
+    it('shows quantity in equipment summary for resolved gear items', () => {
+      renderEquipmentStep({ class: mockFighter });
+
+      // Select leather armor + longbow option (includes Arrows x20)
+      fireEvent.click(screen.getByTestId('choice-0-option-1'));
+      fireEvent.click(screen.getByTestId('choice-1-option-0'));
+
+      const summary = screen.getByTestId('equipment-summary');
+      expect(summary).toBeInTheDocument();
+      // Arrows are gear with quantity 20 — the summary should show "x20"
+      expect(screen.getByText('x20')).toBeInTheDocument();
     });
 
     it('updates character state when all choices are made', () => {
@@ -300,6 +320,18 @@ describe('EquipmentStep', () => {
       renderEquipmentStep({ class: mockWizard });
       expect(screen.getByTestId('fixed-equipment')).toBeInTheDocument();
       expect(screen.getByText('Spellbook')).toBeInTheDocument();
+    });
+
+    it('displays quantity for fixed equipment with quantity > 1', () => {
+      renderEquipmentStep({ class: mockBarbarian });
+      expect(screen.getByTestId('fixed-equipment')).toBeInTheDocument();
+      expect(screen.getByText('Javelin x4')).toBeInTheDocument();
+    });
+
+    it('displays quantity for Monk darts in fixed equipment', () => {
+      renderEquipmentStep({ class: mockMonk });
+      expect(screen.getByTestId('fixed-equipment')).toBeInTheDocument();
+      expect(screen.getByText('Dart x10')).toBeInTheDocument();
     });
   });
 

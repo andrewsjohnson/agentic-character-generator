@@ -72,15 +72,15 @@ export const MYTHIC_REALMS_PACK: ExpansionPack = {
           {
             description: 'Choose a weapon:',
             options: [
-              { label: 'Light crossbow and 20 bolts', items: [{ name: 'Light crossbow' }, { name: 'Crossbow bolt', quantity: 20 }] },
+              { label: 'Light crossbow and 20 bolts', items: [{ name: 'Crossbow, Light' }, { name: 'Bolts', quantity: 20 }] },
               { label: 'Any two simple weapons', items: [{ name: 'Handaxe', quantity: 2 }] },
             ],
           },
         ],
         fixed: [
-          { name: "Thieves' tools" },
+          { name: "Thieves' Tools" },
           { name: "Artisan's tools of your choice" },
-          { name: 'Leather armor' },
+          { name: 'Leather Armor' },
           { name: "Dungeoneer's pack" },
         ],
       },
@@ -110,7 +110,7 @@ export const MYTHIC_REALMS_PACK: ExpansionPack = {
       skillProficiencies: ['Insight', 'Perception'],
       toolProficiency: 'Any one musical instrument or gaming set of your choice',
       equipment: [
-        { name: "Traveler's clothes", quantity: 1 },
+        { name: "Clothes, Traveler's", quantity: 1 },
         { name: 'Maps of your homeland', quantity: 1 },
         { name: 'Journal', quantity: 1 },
         { name: 'Pouch', quantity: 1 },

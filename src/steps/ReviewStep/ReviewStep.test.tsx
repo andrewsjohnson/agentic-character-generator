@@ -507,6 +507,34 @@ describe('ReviewStep', () => {
       expect(screen.getByText('Backpack')).toBeInTheDocument();
     });
 
+    it('shows quantity for gear items with quantity > 1', () => {
+      const arrows: Gear = {
+        kind: 'gear',
+        name: 'Arrows',
+        quantity: 20,
+        weight: 1,
+        cost: '1 gp',
+      };
+      renderReview({
+        equipment: [longsword, arrows],
+      });
+
+      expect(screen.getByText('Longsword')).toBeInTheDocument();
+      // Gear items with quantity > 1 show "(x{quantity})" suffix
+      expect(screen.getByText(/Arrows/)).toBeInTheDocument();
+      expect(screen.getByText(/\(x20\)/)).toBeInTheDocument();
+    });
+
+    it('does not show quantity suffix for gear items with quantity 1', () => {
+      renderReview({
+        equipment: [backpack],
+      });
+
+      expect(screen.getByText('Backpack')).toBeInTheDocument();
+      const gearSection = screen.getByTestId('equipment-section');
+      expect(gearSection).not.toHaveTextContent('(x');
+    });
+
     it('handles empty equipment list', () => {
       renderReview({ equipment: [] });
       const section = screen.getByTestId('equipment-section');

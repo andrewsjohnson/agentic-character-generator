@@ -8,6 +8,10 @@ import {
   getEquipmentByCategory,
 } from './equipment';
 import type { Armor, Weapon, Gear, EquipmentItem, EquipmentChoice } from '../types/equipment';
+import classesData from '../data/classes.json';
+import backgroundsData from '../data/backgrounds.json';
+import { MYTHIC_REALMS_PACK } from '../data/expansion-packs/mythic-realms';
+import { RAGNAROK_ONLINE_PACK } from '../data/expansion-packs/ragnarok-online';
 
 // -- Test fixtures using real SRD values from equipment.json --
 
@@ -565,7 +569,7 @@ describe('resolveStartingEquipment', () => {
     description: 'Choose armor',
     options: [
       { label: 'Chain Mail', items: [{ name: 'Chain Mail' }] },
-      { label: 'Leather Armor and Longbow', items: [{ name: 'Leather Armor' }, { name: 'Longbow' }, { name: 'Arrows (20)' }] },
+      { label: 'Leather Armor and Longbow', items: [{ name: 'Leather Armor' }, { name: 'Longbow' }, { name: 'Arrows', quantity: 20 }] },
     ],
   };
 
@@ -593,7 +597,7 @@ describe('resolveStartingEquipment', () => {
     expect(result).toHaveLength(3);
     expect(result[0].name).toBe('Leather Armor');
     expect(result[1].name).toBe('Longbow');
-    expect(result[2].name).toBe('Arrows (20)');
+    expect(result[2].name).toBe('Arrows');
   });
 
   it('resolves multiple choices with different selections', () => {
@@ -673,5 +677,163 @@ describe('getEquipmentByCategory', () => {
     expect(result.weapon[0]).toBe(longsword);
     expect(result.armor[0]).toBe(leatherArmor);
     expect(result.gear[0]).toBe(backpack);
+  });
+});
+
+// -- Data integrity tests --
+
+// Items that are intentionally not in equipment.json (packs, currency, tools, clothing, etc.)
+// and are expected to produce generic fallback entries.
+const knownGenericItems = new Set([
+  "Calligrapher's Supplies",
+  'Book (Prayers)',
+  'Book (History)',
+  'Parchment',
+  'Robe',
+  '8 GP',
+  '14 GP',
+  '16 GP',
+  "Thieves' Tools",
+  'Gaming Set (choose one)',
+  "Clothes, Traveler's",
+  "Artisan's tools of your choice",
+  "Dungeoneer's pack",
+  'Maps of your homeland',
+  'Journal',
+]);
+
+const allClasses = [
+  ...classesData,
+  ...(MYTHIC_REALMS_PACK.classes ?? []),
+  ...(RAGNAROK_ONLINE_PACK.classes ?? []),
+];
+
+const allBackgrounds = [
+  ...backgroundsData,
+  ...(MYTHIC_REALMS_PACK.backgrounds ?? []),
+  ...(RAGNAROK_ONLINE_PACK.backgrounds ?? []),
+];
+
+describe('data integrity: class equipment refs resolve correctly', () => {
+  for (const cls of allClasses) {
+    const equipment = cls.startingEquipment;
+    if (!equipment) continue;
+
+    for (const choice of equipment.choices) {
+      for (const option of choice.options) {
+        for (const ref of option.items) {
+          if (knownGenericItems.has(ref.name)) continue;
+          it(`${cls.name} choice "${choice.description}" option "${option.label}" ref "${ref.name}" resolves to a real item`, () => {
+            const item = findEquipmentByName(ref.name);
+            expect(item).toBeDefined();
+            expect(item?.cost).not.toBe('0 gp');
+          });
+        }
+      }
+    }
+
+    for (const ref of equipment.fixed) {
+      if (knownGenericItems.has(ref.name)) continue;
+      it(`${cls.name} fixed ref "${ref.name}" resolves to a real item`, () => {
+        const item = findEquipmentByName(ref.name);
+        expect(item).toBeDefined();
+        expect(item?.cost).not.toBe('0 gp');
+      });
+    }
+  }
+});
+
+describe('data integrity: background equipment refs resolve correctly', () => {
+  for (const bg of allBackgrounds) {
+    for (const equip of bg.equipment) {
+      if (knownGenericItems.has(equip.name)) continue;
+      it(`${bg.name} equipment "${equip.name}" resolves to a real item`, () => {
+        const item = findEquipmentByName(equip.name);
+        expect(item).toBeDefined();
+        expect(item?.cost).not.toBe('0 gp');
+      });
+    }
+  }
+});
+
+describe('data integrity: specific audit fixes', () => {
+  it('Ranger fixed equipment includes Quiver', () => {
+    const ranger = allClasses.find((c) => c.name === 'Ranger');
+    expect(ranger).toBeDefined();
+    const quiverRef = ranger!.startingEquipment!.fixed.find(
+      (r) => r.name === 'Quiver'
+    );
+    expect(quiverRef).toBeDefined();
+    expect(findEquipmentByName('Quiver')).toBeDefined();
+  });
+
+  it('Soldier background "Arrows" resolves correctly with quantity 20', () => {
+    const soldier = allBackgrounds.find((b) => b.name === 'Soldier');
+    expect(soldier).toBeDefined();
+    const arrowsRef = soldier!.equipment.find((e) => e.name === 'Arrows');
+    expect(arrowsRef).toBeDefined();
+    expect(arrowsRef!.quantity).toBe(20);
+    expect(findEquipmentByName('Arrows')).toBeDefined();
+  });
+
+  it('Soldier background "Quiver" resolves correctly', () => {
+    const soldier = allBackgrounds.find((b) => b.name === 'Soldier');
+    expect(soldier).toBeDefined();
+    const quiverRef = soldier!.equipment.find((e) => e.name === 'Quiver');
+    expect(quiverRef).toBeDefined();
+    expect(findEquipmentByName('Quiver')).toBeDefined();
+  });
+
+  it('Acolyte background "Holy Symbol (Amulet)" resolves correctly', () => {
+    const acolyte = allBackgrounds.find((b) => b.name === 'Acolyte');
+    expect(acolyte).toBeDefined();
+    const symbolRef = acolyte!.equipment.find(
+      (e) => e.name === 'Holy Symbol (Amulet)'
+    );
+    expect(symbolRef).toBeDefined();
+    expect(findEquipmentByName('Holy Symbol (Amulet)')).toBeDefined();
+  });
+
+  it('Artificer uses "Crossbow, Light" not "Light crossbow"', () => {
+    const artificer = allClasses.find((c) => c.name === 'Artificer');
+    expect(artificer).toBeDefined();
+    const weaponChoice = artificer!.startingEquipment!.choices[0];
+    const crossbowOption = weaponChoice.options.find((o) =>
+      o.label.toLowerCase().includes('crossbow')
+    );
+    expect(crossbowOption).toBeDefined();
+    const crossbowRef = crossbowOption!.items.find((i) =>
+      i.name.includes('Crossbow')
+    );
+    expect(crossbowRef).toBeDefined();
+    expect(crossbowRef!.name).toBe('Crossbow, Light');
+    expect(findEquipmentByName('Crossbow, Light')).toBeDefined();
+  });
+
+  it('Artificer uses "Bolts" with quantity 20, not "Crossbow bolt"', () => {
+    const artificer = allClasses.find((c) => c.name === 'Artificer');
+    expect(artificer).toBeDefined();
+    const weaponChoice = artificer!.startingEquipment!.choices[0];
+    const crossbowOption = weaponChoice.options.find((o) =>
+      o.label.toLowerCase().includes('crossbow')
+    );
+    expect(crossbowOption).toBeDefined();
+    const boltsRef = crossbowOption!.items.find((i) =>
+      i.name.includes('Bolt')
+    );
+    expect(boltsRef).toBeDefined();
+    expect(boltsRef).toMatchObject({ name: 'Bolts', quantity: 20 });
+    expect(findEquipmentByName('Bolts')).toBeDefined();
+  });
+
+  it('Artificer uses "Leather Armor" not "Leather armor"', () => {
+    const artificer = allClasses.find((c) => c.name === 'Artificer');
+    expect(artificer).toBeDefined();
+    const armorRef = artificer!.startingEquipment!.fixed.find((r) =>
+      r.name.toLowerCase().includes('leather')
+    );
+    expect(armorRef).toBeDefined();
+    expect(armorRef!.name).toBe('Leather Armor');
+    expect(findEquipmentByName('Leather Armor')).toBeDefined();
   });
 });

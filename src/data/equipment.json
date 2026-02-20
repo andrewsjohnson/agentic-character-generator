@@ -801,28 +801,28 @@
   },
   {
     "kind": "gear",
-    "name": "Arrows (20)",
+    "name": "Arrows",
     "quantity": 20,
     "weight": 1,
     "cost": "1 gp"
   },
   {
     "kind": "gear",
-    "name": "Bolts (20)",
+    "name": "Bolts",
     "quantity": 20,
     "weight": 1.5,
     "cost": "1 gp"
   },
   {
     "kind": "gear",
-    "name": "Sling Bullets (20)",
+    "name": "Sling Bullets",
     "quantity": 20,
     "weight": 1.5,
     "cost": "4 cp"
   },
   {
     "kind": "gear",
-    "name": "Blowgun Needles (50)",
+    "name": "Blowgun Needles",
     "quantity": 50,
     "weight": 1,
     "cost": "1 gp"

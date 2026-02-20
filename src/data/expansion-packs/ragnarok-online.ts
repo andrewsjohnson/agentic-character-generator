@@ -408,7 +408,7 @@ export const RAGNAROK_ONLINE_PACK: ExpansionPack = {
       name: 'Morroc Wanderer',
       abilityOptions: ['DEX', 'INT', 'CHA'],
       skillProficiencies: ['Deception', 'Survival'],
-      toolProficiency: "Thieves' tools",
+      toolProficiency: "Thieves' Tools",
       equipment: [
         { name: "Clothes, Traveler's", quantity: 1 },
         { name: 'Dagger', quantity: 1 },

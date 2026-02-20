@@ -696,7 +696,6 @@ const knownGenericItems = new Set([
   "Thieves' Tools",
   'Gaming Set (choose one)',
   "Clothes, Traveler's",
-  "Thieves' tools",
   "Artisan's tools of your choice",
   "Dungeoneer's pack",
   'Maps of your homeland',
@@ -727,7 +726,7 @@ describe('data integrity: class equipment refs resolve correctly', () => {
           it(`${cls.name} choice "${choice.description}" option "${option.label}" ref "${ref.name}" resolves to a real item`, () => {
             const item = findEquipmentByName(ref.name);
             expect(item).toBeDefined();
-            expect(item?.weight).not.toBe(0);
+            expect(item?.cost).not.toBe('0 gp');
           });
         }
       }
@@ -738,6 +737,7 @@ describe('data integrity: class equipment refs resolve correctly', () => {
       it(`${cls.name} fixed ref "${ref.name}" resolves to a real item`, () => {
         const item = findEquipmentByName(ref.name);
         expect(item).toBeDefined();
+        expect(item?.cost).not.toBe('0 gp');
       });
     }
   }
@@ -750,6 +750,7 @@ describe('data integrity: background equipment refs resolve correctly', () => {
       it(`${bg.name} equipment "${equip.name}" resolves to a real item`, () => {
         const item = findEquipmentByName(equip.name);
         expect(item).toBeDefined();
+        expect(item?.cost).not.toBe('0 gp');
       });
     }
   }

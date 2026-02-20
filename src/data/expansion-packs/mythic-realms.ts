@@ -78,7 +78,7 @@ export const MYTHIC_REALMS_PACK: ExpansionPack = {
           },
         ],
         fixed: [
-          { name: "Thieves' tools" },
+          { name: "Thieves' Tools" },
           { name: "Artisan's tools of your choice" },
           { name: 'Leather Armor' },
           { name: "Dungeoneer's pack" },

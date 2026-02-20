@@ -76,7 +76,7 @@
     "equipment": [
       { "name": "Spear", "quantity": 1 },
       { "name": "Shortbow", "quantity": 1 },
-      { "name": "Arrows (20)" },
+      { "name": "Arrows", "quantity": 20 },
       { "name": "Gaming Set (choose one)", "quantity": 1 },
       { "name": "Healer's Kit", "quantity": 1 },
       { "name": "Quiver", "quantity": 1 },

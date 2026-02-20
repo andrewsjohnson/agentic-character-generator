@@ -569,7 +569,7 @@ describe('resolveStartingEquipment', () => {
     description: 'Choose armor',
     options: [
       { label: 'Chain Mail', items: [{ name: 'Chain Mail' }] },
-      { label: 'Leather Armor and Longbow', items: [{ name: 'Leather Armor' }, { name: 'Longbow' }, { name: 'Arrows (20)' }] },
+      { label: 'Leather Armor and Longbow', items: [{ name: 'Leather Armor' }, { name: 'Longbow' }, { name: 'Arrows', quantity: 20 }] },
     ],
   };
 
@@ -597,7 +597,7 @@ describe('resolveStartingEquipment', () => {
     expect(result).toHaveLength(3);
     expect(result[0].name).toBe('Leather Armor');
     expect(result[1].name).toBe('Longbow');
-    expect(result[2].name).toBe('Arrows (20)');
+    expect(result[2].name).toBe('Arrows');
   });
 
   it('resolves multiple choices with different selections', () => {
@@ -767,12 +767,13 @@ describe('data integrity: specific audit fixes', () => {
     expect(findEquipmentByName('Quiver')).toBeDefined();
   });
 
-  it('Soldier background "Arrows (20)" resolves correctly', () => {
+  it('Soldier background "Arrows" resolves correctly with quantity 20', () => {
     const soldier = allBackgrounds.find((b) => b.name === 'Soldier');
     expect(soldier).toBeDefined();
-    const arrowsRef = soldier!.equipment.find((e) => e.name === 'Arrows (20)');
+    const arrowsRef = soldier!.equipment.find((e) => e.name === 'Arrows');
     expect(arrowsRef).toBeDefined();
-    expect(findEquipmentByName('Arrows (20)')).toBeDefined();
+    expect(arrowsRef!.quantity).toBe(20);
+    expect(findEquipmentByName('Arrows')).toBeDefined();
   });
 
   it('Soldier background "Quiver" resolves correctly', () => {
@@ -809,7 +810,7 @@ describe('data integrity: specific audit fixes', () => {
     expect(findEquipmentByName('Crossbow, Light')).toBeDefined();
   });
 
-  it('Artificer uses "Bolts (20)" not "Crossbow bolt"', () => {
+  it('Artificer uses "Bolts" with quantity 20, not "Crossbow bolt"', () => {
     const artificer = allClasses.find((c) => c.name === 'Artificer');
     expect(artificer).toBeDefined();
     const weaponChoice = artificer!.startingEquipment!.choices[0];
@@ -821,8 +822,8 @@ describe('data integrity: specific audit fixes', () => {
       i.name.includes('Bolt')
     );
     expect(boltsRef).toBeDefined();
-    expect(boltsRef!.name).toBe('Bolts (20)');
-    expect(findEquipmentByName('Bolts (20)')).toBeDefined();
+    expect(boltsRef).toMatchObject({ name: 'Bolts', quantity: 20 });
+    expect(findEquipmentByName('Bolts')).toBeDefined();
   });
 
   it('Artificer uses "Leather Armor" not "Leather armor"', () => {

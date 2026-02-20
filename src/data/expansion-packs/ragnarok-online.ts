@@ -113,7 +113,7 @@ export const RAGNAROK_ONLINE_PACK: ExpansionPack = {
                 items: [
                   { name: 'Leather Armor' },
                   { name: 'Longbow' },
-                  { name: 'Arrows (20)' },
+                  { name: 'Arrows', quantity: 20 },
                 ],
               },
             ],

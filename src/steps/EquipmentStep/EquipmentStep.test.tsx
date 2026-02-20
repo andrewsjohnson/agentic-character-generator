@@ -33,7 +33,7 @@ const mockFighter: CharacterClass = {
         description: 'Choose armor',
         options: [
           { label: 'Chain Mail', items: [{ name: 'Chain Mail' }] },
-          { label: 'Leather Armor and Longbow', items: [{ name: 'Leather Armor' }, { name: 'Longbow' }, { name: 'Arrows (20)' }] },
+          { label: 'Leather Armor and Longbow', items: [{ name: 'Leather Armor' }, { name: 'Longbow' }, { name: 'Arrows', quantity: 20 }] },
         ],
       },
       {

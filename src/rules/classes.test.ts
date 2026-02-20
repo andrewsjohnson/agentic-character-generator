@@ -26,7 +26,7 @@ const mockFighter: CharacterClass = {
         description: 'Choose armor',
         options: [
           { label: 'Chain Mail', items: [{ name: 'Chain Mail' }] },
-          { label: 'Leather Armor and Longbow with 20 arrows', items: [{ name: 'Leather Armor' }, { name: 'Longbow' }, { name: 'Arrows (20)' }] },
+          { label: 'Leather Armor and Longbow with 20 arrows', items: [{ name: 'Leather Armor' }, { name: 'Longbow' }, { name: 'Arrows', quantity: 20 }] },
         ],
       },
       {
@@ -39,7 +39,7 @@ const mockFighter: CharacterClass = {
       {
         description: 'Choose a ranged weapon',
         options: [
-          { label: 'Light crossbow and 20 bolts', items: [{ name: 'Crossbow, Light' }, { name: 'Bolts (20)' }] },
+          { label: 'Light crossbow and 20 bolts', items: [{ name: 'Crossbow, Light' }, { name: 'Bolts', quantity: 20 }] },
           { label: 'Two handaxes', items: [{ name: 'Handaxe', quantity: 2 }] },
         ],
       },

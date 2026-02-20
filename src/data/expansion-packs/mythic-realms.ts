@@ -72,7 +72,7 @@ export const MYTHIC_REALMS_PACK: ExpansionPack = {
           {
             description: 'Choose a weapon:',
             options: [
-              { label: 'Light crossbow and 20 bolts', items: [{ name: 'Crossbow, Light' }, { name: 'Bolts (20)' }] },
+              { label: 'Light crossbow and 20 bolts', items: [{ name: 'Crossbow, Light' }, { name: 'Bolts', quantity: 20 }] },
               { label: 'Any two simple weapons', items: [{ name: 'Handaxe', quantity: 2 }] },
             ],
           },

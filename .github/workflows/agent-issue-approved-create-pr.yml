@@ -155,7 +155,18 @@ jobs:
       - name: Trigger implementation on PR
         run: |
           set -euo pipefail
-          gh pr comment "${{ steps.create_pr.outputs.pr_number }}" --repo "${{ github.repository }}" --body "/agent-implement"
+          ISSUE_NUMBER="${{ github.event.issue.number }}"
+          REPO="${{ github.repository }}"
+
+          NEXT_MODEL="$(gh api --paginate "/repos/${REPO}/issues/${ISSUE_NUMBER}/comments?per_page=100" \
+            --jq '.[]' \
+            | jq -rs '[.[] | select(.body | type == "string") | select(.body | test("(?m)^## Plan v[0-9]+\\b")) | .body] | last // ""' \
+            | grep -oP '(?<=<!-- next-model: )\w+' || true)"
+          if ! echo "$NEXT_MODEL" | grep -qE '^(opus|sonnet|haiku)$'; then
+            NEXT_MODEL="opus"
+          fi
+
+          gh pr comment "${{ steps.create_pr.outputs.pr_number }}" --repo "$REPO" --body "/agent-implement $NEXT_MODEL"
 
       - name: Comment on issue with PR link
         run: |

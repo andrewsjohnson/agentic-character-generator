@@ -66,6 +66,19 @@ jobs:
       - name: Checkout PR branch
         run: gh pr checkout ${{ github.event.issue.number }} --repo ${{ github.repository }}
 
+      - name: Parse model from trigger comment
+        id: model
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: |
+          set -euo pipefail
+          WORD2=$(echo "$COMMENT_BODY" | awk 'NR==1{print $2}')
+          if echo "$WORD2" | grep -qE '^(opus|sonnet|haiku)$'; then
+            echo "value=$WORD2" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=opus" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Agent PR review (interactive comment mode)
         uses: anthropics/claude-code-action@v1
         with:
@@ -76,7 +89,7 @@ jobs:
           include_fix_links: true
           show_full_output: true
           claude_args: |
-            --model opus
+            --model ${{ steps.model.outputs.value }}
             --max-turns 45
             --settings ./claude/agents/reviewer.json
           prompt: |
@@ -168,6 +181,14 @@ jobs:
             or
             Verdict: CHANGES_REQUESTED
 
+            After the verdict, include a model recommendation for the next agent step:
+            <!-- next-model: X -->
+            where X is haiku, sonnet, or opus. For APPROVE this recommends nothing further; for
+            CHANGES_REQUESTED it recommends the model the implementer should use to fix the issues:
+            - haiku: only trivial fixes needed (typos, minor copy, single-line corrections)
+            - sonnet: moderate fixes (typical refactors, a few files, standard patterns)
+            - opus: complex fixes (logic errors, multi-system impact, high-risk changes)
+
       - name: Ensure review-round labels exist
         run: |
           set -euo pipefail
@@ -230,7 +251,14 @@ jobs:
               gh pr edit "$PR" --repo "$REPO" --add-label "REVIEW-ROUND-1" || true
             fi
 
-            gh pr comment "$PR" --repo "$REPO" --body "/agent-implement"
+            NEXT_MODEL="$(gh pr view "$PR" --repo "$REPO" --json comments \
+              -q '[.comments[].body | select(contains("<!-- next-model:"))] | last // ""' \
+              | grep -oP '(?<=<!-- next-model: )\w+' || true)"
+            if ! echo "$NEXT_MODEL" | grep -qE '^(opus|sonnet|haiku)$'; then
+              NEXT_MODEL="opus"
+            fi
+
+            gh pr comment "$PR" --repo "$REPO" --body "/agent-implement $NEXT_MODEL"
             exit 0
           fi
 

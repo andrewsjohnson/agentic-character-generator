@@ -9,9 +9,10 @@ import { ExpansionPackToggle } from './components/ExpansionPackToggle';
 import { STEPS } from './steps';
 import { MYTHIC_REALMS_PACK } from './data/expansion-packs/mythic-realms';
 import { RAGNAROK_ONLINE_PACK } from './data/expansion-packs/ragnarok-online';
+import { SHADOWRUN_PACK } from './data/expansion-packs/shadowrun';
 import type { ExpansionPack } from './types/expansion-pack';
 
-const EXPANSION_PACKS: ExpansionPack[] = [MYTHIC_REALMS_PACK, RAGNAROK_ONLINE_PACK];
+const EXPANSION_PACKS: ExpansionPack[] = [MYTHIC_REALMS_PACK, RAGNAROK_ONLINE_PACK, SHADOWRUN_PACK];
 import { computeAvailableContent, findStaleSelections } from './rules/expansion-packs';
 import speciesData from './data/races.json';
 import classesData from './data/classes.json';
@@ -129,7 +130,7 @@ function App() {
   const [enabledPackIds, setEnabledPackIds] = useState<string[]>([]);
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <div className="min-h-screen bg-white">
         <header className="bg-gray-900 text-white">
           <div className="max-w-4xl mx-auto px-4 py-6 flex items-center justify-between">

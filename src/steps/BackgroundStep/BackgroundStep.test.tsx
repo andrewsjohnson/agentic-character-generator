@@ -506,8 +506,8 @@ describe('BackgroundStep', () => {
       expect(screen.getByText('Parchment (x10)')).toBeInTheDocument();
 
       // Check single quantity items don't show (x1)
-      expect(screen.getByText('Holy Symbol')).toBeInTheDocument();
-      expect(screen.queryByText('Holy Symbol (x1)')).not.toBeInTheDocument();
+      expect(screen.getByText('Holy Symbol (Amulet)')).toBeInTheDocument();
+      expect(screen.queryByText('Holy Symbol (Amulet) (x1)')).not.toBeInTheDocument();
     });
   });
 

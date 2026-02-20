@@ -102,7 +102,7 @@ export const RAGNAROK_ONLINE_PACK: ExpansionPack = {
             ],
           },
           {
-            description: 'Choose armor:',
+            description: 'Choose armor or ranged kit:',
             options: [
               {
                 label: 'Chain Mail',
@@ -373,7 +373,7 @@ export const RAGNAROK_ONLINE_PACK: ExpansionPack = {
         { name: 'Chain Mail', quantity: 1 },
         { name: 'Holy Symbol (Amulet)', quantity: 1 },
         { name: 'Pouch', quantity: 1 },
-        { name: 'Traveler\'s clothes', quantity: 1 },
+        { name: "Clothes, Traveler's", quantity: 1 },
       ],
       feature: {
         name: "Knight's Authority",
@@ -410,7 +410,7 @@ export const RAGNAROK_ONLINE_PACK: ExpansionPack = {
       skillProficiencies: ['Deception', 'Survival'],
       toolProficiency: "Thieves' tools",
       equipment: [
-        { name: 'Traveler\'s clothes', quantity: 1 },
+        { name: "Clothes, Traveler's", quantity: 1 },
         { name: 'Dagger', quantity: 1 },
         { name: 'Pouch', quantity: 1 },
         { name: 'Waterskin', quantity: 1 },

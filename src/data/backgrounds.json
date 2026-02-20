@@ -7,7 +7,7 @@
     "equipment": [
       { "name": "Calligrapher's Supplies", "quantity": 1 },
       { "name": "Book (Prayers)", "quantity": 1 },
-      { "name": "Holy Symbol", "quantity": 1 },
+      { "name": "Holy Symbol (Amulet)", "quantity": 1 },
       { "name": "Parchment", "quantity": 10 },
       { "name": "Robe", "quantity": 1 },
       { "name": "8 GP", "quantity": 1 }
@@ -62,7 +62,7 @@
       "name": "Researcher",
       "description": "When you attempt to learn or recall a piece of lore, if you do not know that information, you often know where and from whom you can obtain it. Usually, this information comes from a library, scriptorium, university, or a sage or other learned person or creature."
     },
-    "originFeat": "Magic Initiate",
+    "originFeat": "Magic Initiate (Wizard)",
     "personalityTraits": [],
     "ideals": [],
     "bonds": [],
@@ -76,7 +76,7 @@
     "equipment": [
       { "name": "Spear", "quantity": 1 },
       { "name": "Shortbow", "quantity": 1 },
-      { "name": "Arrows", "quantity": 20 },
+      { "name": "Arrows (20)" },
       { "name": "Gaming Set (choose one)", "quantity": 1 },
       { "name": "Healer's Kit", "quantity": 1 },
       { "name": "Quiver", "quantity": 1 },

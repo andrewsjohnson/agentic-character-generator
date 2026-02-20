@@ -210,7 +210,7 @@
     "startingEquipment": {
       "choices": [
         {
-          "description": "Choose armor",
+          "description": "Choose armor or ranged kit",
           "options": [
             { "label": "Chain Mail", "items": [{ "name": "Chain Mail" }] },
             { "label": "Leather Armor and Longbow with 20 arrows", "items": [{ "name": "Leather Armor" }, { "name": "Longbow" }, { "name": "Arrows (20)" }] }
@@ -357,6 +357,7 @@
       ],
       "fixed": [
         { "name": "Longbow" },
+        { "name": "Quiver" },
         { "name": "Arrows (20)" }
       ]
     },

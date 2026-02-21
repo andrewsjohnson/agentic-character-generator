@@ -376,7 +376,7 @@ export const SHADOWRUN_PACK: ExpansionPack = {
         {
           name: 'Spellcasting',
           description:
-            'You have learned to channel mana through force of will. Intelligence is your spellcasting ability. You know two cantrips and can prepare spells from the mage spell list each day after a long rest.',
+            'You have learned to channel mana through force of will. Intelligence is your spellcasting ability. You know two cantrips and can cast spells from the mage spell list.',
         },
       ],
       spellcasting: {

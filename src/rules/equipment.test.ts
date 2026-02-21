@@ -726,7 +726,7 @@ describe('data integrity: class equipment refs resolve correctly', () => {
           it(`${cls.name} choice "${choice.description}" option "${option.label}" ref "${ref.name}" resolves to a real item`, () => {
             const item = findEquipmentByName(ref.name);
             expect(item).toBeDefined();
-            expect(item?.cost).not.toBe('0 gp');
+            expect(item!.weight !== 0 || item!.cost !== '0 gp').toBe(true);
           });
         }
       }
@@ -737,7 +737,7 @@ describe('data integrity: class equipment refs resolve correctly', () => {
       it(`${cls.name} fixed ref "${ref.name}" resolves to a real item`, () => {
         const item = findEquipmentByName(ref.name);
         expect(item).toBeDefined();
-        expect(item?.cost).not.toBe('0 gp');
+        expect(item!.weight !== 0 || item!.cost !== '0 gp').toBe(true);
       });
     }
   }
@@ -750,7 +750,7 @@ describe('data integrity: background equipment refs resolve correctly', () => {
       it(`${bg.name} equipment "${equip.name}" resolves to a real item`, () => {
         const item = findEquipmentByName(equip.name);
         expect(item).toBeDefined();
-        expect(item?.cost).not.toBe('0 gp');
+        expect(item!.weight !== 0 || item!.cost !== '0 gp').toBe(true);
       });
     }
   }

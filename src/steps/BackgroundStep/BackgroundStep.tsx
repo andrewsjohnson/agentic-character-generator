@@ -119,6 +119,13 @@ function BackgroundDetail({ background, conflictingSkills, onResolveConflicts, c
 
   const allConflictsResolved = replacements.length === conflictingSkills.length;
 
+  // True when the current dropdown selections already match the saved replacements
+  const isConfirmed = allConflictsResolved &&
+    character.backgroundSkillReplacements !== undefined &&
+    conflictingSkills.every(
+      (skill, index) => character.backgroundSkillReplacements![skill] === replacements[index]
+    );
+
   const handleConfirm = () => {
     if (allConflictsResolved) {
       onResolveConflicts(replacements);
@@ -173,11 +180,21 @@ function BackgroundDetail({ background, conflictingSkills, onResolveConflicts, c
 
       {/* Skill Conflict Resolution */}
       {hasConflicts && (
-        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg" data-testid="skill-conflict-notice">
-          <h4 className="text-lg font-semibold mb-2 text-yellow-800">Skill Conflicts Detected</h4>
-          <p className="text-sm text-yellow-700 mb-4">
-            The following skills from this background conflict with skills you already have from your class.
-            Please choose replacement skills:
+        <div
+          className={`mb-6 p-4 rounded-lg border ${
+            isConfirmed
+              ? 'bg-green-50 border-green-200'
+              : 'bg-yellow-50 border-yellow-200'
+          }`}
+          data-testid="skill-conflict-notice"
+        >
+          <h4 className={`text-lg font-semibold mb-2 ${isConfirmed ? 'text-green-800' : 'text-yellow-800'}`}>
+            {isConfirmed ? 'Skill Conflicts Resolved' : 'Skill Conflicts Detected'}
+          </h4>
+          <p className={`text-sm mb-4 ${isConfirmed ? 'text-green-700' : 'text-yellow-700'}`}>
+            {isConfirmed
+              ? 'Your replacement skill selections have been saved.'
+              : 'The following skills from this background conflict with skills you already have from your class. Please choose replacement skills:'}
           </p>
           <div className="space-y-3">
             {conflictingSkills.map((skill, index) => (
@@ -205,15 +222,17 @@ function BackgroundDetail({ background, conflictingSkills, onResolveConflicts, c
           </div>
           <button
             onClick={handleConfirm}
-            disabled={!allConflictsResolved}
+            disabled={!allConflictsResolved || isConfirmed}
             className={`mt-4 px-4 py-2 rounded font-medium ${
-              allConflictsResolved
-                ? 'bg-blue-600 text-white hover:bg-blue-700'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              isConfirmed
+                ? 'bg-green-600 text-white cursor-default'
+                : allConflictsResolved
+                  ? 'bg-blue-600 text-white hover:bg-blue-700'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
             data-testid="confirm-replacements-button"
           >
-            Confirm Selection
+            {isConfirmed ? 'Selection Confirmed' : 'Confirm Selection'}
           </button>
         </div>
       )}

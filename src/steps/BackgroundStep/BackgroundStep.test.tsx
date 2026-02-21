@@ -602,6 +602,109 @@ describe('BackgroundStep', () => {
     });
   });
 
+  describe('Confirmed State UI Feedback', () => {
+    it('conflict panel transitions from yellow to green after confirmation', () => {
+      const criminal = backgrounds.find(b => b.name === 'Criminal')!;
+      const initialCharacter: CharacterDraft = {
+        background: criminal,
+        skillProficiencies: ['Stealth'],
+        backgroundSkillReplacements: undefined
+      };
+      const mockUpdate = vi.fn();
+
+      const { rerender } = render(
+        <MemoryRouter>
+          <BackgroundStep character={initialCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
+        </MemoryRouter>
+      );
+
+      // Panel should initially be yellow
+      const notice = screen.getByTestId('skill-conflict-notice');
+      expect(notice).toHaveClass('bg-yellow-50');
+
+      // Select a replacement and click confirm
+      const select = screen.getByTestId('replacement-select-0') as HTMLSelectElement;
+      fireEvent.change(select, { target: { value: 'Athletics' } });
+      expect(screen.getByTestId('confirm-replacements-button')).toHaveTextContent('Confirm Selection');
+      fireEvent.click(screen.getByTestId('confirm-replacements-button'));
+
+      // Simulate the parent updating character state after confirmation
+      const confirmedCharacter: CharacterDraft = {
+        background: criminal,
+        skillProficiencies: ['Stealth', 'Sleight of Hand', 'Athletics'],
+        backgroundSkillReplacements: { 'Stealth': 'Athletics' }
+      };
+
+      rerender(
+        <MemoryRouter>
+          <BackgroundStep character={confirmedCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
+        </MemoryRouter>
+      );
+
+      // Panel should now be green
+      expect(notice).toHaveClass('bg-green-50', 'border-green-200');
+      expect(notice).not.toHaveClass('bg-yellow-50');
+
+      // Button should show confirmed text and be disabled
+      expect(screen.getByTestId('confirm-replacements-button')).toHaveTextContent('Selection Confirmed');
+      expect(screen.getByTestId('confirm-replacements-button')).toBeDisabled();
+    });
+
+    it('panel reverts to yellow and button re-enables when a dropdown changes after confirmation', () => {
+      const criminal = backgrounds.find(b => b.name === 'Criminal')!;
+      const mockCharacter: CharacterDraft = {
+        background: criminal,
+        skillProficiencies: ['Stealth', 'Sleight of Hand', 'Athletics'],
+        backgroundSkillReplacements: { 'Stealth': 'Athletics' }
+      };
+      const mockUpdate = vi.fn();
+
+      render(
+        <MemoryRouter>
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
+        </MemoryRouter>
+      );
+
+      // Panel should initially be green (confirmed state)
+      const notice = screen.getByTestId('skill-conflict-notice');
+      expect(notice).toHaveClass('bg-green-50');
+      expect(screen.getByTestId('confirm-replacements-button')).toBeDisabled();
+
+      // Change the dropdown to a different skill
+      const select = screen.getByTestId('replacement-select-0') as HTMLSelectElement;
+      fireEvent.change(select, { target: { value: 'Perception' } });
+
+      // Panel should revert to yellow (unconfirmed change)
+      expect(notice).toHaveClass('bg-yellow-50');
+      expect(notice).not.toHaveClass('bg-green-50');
+
+      // Button should be re-enabled
+      const confirmButton = screen.getByTestId('confirm-replacements-button');
+      expect(confirmButton).toHaveTextContent('Confirm Selection');
+      expect(confirmButton).not.toBeDisabled();
+    });
+
+    it('confirm button is disabled when initialized with already-confirmed replacements', () => {
+      const criminal = backgrounds.find(b => b.name === 'Criminal')!;
+      const mockCharacter: CharacterDraft = {
+        background: criminal,
+        skillProficiencies: ['Stealth', 'Sleight of Hand', 'Athletics'],
+        backgroundSkillReplacements: { 'Stealth': 'Athletics' }
+      };
+      const mockUpdate = vi.fn();
+
+      render(
+        <MemoryRouter>
+          <BackgroundStep character={mockCharacter} updateCharacter={mockUpdate} availableContent={baseAvailableContent} />
+        </MemoryRouter>
+      );
+
+      const confirmButton = screen.getByTestId('confirm-replacements-button');
+      expect(confirmButton).toBeDisabled();
+      expect(confirmButton).toHaveTextContent('Selection Confirmed');
+    });
+  });
+
   describe('Detail Panel Content', () => {
     it('displays all background information in detail panel', () => {
       const mockCharacter: CharacterDraft = {};

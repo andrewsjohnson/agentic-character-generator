@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import type { ExpansionPack } from '../types/expansion-pack';
+import { capture } from '../analytics/index';
 
 type ExpansionPackToggleProps = {
   packs: ExpansionPack[];
@@ -37,7 +38,10 @@ export function ExpansionPackToggle({ packs, enabledPackIds, onChange }: Expansi
   const enabledCount = enabledPackIds.length;
 
   const handleToggle = (packId: string) => {
-    if (enabledPackIds.includes(packId)) {
+    const enabled = !enabledPackIds.includes(packId);
+    const packName = packs.find(p => p.id === packId)?.name ?? packId;
+    capture('expansion_pack_toggled', { pack_id: packId, pack_name: packName, enabled });
+    if (!enabled) {
       onChange(enabledPackIds.filter(id => id !== packId));
     } else {
       onChange([...enabledPackIds, packId]);

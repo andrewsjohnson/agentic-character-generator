@@ -12,6 +12,7 @@ import {
 import { exportCharacterJSON } from '../rules/json-export';
 import { exportCharacterPDF } from '../rules/pdf-export';
 import { STEPS } from '../steps';
+import { capture } from '../analytics/index';
 
 type StepPath = (typeof STEPS)[number]['path'];
 
@@ -75,20 +76,31 @@ export function BottomNavigation({ character, enabledPackIds }: BottomNavigation
 
     if (validation && !validation.valid) {
       setErrors(validation.errors);
+      capture('step_validation_failed', {
+        step: currentPath ?? '',
+        errors: validation.errors,
+      });
       return;
     }
 
     setErrors([]);
     if (nextPath) {
+      capture('step_completed', {
+        from_step: currentPath ?? '',
+        to_step: nextPath,
+        step_index: currentIndex,
+      });
       navigate(nextPath);
     }
   };
 
   const handleExportPDF = () => {
+    capture('character_exported', { format: 'pdf' });
     exportCharacterPDF(character);
   };
 
   const handleExportJSON = () => {
+    capture('character_exported', { format: 'json' });
     exportCharacterJSON(character, enabledPackIds);
   };
 

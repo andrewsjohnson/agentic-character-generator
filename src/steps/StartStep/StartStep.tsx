@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { StepProps } from '../types';
 import { deserializeCharacter } from '../../rules/serialization';
+import { capture } from '../../analytics/index';
 
 export function StartStep({ replaceCharacter, onEnablePackIds }: StepProps) {
   const navigate = useNavigate();
@@ -9,6 +10,7 @@ export function StartStep({ replaceCharacter, onEnablePackIds }: StepProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleCreateNew = () => {
+    capture('character_started', { method: 'new' });
     replaceCharacter?.({});
     navigate('/name');
   };
@@ -18,6 +20,7 @@ export function StartStep({ replaceCharacter, onEnablePackIds }: StepProps) {
     if (!file) return;
 
     if (!file.name.endsWith('.json')) {
+      capture('character_import_failed', { reason: 'not_json' });
       setImportError('Please select a .json file.');
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -35,6 +38,7 @@ export function StartStep({ replaceCharacter, onEnablePackIds }: StepProps) {
 
       const result = deserializeCharacter(content);
       if (!result.success) {
+        capture('character_import_failed', { reason: result.error });
         setImportError(result.error);
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
@@ -42,6 +46,7 @@ export function StartStep({ replaceCharacter, onEnablePackIds }: StepProps) {
         return;
       }
 
+      capture('character_imported', { enabled_pack_count: result.enabledPackIds.length });
       setImportError(null);
       if (result.enabledPackIds.length > 0 && onEnablePackIds) {
         onEnablePackIds(result.enabledPackIds);
@@ -51,6 +56,7 @@ export function StartStep({ replaceCharacter, onEnablePackIds }: StepProps) {
     };
 
     reader.onerror = () => {
+      capture('character_import_failed', { reason: 'file_read_error' });
       setImportError('Failed to read file.');
     };
 

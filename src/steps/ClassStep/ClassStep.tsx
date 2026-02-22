@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import type { StepProps } from '../types';
 import type { CharacterClass } from '../../types/class';
 import { getClassSkillChoices } from '../../rules/classes';
+import { capture } from '../../analytics/index';
 
 type ClassCardProps = {
   charClass: CharacterClass;
@@ -136,6 +137,10 @@ export function ClassStep({ character, updateCharacter, availableContent }: Step
 
   const handleClassClick = (charClass: CharacterClass) => {
     setSelectedClass(charClass);
+    const source =
+      availableContent.classes.find(g => g.items.some(c => c.name === charClass.name))?.source ??
+      'Base Content';
+    capture('class_selected', { class: charClass.name, source });
     updateCharacter({ class: charClass });
   };
 

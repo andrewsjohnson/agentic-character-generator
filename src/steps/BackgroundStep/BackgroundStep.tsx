@@ -3,6 +3,7 @@ import type { StepProps } from '../types';
 import type { Background } from '../../types/background';
 import type { SkillName } from '../../types/skill';
 import { isSkillName } from '../../types/skill';
+import { capture } from '../../analytics/index';
 import { getBackgroundSkills, getBackgroundEquipment, hasSkillConflict } from '../../rules/backgrounds';
 import classesData from '../../data/classes.json';
 import type { CharacterClass } from '../../types/class';
@@ -233,6 +234,7 @@ export function BackgroundStep({ character, updateCharacter, availableContent }:
 
   const handleBackgroundClick = (background: Background) => {
     setSelectedBackground(background);
+    capture('background_selected', { background: background.name });
 
     // Get class skills (may be undefined if no class chosen yet)
     const classSkills = character.skillProficiencies || [];

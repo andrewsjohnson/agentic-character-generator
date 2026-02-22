@@ -67,7 +67,7 @@ export function initAnalytics(): void {
   if (!key) return;
 
   const host =
-    (import.meta.env['VITE_POSTHOG_HOST'] as string | undefined) ??
+    (import.meta.env['VITE_POSTHOG_HOST'] as string | undefined) ||
     'https://us.i.posthog.com';
 
   posthog.init(key, {

@@ -33,6 +33,7 @@ jobs:
         run: npm run build
         env:
           VITE_BASE_PATH: /${{ github.event.repository.name }}/
+          VITE_POSTHOG_KEY: ${{ vars.VITE_POSTHOG_KEY }}
 
       - uses: actions/upload-pages-artifact@v3
         with:

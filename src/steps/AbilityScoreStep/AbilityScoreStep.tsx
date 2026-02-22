@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import type { StepProps } from '../types';
 import type { AbilityScores, AbilityName } from '../../types/ability';
+import { capture } from '../../analytics/index';
 import { ABILITY_NAMES } from '../../types/ability';
 import {
   getPointBuyCost,
@@ -85,6 +86,7 @@ export function AbilityScoreStep({ character, updateCharacter }: StepProps) {
   // Handle mode switching — preserve scores for each method independently
   const handleModeChange = (newMode: Mode) => {
     setMode(newMode);
+    capture('ability_score_method_selected', { method: newMode });
   };
 
   // Point Buy handlers

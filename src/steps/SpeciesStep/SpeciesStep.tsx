@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import type { StepProps } from '../types';
 import type { Species, Subspecies } from '../../types/species';
 import { formatAbilityBonuses } from '../../rules/format-ability-bonuses';
+import { capture } from '../../analytics/index';
 
 type SpeciesCardProps = {
   species: Species;
@@ -78,6 +79,15 @@ export function SpeciesStep({ character, updateCharacter, availableContent }: St
   const handleSpeciesClick = (species: Species) => {
     setSelectedSpecies(species);
 
+    const source =
+      availableContent.species.find(g => g.items.some(s => s.name === species.name))?.source ??
+      'Base Content';
+    capture('species_selected', {
+      species: species.name,
+      source,
+      has_subspecies: species.subspecies.length > 0,
+    });
+
     // If species has no subspecies, update character immediately
     if (species.subspecies.length === 0) {
       updateCharacter({ species, subspecies: undefined });
@@ -91,8 +101,8 @@ export function SpeciesStep({ character, updateCharacter, availableContent }: St
   const handleSubspeciesClick = (subspecies: Subspecies) => {
     setSelectedSubspecies(subspecies);
 
-    // Update character with both species and subspecies
     if (selectedSpecies) {
+      capture('subspecies_selected', { species: selectedSpecies.name, subspecies: subspecies.name });
       updateCharacter({ species: selectedSpecies, subspecies });
     }
   };

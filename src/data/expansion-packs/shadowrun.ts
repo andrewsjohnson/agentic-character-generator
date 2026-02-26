@@ -735,7 +735,7 @@ export const SHADOWRUN_PACK: ExpansionPack = {
       name: 'Shadowrunner',
       abilityOptions: ['STR', 'DEX', 'CON'],
       skillProficiencies: ['Stealth', 'Insight'],
-      toolProficiency: "Thieves' tools",
+      toolProficiency: "Thieves' Tools",
       equipment: [
         { name: "Traveler's clothes", quantity: 1 },
         { name: 'Dagger', quantity: 1 },
